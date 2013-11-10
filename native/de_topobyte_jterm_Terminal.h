@@ -17,11 +17,35 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_test
 
 /*
  * Class:     de_topobyte_jterm_Terminal
+ * Method:    testStringCreation
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_Terminal_testStringCreation
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     de_topobyte_jterm_Terminal
  * Method:    write
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_write
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     de_topobyte_jterm_Terminal
+ * Method:    start
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     de_topobyte_jterm_Terminal
+ * Method:    read
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

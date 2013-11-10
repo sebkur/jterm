@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
 {
 	char * command = "/bin/bash";
 
+ 	fprintf(stderr, "proc id: %d\n", getpid());
+
 	int mfd = posix_openpt(O_RDWR | O_NOCTTY); //master
 	fprintf(stderr, "master fd: %d\n", mfd);
 	grantpt(mfd);
@@ -57,6 +59,7 @@ int main(int argc, char *argv[])
 		setsid();
 		setpgid(0, 0);
 		int sfd = open(pn, O_RDWR);
+		fprintf(stderr, "slave fd: %d\n", sfd);
 		ioctl (sfd, TIOCSCTTY, 0);
 
 		struct termios st;
@@ -78,12 +81,18 @@ int main(int argc, char *argv[])
 			char * var = *iter;
 			if (strcmp(var, "TERM") == 0){
 			}else{
-				env[e2] = g_strdup(environ[e1]);
+				//env[e2] = g_strdup(environ[e1]);
+                env[e2] = malloc(sizeof(char) * strlen(environ[e1]));
+                strncpy(env[e2], environ[e1], strlen(environ[e1]));
 				e2++;
 			}
 			e1++;
 		}
-		env[e2++] = g_strdup("TERM=xterm");
+		//env[e2++] = g_strdup("TERM=xterm");
+        const char * last = "TERM=xterm";
+        env[e2] = malloc(sizeof(char) * strlen(last));
+        strncpy(env[e2], last, strlen(last));
+        e2++;
 		env[e2] = NULL;
 
 		/* working directory */
