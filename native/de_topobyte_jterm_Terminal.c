@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_write
     } else {
         const char * msg = (*env)->GetStringUTFChars(env, message, NULL);
         printf("This is my message: '%s'\n", msg);
+        fflush(stdout);
+
+        jclass thisClass = (*env)->GetObjectClass(env, this);
+        jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
+        jint mfd = (*env)->GetIntField(env, this, fidMfd);
+        printf("write(%d, '%s', %d)\n", mfd, msg, strlen(msg));
+        write(mfd, msg, strlen(msg));
+
         (*env)->ReleaseStringUTFChars(env, message, msg);
     }
 }

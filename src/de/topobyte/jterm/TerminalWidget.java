@@ -27,6 +27,9 @@ public class TerminalWidget extends JComponent {
 
 		terminal.start();
 
+		setFocusable(true);
+		addKeyListener(new TerminalKeyAdapter(terminal));
+
 		byte[] bytes = terminal.read();
 		for (int i = 0; i < bytes.length; i++) {
 			byte b = bytes[i];
@@ -83,10 +86,10 @@ public class TerminalWidget extends JComponent {
 		 */
 
 		g.setColor(Color.GREEN);
-		
+
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 10);
 		g.setFont(font);
-		
+
 		List<Row> rows = screen.getRows();
 		for (int i = 0; i < rows.size(); i++) {
 			Row row = rows.get(i);
