@@ -5,9 +5,11 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class TestTerminalWidget {
+public class TestTerminalWidget
+{
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		System.loadLibrary("terminal");
 
 		JFrame frame = new JFrame("JTerm");

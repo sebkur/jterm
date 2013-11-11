@@ -27,8 +27,8 @@ public class TerminalWidget extends JComponent
 
 		history = new History();
 
-		screen = new Screen(terminal.getNumberOfRows(),
-				terminal.getNumberOfCols());
+		screen = new Screen(terminal.getNumberOfCols(),
+				terminal.getNumberOfRows());
 
 		terminal.start();
 
@@ -48,7 +48,7 @@ public class TerminalWidget extends JComponent
 					for (int i = 0; i < bytes.length; i++) {
 						byte b = bytes[i];
 						char c = (char) b;
-						// System.out.println("Byte: " + b + "..." + c);
+						System.out.println("Byte: " + b + "..." + c);
 
 						handle(c);
 					}
@@ -112,6 +112,12 @@ public class TerminalWidget extends JComponent
 				g.drawString(s, x, y + charHeight);
 			}
 		}
+
+		g.setColor(new Color(0x99ff0000, true));
+		g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
+				(screen.getCurrentRow() - 1) * charHeight, charWidth,
+				charHeight);
+
 	}
 
 	private enum State {
@@ -196,7 +202,7 @@ public class TerminalWidget extends JComponent
 			case 'c': // Reset (RIS)
 			case 'H': { // Home Position ()
 				state = State.NORMAL;
-				// TODO: handle_escaped(c);
+				handleEscaped(c);
 				break;
 			}
 			default: {
@@ -282,6 +288,7 @@ public class TerminalWidget extends JComponent
 				for (int i = 0; i < 8 - m; i++) {
 					add(' ');
 				}
+				return;
 			}
 			}
 			add(c);
@@ -339,6 +346,11 @@ public class TerminalWidget extends JComponent
 		handleCsi(currentCsi);
 	}
 
+	private void handleEscaped(char c)
+	{
+		System.out.println("Handle Escaped: " + c);
+	}
+
 	private void handleCsi(Csi csi)
 	{
 		System.out.println("Handle CSI");
@@ -391,6 +403,11 @@ public class TerminalWidget extends JComponent
 
 	private void add(char c)
 	{
+		if (screen.getCurrentColumn() > screen.getWidth()) {
+			appendRow();
+			screen.setCurrentColumn(1);
+		}
+
 		int r = screen.getCurrentRow();
 
 		while (screen.getRows().size() < r) {
@@ -398,7 +415,22 @@ public class TerminalWidget extends JComponent
 		}
 
 		Row row = screen.getRows().get(r - 1);
-		row.getPixels().add(new Pixel(0, c));
+		List<Pixel> pixels = row.getPixels();
+
+		if (pixels.size() < screen.getCurrentColumn() - 1) {
+			int fill = screen.getCurrentColumn() - pixels.size() - 1;
+			for (int x = 0; x < fill; x++) {
+				pixels.add(new Pixel(0, c));
+			}
+		} else if (pixels.size() == screen.getCurrentColumn() - 1) {
+			// No padding needed, cursor is exactly at insertion position
+			pixels.add(new Pixel(0, c));
+		} else {
+			// Overwriting
+			if (screen.getCurrentColumn() - 1 < pixels.size()) {
+				pixels.get(screen.getCurrentColumn() - 1).setChar(c);
+			}
+		}
 
 		screen.setCurrentColumn(screen.getCurrentColumn() + 1);
 	}

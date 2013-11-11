@@ -1,6 +1,7 @@
 package de.topobyte.jterm;
 
-public class Terminal {
+public class Terminal
+{
 
 	private int mfd = 0;
 
@@ -17,15 +18,18 @@ public class Terminal {
 
 	public native byte[] read();
 
-	public void printInfo() {
+	public void printInfo()
+	{
 		System.out.println("MFD: " + mfd);
 	}
 
-	public int getNumberOfCols() {
+	public int getNumberOfCols()
+	{
 		return cols;
 	}
 
-	public int getNumberOfRows() {
+	public int getNumberOfRows()
+	{
 		return rows;
 	}
 }

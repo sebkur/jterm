@@ -3,7 +3,8 @@ package de.topobyte.jterm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Screen {
+public class Screen
+{
 
 	private int width;
 	private int height;
@@ -14,45 +15,54 @@ public class Screen {
 
 	private List<Row> rows = new ArrayList<Row>();
 
-	public Screen(int width, int height) {
+	public Screen(int width, int height)
+	{
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public List<Row> getRows()
 	{
 		return rows;
 	}
 
-	public int getWidth() {
+	public int getWidth()
+	{
 		return width;
 	}
 
-	public int getHeight() {
+	public int getHeight()
+	{
 		return height;
 	}
 
-	public void setWidth(int width) {
+	public void setWidth(int width)
+	{
 		this.width = width;
 	}
 
-	public void setHeight(int height) {
+	public void setHeight(int height)
+	{
 		this.height = height;
 	}
 
-	public int getCurrentColumn() {
+	public int getCurrentColumn()
+	{
 		return ccol;
 	}
 
-	public int getCurrentRow() {
+	public int getCurrentRow()
+	{
 		return crow;
 	}
 
-	public void setCurrentColumn(int ccol) {
+	public void setCurrentColumn(int ccol)
+	{
 		this.ccol = ccol;
 	}
 
-	public void setCurrentRow(int crow) {
+	public void setCurrentRow(int crow)
+	{
 		this.crow = crow;
 	}
 

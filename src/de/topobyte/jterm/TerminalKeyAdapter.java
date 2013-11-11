@@ -16,7 +16,7 @@ public class TerminalKeyAdapter extends KeyAdapter
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
-		System.out.println("key typed: " + e.getKeyChar());
+		// System.out.println("key typed: " + e.getKeyChar());
 		String message = String.format("%c", e.getKeyChar());
 		terminal.write(message);
 	}
