@@ -42,6 +42,9 @@ public class TerminalWidget extends JComponent
 			{
 				while (true) {
 					byte[] bytes = terminal.read();
+					if (bytes == null) {
+						break;
+					}
 					for (int i = 0; i < bytes.length; i++) {
 						byte b = bytes[i];
 						char c = (char) b;
