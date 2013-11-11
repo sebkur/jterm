@@ -116,11 +116,49 @@ public class TerminalWidget extends JComponent
 	};
 
 	private State state = State.NORMAL;
+	private Csi currentCsi = new Csi();
 
 	private void handle(char c)
 	{
-		System.out.println(state);
 		switch (state) {
+		case CSI_SUFFIX: {
+			handleSecondSuffix(c);
+			break;
+		}
+		case CSI_NUM:
+		case CSI_PREFIX: {
+			switch (c) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9': {
+				handleNumber(c);
+				break;
+			}
+			case ';': {
+				handleSemicolon();
+				break;
+			}
+			default: {
+				handleSuffix(c);
+				break;
+			}
+			}
+			break;
+		}
+		case LEFT_BRACKET: // TODO: G0 (vt102 uses registers for charsets)
+		case RIGHT_BRACKET: { // TODO: G1
+			// handle Language setting
+			state = State.NORMAL;
+			setCharset(c);
+			break;
+		}
 		case ESC: {
 			if (c <= 15) {
 				break;
@@ -132,7 +170,7 @@ public class TerminalWidget extends JComponent
 			}
 			case '[': {
 				state = State.CSI;
-				// clear_current_csi(terminal);
+				currentCsi = new Csi();
 				break;
 			}
 			case '(': {
@@ -155,7 +193,7 @@ public class TerminalWidget extends JComponent
 			case 'c': // Reset (RIS)
 			case 'H': { // Home Position ()
 				state = State.NORMAL;
-				// handle_escaped(c);
+				// TODO: handle_escaped(c);
 				break;
 			}
 			default: {
@@ -172,10 +210,53 @@ public class TerminalWidget extends JComponent
 			}
 			break;
 		}
+		case CSI: {
+			switch (c) {
+			case '!':
+			case '?':
+			case '>': {
+				state = State.CSI_PREFIX;
+				currentCsi.prefix = c;
+				break;
+			}
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9': {
+				state = State.CSI_NUM;
+				handleNumber(c);
+				break;
+			}
+			case ';': {
+				state = State.CSI_NUM;
+				handleSemicolon();
+				break;
+			}
+			default: {
+				handleSuffix(c);
+				break;
+			}
+			}
+			break;
+		}
 		case NORMAL: {
 			switch (c) {
 			case '\u001b': {
 				state = State.ESC;
+			}
+			case '\0': {
+				return;
+			}
+			case '\b': {
+				System.out.println("backspace");
+				screen.setCurrentColumn(screen.getCurrentColumn() - 1);
+				return;
 			}
 			case '\7': {
 				System.out.println("CHAR: BELL");
@@ -205,6 +286,104 @@ public class TerminalWidget extends JComponent
 		default:
 			break;
 		}
+	}
+
+	private void handleNumber(char c)
+	{
+		int n = c - 48;
+		if (currentCsi.firstDigit) {
+			currentCsi.firstDigit = false;
+			currentCsi.nums.add(n);
+		} else {
+			int num = currentCsi.nums.get(currentCsi.nums.size() - 1);
+			int v = num * 10 + n;
+			currentCsi.nums.set(currentCsi.nums.size() - 1, v);
+		}
+	}
+
+	private void handleSemicolon()
+	{
+		if (currentCsi.firstDigit) {
+			int n = 0; // TODO: right default values
+			currentCsi.nums.add(n);
+		} else {
+			currentCsi.firstDigit = true;
+		}
+	}
+
+	private void handleSuffix(char c)
+	{
+		currentCsi.suffix1 = c;
+		switch (c) {
+		case '\"':
+		case '\'': {
+			state = State.CSI_SUFFIX;
+			break;
+		}
+		default: {
+			// TODO: emit an action since a sequence was processed
+			state = State.NORMAL;
+			handleCsi(currentCsi);
+			break;
+		}
+		}
+	}
+
+	private void handleSecondSuffix(char c)
+	{
+		// TODO: emit an action since a sequence was processed
+		currentCsi.suffix2 = c;
+		handleCsi(currentCsi);
+	}
+
+	private void handleCsi(Csi csi)
+	{
+		System.out.println("Handle CSI");
+		for (int i = 0; i < csi.nums.size(); i++) {
+			int num = csi.nums.get(i);
+			System.out.println("CSI number: " + num);
+		}
+
+		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
+			System.out.println("CSI case 1");
+		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
+				&& csi.prefix == '?') { // DECSET / DECRST
+			System.out.println("CSI case 2");
+		} else if (csi.suffix1 == 'H') { // goto
+			// TODO: many cases missing
+		} else if (csi.suffix1 == 'K') { // erase in line
+			int n = getValueOrDefault(csi, 0);
+			switch (n) {
+			case 0:
+				// erase to the right
+				Row row = screen.getRows().get(screen.getCurrentRow() - 1);
+				List<Pixel> pixels = row.getPixels();
+				int ccol = screen.getCurrentColumn();
+				while (pixels.size() >= ccol) {
+					pixels.remove(pixels.size() - 1);
+				}
+				break;
+			case 1:
+				// erase to the left
+				break;
+			case 2:
+				// erase line
+				break;
+			}
+		}
+	}
+
+	private int getValueOrDefault(Csi csi, int v)
+	{
+		if (csi.nums.size() > 0) {
+			return csi.nums.get(0);
+		}
+		return v;
+	}
+
+	private void setCharset(char c)
+	{
+		System.out.println("Set Charset: '" + c + "'");
 	}
 
 	private void add(char c)
