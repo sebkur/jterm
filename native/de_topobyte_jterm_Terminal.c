@@ -32,13 +32,13 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_write
         printf("Message is null\n");
     } else {
         const char * msg = (*env)->GetStringUTFChars(env, message, NULL);
-        printf("This is my message: '%s'\n", msg);
-        fflush(stdout);
+        //printf("This is my message: '%s'\n", msg);
+        //fflush(stdout);
 
         jclass thisClass = (*env)->GetObjectClass(env, this);
         jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
         jint mfd = (*env)->GetIntField(env, this, fidMfd);
-        printf("write(%d, '%s', %d)\n", mfd, msg, (int)strlen(msg));
+        //printf("write(%d, '%s', %d)\n", mfd, msg, (int)strlen(msg));
         write(mfd, msg, strlen(msg));
 
         (*env)->ReleaseStringUTFChars(env, message, msg);
@@ -190,7 +190,7 @@ JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
     ssize_t c;
     c = read(mfd, buf, BUFSIZE - 1);
 
-    fprintf(stderr, "read: %d\n", (int)c);
+    //fprintf(stderr, "read: %d\n", (int)c);
 
     if (c <= 0) {
         return NULL;
