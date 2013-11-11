@@ -120,19 +120,22 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
         int e1 = 0, e2 = 0;
         for (iter = environ; *iter != NULL; iter++){
             char * var = *iter;
+            printf("var: %s\n", var);
             if (strcmp(var, "TERM") == 0){
             }else{
                 //env[e2] = g_strdup(environ[e1]);
-                env[e2] = malloc(sizeof(char) * strlen(environ[e1]));
-                strncpy(env[e2], environ[e1], strlen(environ[e1]));
+                env[e2] = malloc(sizeof(char) * strlen(environ[e1]) + 1);
+                //strncpy(env[e2], environ[e1], strlen(environ[e1]));
+                strcpy(env[e2], environ[e1]);
                 e2++;
             }
             e1++;
         }
         //env[e2++] = g_strdup("TERM=xterm");
         const char * last = "TERM=xterm";
-        env[e2] = malloc(sizeof(char) * strlen(last));
-        strncpy(env[e2], last, strlen(last));
+        env[e2] = malloc(sizeof(char) * strlen(last) + 1);
+        //strncpy(env[e2], last, strlen(last));
+        strcpy(env[e2], last);
         e2++;
         env[e2] = NULL;
 
