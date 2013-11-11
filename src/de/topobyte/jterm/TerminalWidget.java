@@ -30,17 +30,42 @@ public class TerminalWidget extends JComponent {
 		setFocusable(true);
 		addKeyListener(new TerminalKeyAdapter(terminal));
 
-		byte[] bytes = terminal.read();
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-			char c = (char) b;
-			System.out.println("Byte: " + b + "..." + c);
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					byte[] bytes = terminal.read();
+					for (int i = 0; i < bytes.length; i++) {
+						byte b = bytes[i];
+						char c = (char) b;
+						System.out.println("Byte: " + b + "..." + c);
 
-			handle(c);
-		}
+						handle(c);
+					}
+					repaint();
+				}
+			}
+		});
+		t.start();
 	}
 
 	private void handle(char c) {
+		switch(c) {
+		case '\7': {
+			System.out.println("BELL");
+			return;
+		}
+		case '\r': {
+			System.out.println("carriage return");
+			screen.setCurrentColumn(1);
+			return;
+		}
+		case '\n': {
+			System.out.println("line feed");
+			int r = screen.getCurrentRow();
+			screen.setCurrentRow(r+1);
+			return;
+		}
+		}
 		int r = screen.getCurrentRow();
 		List<Row> rows = screen.getRows();
 		if (rows.size() < r) {
