@@ -931,7 +931,13 @@ public class TerminalWidget extends JComponent
 
 	private void insertBlankCharacters(int n)
 	{
-		System.out.println("TODO: insertBlankCharacters");
+		List<Pixel> row = screen.getRows().get(screen.getCurrentRow() - 1)
+				.getPixels();
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentColumn() <= row.size()) {
+				row.add(screen.getCurrentColumn() - 1, createPixel(' '));
+			}
+		}
 	}
 
 	private void cursorGoto(int r, int c)
