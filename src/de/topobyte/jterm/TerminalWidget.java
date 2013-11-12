@@ -70,7 +70,10 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_RIGHT);
 		keyUtil.addKeyAction(KeyEvent.VK_HOME);
 		keyUtil.addKeyAction(KeyEvent.VK_END);
+		keyUtil.addKeyAction(KeyEvent.VK_INSERT);
 		keyUtil.addKeyAction(KeyEvent.VK_DELETE);
+		keyUtil.addKeyAction(KeyEvent.VK_PAGE_UP);
+		keyUtil.addKeyAction(KeyEvent.VK_PAGE_DOWN);
 
 		TerminalReader terminalReader = new TerminalReader(terminal) {
 
@@ -1093,5 +1096,6 @@ public class TerminalWidget extends JComponent
 		// @formatter:on
 		String message = String.format("\033[%c~", letter);
 		terminal.write(message);
+		System.out.println("message: '" + message + "'");
 	}
 }

@@ -36,6 +36,7 @@ public class KeyAction extends AbstractAction
 		case KeyEvent.VK_PAGE_UP:
 		case KeyEvent.VK_PAGE_DOWN:
 			terminal.sendKeypad(keyCode);
+			break;
 		}
 	}
 }
