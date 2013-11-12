@@ -2,11 +2,11 @@ package de.topobyte.jterm;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
-import java.awt.font.TextAttribute;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -31,11 +31,14 @@ public class TerminalWidget extends JComponent
 
 	private Terminal terminal;
 
-	private String fontname = "Monospace";
-	private int fontsize = 9;
+	private String fontname = "Monospaced";
+	private int fontsize = 10;
+
+	private Font font;
 
 	private int charWidth = 7;
 	private int charHeight = 11;
+	private int descent = 3;
 
 	private Screen screen;
 	private Screen screenNormal;
@@ -65,6 +68,12 @@ public class TerminalWidget extends JComponent
 		screenNormal = new Screen(1, terminal.getNumberOfRows());
 		screenAlternate = new Screen(1, terminal.getNumberOfRows());
 		screen = screenNormal;
+
+		font = new Font(fontname, Font.PLAIN, fontsize);
+		FontMetrics metrics = getFontMetrics(font);
+		charHeight = metrics.getHeight();
+		charWidth = metrics.charWidth('O');
+		descent = metrics.getDescent();
 
 		terminal.start();
 
@@ -149,11 +158,7 @@ public class TerminalWidget extends JComponent
 
 		g.setColor(Color.GREEN);
 
-		Font font = new Font(Font.MONOSPACED, Font.PLAIN, fontsize);
 		g.setFont(font);
-
-		Object object = font.getAttributes().get(TextAttribute.WIDTH_REGULAR);
-		System.out.println(object);
 
 		List<Row> rows = screen.getRows();
 		for (int i = 0; i < rows.size(); i++) {
@@ -167,7 +172,7 @@ public class TerminalWidget extends JComponent
 				g.fillRect(x, y, charWidth, charHeight);
 				g.setColor(palette.getColor(pixel.getIndexFG()));
 				String s = String.format("%c", pixel.getChar());
-				g.drawString(s, x, y + charHeight);
+				g.drawString(s, x, y + charHeight - descent);
 			}
 		}
 
@@ -195,10 +200,12 @@ public class TerminalWidget extends JComponent
 		 * Cursor
 		 */
 
-		g.setColor(colorCursor);
-		g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
-				(screen.getCurrentRow() - 1) * charHeight, charWidth,
-				charHeight);
+		if (cursorVisible) {
+			g.setColor(colorCursor);
+			g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
+					(screen.getCurrentRow() - 1) * charHeight, charWidth,
+					charHeight);
+		}
 
 		/*
 		 * Scrolling region
