@@ -112,9 +112,6 @@ public class Pixel
 	public int getIndexBG()
 	{
 		int v = reverse ? getIndexForeground() : getIndexBackground();
-		if (highlighted && v <= 7) {
-			v += 8;
-		}
 		return v;
 	}
 
