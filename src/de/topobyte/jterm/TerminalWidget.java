@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 
 public class TerminalWidget extends JComponent
@@ -46,6 +49,18 @@ public class TerminalWidget extends JComponent
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
 		addKeyListener(new TerminalKeyAdapter(terminal));
+
+		InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		ActionMap actionMap = getActionMap();
+
+		TerminalWidgetKeyUtil keyUtil = new TerminalWidgetKeyUtil(this,
+				inputMap, actionMap);
+		keyUtil.addKeyAction(KeyEvent.VK_UP);
+		keyUtil.addKeyAction(KeyEvent.VK_DOWN);
+		keyUtil.addKeyAction(KeyEvent.VK_LEFT);
+		keyUtil.addKeyAction(KeyEvent.VK_RIGHT);
+		keyUtil.addKeyAction(KeyEvent.VK_HOME);
+		keyUtil.addKeyAction(KeyEvent.VK_END);
 
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -634,6 +649,28 @@ public class TerminalWidget extends JComponent
 			Row row = rows.remove(0);
 			history.push(row);
 		}
+	}
+
+	void sendCursor(int keyCode)
+	{
+		char letter = 'A';
+		// @formatter:off
+		switch (keyCode) {
+			case KeyEvent.VK_UP:    letter = 'A'; break;
+			case KeyEvent.VK_DOWN:  letter = 'B'; break;
+			case KeyEvent.VK_RIGHT: letter = 'C'; break;
+			case KeyEvent.VK_LEFT:  letter = 'D'; break;
+			case KeyEvent.VK_HOME:  letter = 'H'; break;
+			case KeyEvent.VK_END:   letter = 'F'; break;
+		}
+		// @formatter:on
+		String message;
+		if (decCkm) {
+			message = String.format("\033O%c", letter);
+		} else {
+			message = String.format("\033[%c", letter);
+		}
+		terminal.write(message);
 	}
 
 }
