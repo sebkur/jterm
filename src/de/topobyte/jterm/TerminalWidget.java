@@ -67,6 +67,7 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_RIGHT);
 		keyUtil.addKeyAction(KeyEvent.VK_HOME);
 		keyUtil.addKeyAction(KeyEvent.VK_END);
+		keyUtil.addKeyAction(KeyEvent.VK_DELETE);
 
 		TerminalReader terminalReader = new TerminalReader(terminal) {
 
@@ -1042,7 +1043,11 @@ public class TerminalWidget extends JComponent
 		}
 	}
 
-	void sendCursor(int keyCode)
+	// See: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+	// Section: PC-Style Function Keys
+
+	void sendCursor(int keyCode) // xterm doc
+	// depends on DECCKM
 	{
 		char letter = 'A';
 		// @formatter:off
@@ -1064,4 +1069,18 @@ public class TerminalWidget extends JComponent
 		terminal.write(message);
 	}
 
+	void sendKeypad(int keyCode)
+	{
+		char letter = '2';
+		// @formatter:off
+		switch (keyCode) {
+		case KeyEvent.VK_INSERT:    letter = '2'; break;
+		case KeyEvent.VK_DELETE:    letter = '3'; break;
+		case KeyEvent.VK_PAGE_UP:   letter = '5'; break;
+		case KeyEvent.VK_PAGE_DOWN: letter = '6'; break;
+		}
+		// @formatter:on
+		String message = String.format("\033[%c~", letter);
+		terminal.write(message);
+	}
 }
