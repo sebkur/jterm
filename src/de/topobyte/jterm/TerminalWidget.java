@@ -36,7 +36,7 @@ public class TerminalWidget extends JComponent
 
 	private Screen screen;
 	private Screen screenNormal;
-	private Screen screenSpecial;
+	private Screen screenAlternate;
 
 	private int historyPos = 0;
 	private History history;
@@ -60,7 +60,7 @@ public class TerminalWidget extends JComponent
 		history = new History();
 
 		screenNormal = new Screen(1, terminal.getNumberOfRows());
-		screenSpecial = new Screen(1, terminal.getNumberOfRows());
+		screenAlternate = new Screen(1, terminal.getNumberOfRows());
 		screen = screenNormal;
 
 		terminal.start();
@@ -97,6 +97,10 @@ public class TerminalWidget extends JComponent
 			public void handleAscii(byte b)
 			{
 				char c = (char) b;
+				if (screen.getCharacterSet() == '0') {
+					Character replacement = Charmap.get(c);
+					c = replacement == null ? c : replacement;
+				}
 				State before = state;
 				boolean handled = TerminalWidget.this.handle(c);
 				if (!handled) {
@@ -623,7 +627,7 @@ public class TerminalWidget extends JComponent
 					} else {
 						useNormalScreen();
 					}
-					break;
+					return true;
 				}
 				default: {
 					break;
@@ -768,8 +772,8 @@ public class TerminalWidget extends JComponent
 
 			}
 			}
-		} else if (csi.suffix1 == 'r' && csi.prefix == '\0') { // set scrolling
-																// region
+		} else if (csi.suffix1 == 'r' && csi.prefix == '\0') {
+			// set scrolling region
 			int t = 1;
 			int b = terminal.getNumberOfRows();
 			if (csi.nums.size() >= 2) {
@@ -782,11 +786,9 @@ public class TerminalWidget extends JComponent
 
 			screen.setScrollTop(t);
 			screen.setScrollBottom(b);
-		} else if (csi.suffix1 == 'c' && csi.prefix == '>') { // send device
-																// attributes
-																// (secondary
-																// DA)
-
+			return true;
+		} else if (csi.suffix1 == 'c' && csi.prefix == '>') {
+			// send device attributes (secondary DA)
 			System.out.println(String
 					.format("||TODO: DEVICE ATTRIBUTES, PLEASE||"));
 
@@ -948,11 +950,13 @@ public class TerminalWidget extends JComponent
 	private void useNormalScreen()
 	{
 		System.out.println("Switch to normal Screen!");
+		screen = screenNormal;
 	}
 
 	private void useAlternateScreen()
 	{
 		System.out.println("Switch to alternate Screen!");
+		screen = screenAlternate;
 	}
 
 	private void setColors(int code)
@@ -1009,7 +1013,8 @@ public class TerminalWidget extends JComponent
 
 	private void setCharset(char c)
 	{
-		System.out.println("TODO: Set Charset: '" + c + "'");
+		// System.out.println("Set Charset: '" + c + "'");
+		screen.setCharacterSet(c);
 	}
 
 	private void add(char c)

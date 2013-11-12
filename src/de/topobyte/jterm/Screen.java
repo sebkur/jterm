@@ -13,6 +13,8 @@ public class Screen
 	private int scrollTop;
 	private int scrollBottom;
 
+	private char characterSet = 'B';
+
 	private List<Row> rows = new ArrayList<Row>();
 
 	public Screen(int scrollTop, int scrollBottom)
@@ -64,6 +66,16 @@ public class Screen
 	public void setScrollBottom(int scrollBottom)
 	{
 		this.scrollBottom = scrollBottom;
+	}
+
+	public char getCharacterSet()
+	{
+		return characterSet;
+	}
+
+	public void setCharacterSet(char characterSet)
+	{
+		this.characterSet = characterSet;
 	}
 
 }
