@@ -21,6 +21,15 @@ public class TerminalWidget extends JComponent
 	private Screen screen;
 	private History history;
 
+	private int fg = 16;
+	private int bg = 17;
+	private boolean highlighted = false;
+	private boolean reverse = false;
+	private boolean fgBright = false;
+	private boolean bgBright = false;
+
+	private Palette palette = new Palette();
+
 	public TerminalWidget()
 	{
 		terminal = new Terminal();
@@ -107,6 +116,7 @@ public class TerminalWidget extends JComponent
 			for (int k = 0; k < pixels.size(); k++) {
 				int x = charWidth * k;
 				Pixel pixel = pixels.get(k);
+				g.setColor(palette.getColor(pixel.getIndexFG()));
 				String s = String.format("%c", pixel.getChar());
 				g.drawString(s, x, y + charHeight);
 			}
@@ -384,6 +394,59 @@ public class TerminalWidget extends JComponent
 				// erase line
 				break;
 			}
+		} else if (csi.suffix1 == 'm') {
+			int n = csi.nums.size();
+			if (n == 0) {
+				setColors(0);
+			} else {
+				for (int i = 0; i < csi.nums.size(); i++) {
+					setColors(csi.nums.get(i));
+				}
+			}
+		}
+	}
+
+	private void setColors(int code)
+	{
+		if (code == 0) {
+			fg = 16;
+			bg = 17;
+			highlighted = false;
+			reverse = false;
+			fgBright = false;
+			bgBright = false;
+		} else if (code == 1) {
+			highlighted = true;
+		} else if (code == 2) {
+			highlighted = false;
+		} else if (code == 7) {
+			reverse = true;
+		} else if (code == 27) {
+			reverse = false;
+		} else if (code >= 30 && code <= 37) {
+			int c = code - 30;
+			fg = c;
+			fgBright = false;
+		} else if (code == 39) {
+			fg = 16;
+			fgBright = false;
+		} else if (code >= 40 && code <= 47) {
+			int c = code - 40;
+			bg = c;
+			bgBright = false;
+		} else if (code == 49) {
+			bg = 17;
+			bgBright = false;
+		} else if (code >= 90 && code <= 97) { // should be bright
+			int c = code - 90;
+			fg = c;
+			fgBright = true;
+		} else if (code >= 100 && code <= 107) { // should be bright
+			int c = code - 100;
+			bg = c;
+			bgBright = true;
+		} else {
+			System.out.println("color: " + code);
 		}
 	}
 
@@ -419,11 +482,11 @@ public class TerminalWidget extends JComponent
 		if (pixels.size() < screen.getCurrentColumn() - 1) {
 			int fill = screen.getCurrentColumn() - pixels.size() - 1;
 			for (int x = 0; x < fill; x++) {
-				pixels.add(new Pixel(0, c));
+				pixels.add(createPixel(c));
 			}
 		} else if (pixels.size() == screen.getCurrentColumn() - 1) {
 			// No padding needed, cursor is exactly at insertion position
-			pixels.add(new Pixel(0, c));
+			pixels.add(createPixel(c));
 		} else {
 			// Overwriting
 			if (screen.getCurrentColumn() - 1 < pixels.size()) {
@@ -432,6 +495,18 @@ public class TerminalWidget extends JComponent
 		}
 
 		screen.setCurrentColumn(screen.getCurrentColumn() + 1);
+	}
+
+	private Pixel createPixel(char c)
+	{
+		Pixel pixel = new Pixel(0, c);
+		pixel.setFg(fg);
+		pixel.setBg(bg);
+		pixel.setBgBright(bgBright);
+		pixel.setFgBright(fgBright);
+		pixel.setHighlighted(highlighted);
+		pixel.setReverse(reverse);
+		return pixel;
 	}
 
 	private void appendRow()
