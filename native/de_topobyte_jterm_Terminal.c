@@ -120,7 +120,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
         int e1 = 0, e2 = 0;
         for (iter = environ; *iter != NULL; iter++){
             char * var = *iter;
-            printf("var: %s\n", var);
+            //printf("var: %s\n", var);
             if (strcmp(var, "TERM") == 0){
             }else{
                 //env[e2] = g_strdup(environ[e1]);
