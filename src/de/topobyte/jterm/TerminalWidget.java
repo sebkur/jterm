@@ -16,6 +16,9 @@ public class TerminalWidget extends JComponent
 
 	private static final long serialVersionUID = 6198367149770918349L;
 
+	private boolean DEBUG_NEWLINES = false;
+	private boolean DEBUG_HISTORY = false;
+
 	private Terminal terminal;
 
 	private int charWidth = 7;
@@ -326,12 +329,16 @@ public class TerminalWidget extends JComponent
 				return true;
 			}
 			case '\r': {
-				System.out.println("CHAR: carriage return");
+				if (DEBUG_NEWLINES) {
+					System.out.println("CHAR: carriage return");
+				}
 				screen.setCurrentColumn(1);
 				return true;
 			}
 			case '\n': {
-				System.out.println("CHAR: line feed");
+				if (DEBUG_NEWLINES) {
+					System.out.println("CHAR: line feed");
+				}
 				if (screen.getCurrentRow() < screen.getScrollBottom()) {
 					screen.setCurrentRow(screen.getCurrentRow() + 1);
 				} else {
@@ -1037,7 +1044,9 @@ public class TerminalWidget extends JComponent
 		rows.add(new Row());
 
 		if (rows.size() > terminal.getNumberOfRows()) {
-			System.out.println("pushing row to history");
+			if (DEBUG_HISTORY) {
+				System.out.println("pushing row to history");
+			}
 			Row row = rows.remove(0);
 			history.push(row);
 		}

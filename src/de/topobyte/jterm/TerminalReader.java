@@ -54,6 +54,7 @@ public abstract class TerminalReader implements Runnable
 				int leftover = available.length - p;
 				unhandled = new byte[leftover];
 				System.arraycopy(available, p, unhandled, 0, leftover);
+				break;
 			}
 		}
 	}
@@ -101,7 +102,10 @@ public abstract class TerminalReader implements Runnable
 	 */
 	private int checkSanity(byte[] buffer, int offset, int check)
 	{
-		if (offset + check > buffer.length) {
+		// System.out.println("buffer length: " + buffer.length
+		// + ", offset: " + offset
+		// + ", check: " + check);
+		if (offset + check + 1 > buffer.length) {
 			return 0;
 		}
 		for (int i = 0; i < check; i++) {
