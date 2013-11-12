@@ -30,6 +30,9 @@ public class TerminalWidget extends JComponent
 
 	private Palette palette = new Palette();
 
+	private boolean decCkm = false;
+	private boolean cursorVisible = true;
+
 	public TerminalWidget()
 	{
 		terminal = new Terminal();
@@ -56,9 +59,13 @@ public class TerminalWidget extends JComponent
 					for (int i = 0; i < bytes.length; i++) {
 						byte b = bytes[i];
 						char c = (char) b;
-						System.out.println("Byte: " + b + "..." + c);
 
-						handle(c);
+						State before = state;
+						boolean handled = handle(c);
+						if (!handled) {
+							System.out.println("STATE: " + before + " Byte: "
+									+ b + "..." + c);
+						}
 					}
 					repaint();
 				}
@@ -136,12 +143,11 @@ public class TerminalWidget extends JComponent
 	private State state = State.NORMAL;
 	private Csi currentCsi = new Csi();
 
-	private void handle(char c)
+	private boolean handle(char c)
 	{
 		switch (state) {
 		case CSI_SUFFIX: {
-			handleSecondSuffix(c);
-			break;
+			return handleSecondSuffix(c);
 		}
 		case CSI_NUM:
 		case CSI_PREFIX: {
@@ -157,18 +163,16 @@ public class TerminalWidget extends JComponent
 			case '8':
 			case '9': {
 				handleNumber(c);
-				break;
+				return true;
 			}
 			case ';': {
 				handleSemicolon();
-				break;
+				return true;
 			}
 			default: {
-				handleSuffix(c);
-				break;
+				return handleSuffix(c);
 			}
 			}
-			break;
 		}
 		case LEFT_BRACKET: // TODO: G0 (vt102 uses registers for charsets)
 		case RIGHT_BRACKET: { // TODO: G1
@@ -184,20 +188,20 @@ public class TerminalWidget extends JComponent
 			switch (c) {
 			case ']': {
 				state = State.TITLE;
-				break;
+				return true;
 			}
 			case '[': {
 				state = State.CSI;
 				currentCsi = new Csi();
-				break;
+				return true;
 			}
 			case '(': {
 				state = State.LEFT_BRACKET;
-				break;
+				return true;
 			}
 			case ')': {
 				state = State.RIGHT_BRACKET;
-				break;
+				return true;
 			}
 			case 'D': // Index (IND)
 			case 'M': // Reverse Index (RI)
@@ -226,7 +230,7 @@ public class TerminalWidget extends JComponent
 			if (c == '\07') {
 				state = State.NORMAL;
 			}
-			break;
+			return true;
 		}
 		case CSI: {
 			switch (c) {
@@ -235,7 +239,7 @@ public class TerminalWidget extends JComponent
 			case '>': {
 				state = State.CSI_PREFIX;
 				currentCsi.prefix = c;
-				break;
+				return true;
 			}
 			case '0':
 			case '1':
@@ -249,7 +253,7 @@ public class TerminalWidget extends JComponent
 			case '9': {
 				state = State.CSI_NUM;
 				handleNumber(c);
-				break;
+				return true;
 			}
 			case ';': {
 				state = State.CSI_NUM;
@@ -257,8 +261,7 @@ public class TerminalWidget extends JComponent
 				break;
 			}
 			default: {
-				handleSuffix(c);
-				break;
+				return handleSuffix(c);
 			}
 			}
 			break;
@@ -267,28 +270,29 @@ public class TerminalWidget extends JComponent
 			switch (c) {
 			case '\u001b': {
 				state = State.ESC;
+				return true;
 			}
 			case '\0': {
-				return;
+				return false;
 			}
 			case '\b': {
 				System.out.println("backspace");
 				screen.setCurrentColumn(screen.getCurrentColumn() - 1);
-				return;
+				return true;
 			}
 			case '\7': {
 				System.out.println("CHAR: BELL");
-				return;
+				return true;
 			}
 			case '\r': {
 				System.out.println("CHAR: carriage return");
 				screen.setCurrentColumn(1);
-				return;
+				return true;
 			}
 			case '\n': {
 				System.out.println("CHAR: line feed");
 				appendRow();
-				return;
+				return true;
 			}
 			case '\t': {
 				System.out.println("CHAR: tab");
@@ -297,14 +301,16 @@ public class TerminalWidget extends JComponent
 				for (int i = 0; i < 8 - m; i++) {
 					add(' ');
 				}
-				return;
+				return true;
 			}
 			}
 			add(c);
+			return true;
 		}
 		default:
 			break;
 		}
+		return false;
 	}
 
 	private void handleNumber(char c)
@@ -330,7 +336,7 @@ public class TerminalWidget extends JComponent
 		}
 	}
 
-	private void handleSuffix(char c)
+	private boolean handleSuffix(char c)
 	{
 		currentCsi.suffix1 = c;
 		switch (c) {
@@ -342,17 +348,17 @@ public class TerminalWidget extends JComponent
 		default: {
 			// TODO: emit an action since a sequence was processed
 			state = State.NORMAL;
-			handleCsi(currentCsi);
-			break;
+			return handleCsi(currentCsi);
 		}
 		}
+		return false;
 	}
 
-	private void handleSecondSuffix(char c)
+	private boolean handleSecondSuffix(char c)
 	{
 		// TODO: emit an action since a sequence was processed
 		currentCsi.suffix2 = c;
-		handleCsi(currentCsi);
+		return handleCsi(currentCsi);
 	}
 
 	private void handleEscaped(char c)
@@ -360,19 +366,111 @@ public class TerminalWidget extends JComponent
 		System.out.println("Handle Escaped: " + c);
 	}
 
-	private void handleCsi(Csi csi)
+	private void printCsi(Csi csi)
 	{
-		System.out.println("Handle CSI");
+		System.out.println("Handle CSI. prefix: '" + csi.prefix
+				+ "', suffix1: '" + csi.suffix1
+				+ "', suffix2: '" + csi.suffix2 + "'");
 		for (int i = 0; i < csi.nums.size(); i++) {
 			int num = csi.nums.get(i);
 			System.out.println("CSI number: " + num);
 		}
+	}
 
+	private boolean handleCsi(Csi csi)
+	{
+		boolean value = handleCsiInter(csi);
+		if (!value) {
+			printCsi(csi);
+		}
+		return value;
+	}
+
+	private boolean handleCsiInter(Csi csi)
+	{
 		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
 			System.out.println("CSI case 1");
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
-			System.out.println("CSI case 2");
+			boolean set = csi.prefix == 'h'; // SET / RESET
+			for (int i = 0; i < csi.nums.size(); i++) {
+				int n = csi.nums.get(i);
+				switch (n) {
+				case 1: { // DECCKM
+					// set: cursor keys transmit control (application) functions
+					// reset: cursor keys transmit ANSI control sequences
+					decCkm = set;
+					break;
+				}
+				case 2: { // VT52 Mode (DECANM)
+					if (csi.suffix1 == 'h') { // only 'h'
+						// TODO: ?
+					}
+					System.out.println(String.format("|TODO: DECANM|"));
+					break;
+				}
+				case 3: { // Column Mode (DECCOLM)
+							// set: 132 cols/line; reset: 80 cols/line
+					System.out.println(String.format("|TODO: DECCOLM|"));
+					break;
+				}
+				case 4: { // Scroll Mode (DECSCLM)
+							// set: smooth (6 lines/sec); reset: jump (fast as
+							// possible)
+					System.out.println(String.format("|TODO: DECSCLM|"));
+					break;
+				}
+				case 5: { // Screen Mode (DECSCNM)
+							// set: reverse screen (white screen, black chars)
+							// reset: normal screen (black screen, white chars)
+					System.out.println(String.format("|TODO: DECSCNM|"));
+					break;
+				}
+				case 6: { // Origin Mode (DECOM)
+							// set: relative to scrolling region; reset:
+							// absolute
+					System.out.println(String.format("|TODO: DECOM|"));
+					break;
+				}
+				case 7: { // Wrap Mode (DECAWM)
+							// set: auto wrap (goto next line; scroll if
+							// neccessary)
+							// reset: diable auto wrap (overwrite chars at end
+							// of line)
+					System.out.println(String.format("|TODO: DECAWM|"));
+					break;
+				}
+				case 8: { // Auto Repeat Mode (DECARM)
+							// enable / disable auto repeat of pressed keys
+					System.out.println(String.format("|TODO: DECARM|"));
+					break;
+				}
+				case 12: {
+					String s = set ? "START" : "STOP";
+					System.out.println(String.format("||%s BLINKING||", s));
+					break;
+				}
+				case 25: {
+					String s = set ? "SHOW" : "HIDE";
+					System.out.println(String.format("||%s CURSOR||", s));
+					cursorVisible = set;
+					break;
+				}
+				case 1049: {
+					String s = set ? "alternate" : "normal";
+					System.out.println(String.format("||%s SCREEN||", s));
+					if (set) {
+						useAlternateScreen();
+					} else {
+						useNormalScreen();
+					}
+					break;
+				}
+				default: {
+					break;
+				}
+				}
+			}
 		} else if (csi.suffix1 == 'H') { // goto
 			// TODO: many cases missing
 		} else if (csi.suffix1 == 'K') { // erase in line
@@ -386,7 +484,7 @@ public class TerminalWidget extends JComponent
 				while (pixels.size() >= ccol) {
 					pixels.remove(pixels.size() - 1);
 				}
-				break;
+				return true;
 			case 1:
 				// erase to the left
 				break;
@@ -403,7 +501,19 @@ public class TerminalWidget extends JComponent
 					setColors(csi.nums.get(i));
 				}
 			}
+			return true;
 		}
+		return false;
+	}
+
+	private void useNormalScreen()
+	{
+		System.out.println("Switch to normal Screen!");
+	}
+
+	private void useAlternateScreen()
+	{
+		System.out.println("Switch to alternate Screen!");
 	}
 
 	private void setColors(int code)
@@ -520,7 +630,7 @@ public class TerminalWidget extends JComponent
 		rows.add(new Row());
 
 		if (rows.size() > terminal.getNumberOfRows()) {
-			System.out.println("remove");
+			System.out.println("pushing row to history");
 			Row row = rows.remove(0);
 			history.push(row);
 		}
