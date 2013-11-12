@@ -1,9 +1,11 @@
 package de.topobyte.jterm;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
@@ -18,6 +20,14 @@ public class TerminalWidget extends JComponent
 
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
+
+	private Color colorFrame = new Color(0xffffff);
+	private Color colorRaster = new Color(0x333333);
+	private Color colorCursor = new Color(0x99ff0000, true);
+	private Color colorScrollingRegion = new Color(0x99ff0000, true);
+
+	private boolean drawFrame = true;
+	private boolean drawRaster = false;
 
 	private Terminal terminal;
 
@@ -121,6 +131,12 @@ public class TerminalWidget extends JComponent
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
+		if (drawFrame) {
+			g.setColor(colorFrame);
+			g.drawRect(0, 0, terminal.getNumberOfCols() * charWidth,
+					terminal.getNumberOfRows() * charHeight);
+		}
+
 		/*
 		 * Screen
 		 */
@@ -150,25 +166,27 @@ public class TerminalWidget extends JComponent
 		 * Raster
 		 */
 
-		int width = charWidth * terminal.getNumberOfCols();
-		int height = charHeight * terminal.getNumberOfRows();
+		if (drawRaster) {
+			int width = charWidth * terminal.getNumberOfCols();
+			int height = charHeight * terminal.getNumberOfRows();
 
-		g.setColor(Color.GRAY.darker().darker());
+			g.setColor(colorRaster);
 
-		for (int i = 0; i <= terminal.getNumberOfRows(); i++) {
-			int y = i * charHeight;
-			g.drawLine(0, y, width, y);
-		}
-		for (int i = 0; i <= terminal.getNumberOfCols(); i++) {
-			int x = i * charWidth;
-			g.drawLine(x, 0, x, height);
+			for (int i = 0; i <= terminal.getNumberOfRows(); i++) {
+				int y = i * charHeight;
+				g.drawLine(0, y, width, y);
+			}
+			for (int i = 0; i <= terminal.getNumberOfCols(); i++) {
+				int x = i * charWidth;
+				g.drawLine(x, 0, x, height);
+			}
 		}
 
 		/*
 		 * Cursor
 		 */
 
-		g.setColor(new Color(0x99ff0000, true));
+		g.setColor(colorCursor);
 		g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
 				(screen.getCurrentRow() - 1) * charHeight, charWidth,
 				charHeight);
@@ -177,7 +195,7 @@ public class TerminalWidget extends JComponent
 		 * Scrolling region
 		 */
 
-		g.setColor(new Color(0x99ff0000, true));
+		g.setColor(colorScrollingRegion);
 		g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
 				terminal.getNumberOfCols() * charWidth,
 				screen.getScrollBottom() * charHeight);
