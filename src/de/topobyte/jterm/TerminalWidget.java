@@ -68,30 +68,35 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_HOME);
 		keyUtil.addKeyAction(KeyEvent.VK_END);
 
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run()
-			{
-				while (true) {
-					byte[] bytes = terminal.read();
-					if (bytes == null) {
-						break;
-					}
-					for (int i = 0; i < bytes.length; i++) {
-						byte b = bytes[i];
-						char c = (char) b;
+		TerminalReader terminalReader = new TerminalReader(terminal) {
 
-						State before = state;
-						boolean handled = handle(c);
-						if (!handled) {
-							System.out.println("STATE: " + before + " Byte: "
-									+ b + "..." + c);
-						}
-					}
-					repaint();
+			@Override
+			public void chunkHandled()
+			{
+				repaint();
+			}
+
+			@Override
+			public void handleAscii(byte b)
+			{
+				char c = (char) b;
+				State before = state;
+				boolean handled = TerminalWidget.this.handle(c);
+				if (!handled) {
+					System.out.println("STATE: " + before + " Byte: " + b
+							+ "..." + c);
 				}
 			}
-		});
+
+			@Override
+			public void handleUtf8(char c)
+			{
+				TerminalWidget.this.handle(c);
+			}
+
+		};
+
+		Thread t = new Thread(terminalReader);
 		t.start();
 	}
 
@@ -169,9 +174,14 @@ public class TerminalWidget extends JComponent
 				screen.getScrollBottom() * charHeight);
 	}
 
+	// @formatter:off
 	private enum State {
-		NORMAL, ESC, TITLE, LEFT_BRACKET, RIGHT_BRACKET, CSI, CSI_PREFIX, CSI_NUM, CSI_SUFFIX
+		NORMAL, ESC, TITLE, 
+		LEFT_BRACKET, RIGHT_BRACKET, 
+		CSI, CSI_PREFIX, 
+		CSI_NUM, CSI_SUFFIX
 	};
+	// @formatter:on
 
 	private State state = State.NORMAL;
 	private Csi currentCsi = new Csi();
@@ -495,7 +505,6 @@ public class TerminalWidget extends JComponent
 
 	private boolean handleCsi(Csi csi)
 	{
-		printCsi(csi);
 		boolean value = handleCsiIntern(csi);
 		if (!value) {
 			printCsi(csi);
@@ -788,19 +797,16 @@ public class TerminalWidget extends JComponent
 
 	private void insertLinesBefore(int n)
 	{
-		System.out.println("Insert lines before cursor: " + n);
 		// ignore if not within scrolling region
 		for (int i = 0; i < n; i++) {
 			if (screen.getCurrentRow() >= screen.getScrollTop()
 					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
 				// ok, we're in the scrolling region
-				System.out.println("Ok, we're in the scrolling region");
 				if (screen.getRows().size() >= screen.getScrollBottom()) {
 					System.out.println("Remove line "
 							+ (screen.getScrollBottom() - 1));
 					screen.getRows().remove(screen.getScrollBottom() - 1);
 				}
-				System.out.println("Add line " + (screen.getCurrentRow() - 1));
 				screen.getRows().add(screen.getCurrentRow() - 1, new Row());
 			}
 		}
@@ -813,7 +819,6 @@ public class TerminalWidget extends JComponent
 			if (screen.getCurrentRow() >= screen.getScrollTop()
 					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
 				// ok, we're in the scrolling region
-				System.out.println("Ok, we're in the scrolling region");
 				if (screen.getCurrentRow() == screen.getScrollBottom()) {
 					// we're on the last line, have to scroll
 					for (int s = screen.getRows().size(); s < screen
