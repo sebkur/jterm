@@ -1044,7 +1044,8 @@ public class TerminalWidget extends JComponent
 		} else {
 			// Overwriting
 			if (screen.getCurrentColumn() - 1 < pixels.size()) {
-				pixels.get(screen.getCurrentColumn() - 1).setChar(c);
+				Pixel pixel = pixels.get(screen.getCurrentColumn() - 1);
+				changePixel(pixel, c);
 			}
 		}
 
