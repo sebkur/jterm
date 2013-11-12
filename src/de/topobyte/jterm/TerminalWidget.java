@@ -95,10 +95,6 @@ public class TerminalWidget extends JComponent
 			public void handleAscii(byte b)
 			{
 				char c = (char) b;
-				if (screen.getCharacterSet() == '0') {
-					Character replacement = Charmap.get(c);
-					c = replacement == null ? c : replacement;
-				}
 				State before = state;
 				boolean handled = TerminalWidget.this.handle(c);
 				if (!handled) {
@@ -618,7 +614,7 @@ public class TerminalWidget extends JComponent
 					String s = set ? "SHOW" : "HIDE";
 					System.out.println(String.format("||%s CURSOR||", s));
 					cursorVisible = set;
-					break;
+					return true;
 				}
 				case 1049: {
 					String s = set ? "alternate" : "normal";
@@ -1061,6 +1057,11 @@ public class TerminalWidget extends JComponent
 
 	private void add(char c)
 	{
+		if (screen.getCharacterSet() == '0') {
+			Character replacement = Charmap.get(c);
+			c = replacement == null ? c : replacement;
+		}
+
 		if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
 			appendRow();
 			screen.setCurrentColumn(1);
