@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.awt.font.TextAttribute;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -28,6 +30,9 @@ public class TerminalWidget extends JComponent
 	private boolean drawRaster = false;
 
 	private Terminal terminal;
+
+	private String fontname = "Monospace";
+	private int fontsize = 9;
 
 	private int charWidth = 7;
 	private int charHeight = 11;
@@ -139,10 +144,16 @@ public class TerminalWidget extends JComponent
 		 * Screen
 		 */
 
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+
 		g.setColor(Color.GREEN);
 
-		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 10);
+		Font font = new Font(Font.MONOSPACED, Font.PLAIN, fontsize);
 		g.setFont(font);
+
+		Object object = font.getAttributes().get(TextAttribute.WIDTH_REGULAR);
+		System.out.println(object);
 
 		List<Row> rows = screen.getRows();
 		for (int i = 0; i < rows.size(); i++) {
@@ -639,7 +650,7 @@ public class TerminalWidget extends JComponent
 			if (csi.nums.size() >= 2) {
 				c = csi.nums.get(1);
 			}
-			System.out.println(String.format("||GOTO:%d,%d||", r, c));
+			// System.out.println(String.format("||GOTO:%d,%d||", r, c));
 
 			cursorGoto(r, c);
 			return true;
@@ -653,7 +664,7 @@ public class TerminalWidget extends JComponent
 				c = csi.nums.get(0);
 			}
 
-			System.out.println(String.format("||GOTO:%d,%d||", r, c));
+			// System.out.println(String.format("||GOTO:%d,%d||", r, c));
 
 			screen.setCurrentRow(r);
 			screen.setCurrentColumn(c >= 1 ? c : 1);
@@ -668,7 +679,7 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'X') { // erase n characters
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||erase %d chars||", n));
+			// System.out.println(String.format("||erase %d chars||", n));
 
 			eraseCharacters(n);
 			return true;
@@ -682,7 +693,8 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'G') { // cursor character absolute
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||cursor char absolute %d||", n));
+			// System.out.println(String.format("||cursor char absolute %d||",
+			// n));
 
 			cursorCharacterAbsolute(n);
 			return true;
@@ -702,7 +714,7 @@ public class TerminalWidget extends JComponent
 			return true;
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
-			System.out.println(String.format("||cursor %d forward||", n));
+			// System.out.println(String.format("||cursor %d forward||", n));
 			screen.setCurrentColumn(screen.getCurrentColumn() + n);
 			return true;
 		} else if (csi.suffix1 == 'D') { // cursor backward n times
