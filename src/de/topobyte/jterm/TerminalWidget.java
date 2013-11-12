@@ -870,8 +870,16 @@ public class TerminalWidget extends JComponent
 
 	private void deleteCharacters(int n)
 	{
-		// TODO Auto-generated method stub
-
+		if (screen.getCurrentRow() <= screen.getRows().size()) {
+			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
+			List<Pixel> pixels = row.getPixels();
+			for (int i = 0; i < n; i++) {
+				// TODO: changed from < to <= (compared to vexterm)
+				if (screen.getCurrentColumn() <= pixels.size()) {
+					pixels.remove(screen.getCurrentColumn() - 1);
+				}
+			}
+		}
 	}
 
 	private void eraseCharacters(int n)
