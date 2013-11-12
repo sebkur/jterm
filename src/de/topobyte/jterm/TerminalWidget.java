@@ -643,7 +643,6 @@ public class TerminalWidget extends JComponent
 			if (csi.nums.size() >= 2) {
 				c = csi.nums.get(1);
 			}
-
 			System.out.println(String.format("||GOTO:%d,%d||", r, c));
 
 			cursorGoto(r, c);
@@ -662,42 +661,49 @@ public class TerminalWidget extends JComponent
 
 			screen.setCurrentRow(r);
 			screen.setCurrentColumn(c >= 1 ? c : 1);
+			return true;
 		} else if (csi.suffix1 == '@') { // insert n blank characters
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||insert %d blank chars||", n));
 
 			insertBlankCharacters(n);
+			return true;
 		} else if (csi.suffix1 == 'X') { // erase n characters
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||erase %d chars||", n));
 
 			eraseCharacters(n);
+			return true;
 		} else if (csi.suffix1 == 'P') { // delete n characters
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||delete %d chars||", n));
 
 			deleteCharacters(n);
+			return true;
 		} else if (csi.suffix1 == 'G') { // cursor character absolute
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||cursor char absolute %d||", n));
 
 			cursorCharacterAbsolute(n);
+			return true;
 		} else if (csi.suffix1 == 'A') { // cursor up n times
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||cursor %d up||", n));
 
 			cursorUp(n);
+			return true;
 		} else if (csi.suffix1 == 'B') { // cursor down n times
 			int n = getValueOrDefault(csi, 1);
 
 			System.out.println(String.format("||cursor %d down||", n));
 
 			cursorDown(n);
+			return true;
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
 			System.out.println(String.format("||cursor %d forward||", n));
@@ -718,18 +724,15 @@ public class TerminalWidget extends JComponent
 			switch (n) {
 			case 0:
 				// erase to the right
-				Row row = screen.getRows().get(screen.getCurrentRow() - 1);
-				List<Pixel> pixels = row.getPixels();
-				int ccol = screen.getCurrentColumn();
-				while (pixels.size() >= ccol) {
-					pixels.remove(pixels.size() - 1);
-				}
+				eraseToTheRight();
 				return true;
 			case 1:
 				// erase to the left
+				eraseToTheLeft();
 				break;
 			case 2:
 				// erase line
+				eraseLine();
 				break;
 			}
 		} else if (csi.suffix1 == 'L') { // insert n lines
@@ -738,6 +741,7 @@ public class TerminalWidget extends JComponent
 			System.out.println(String.format("IL: CSI.L"));
 
 			insertLinesBefore(n);
+			return true;
 		} else if (csi.suffix1 == 'S') { // scroll up n lines
 			int n = getValueOrDefault(csi, 1);
 
@@ -747,13 +751,13 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'T') { // scroll down n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||scroll %d down||", n));
+			System.out.println(String.format("||TODO: scroll %d down||", n));
 
 			scrollDown(n);
 		} else if (csi.suffix1 == 'M') { // delete n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||delete %d lines||", n));
+			System.out.println(String.format("||TODO: delete %d lines||", n));
 
 			deleteLines(n);
 		} else if (csi.suffix1 == 'J') { // erase in display
@@ -764,7 +768,7 @@ public class TerminalWidget extends JComponent
 				System.out.println(String.format("||ERASE IN DISPLAY, ALL||"));
 
 				eraseAll();
-				break;
+				return true;
 			}
 			default: {
 
@@ -792,7 +796,6 @@ public class TerminalWidget extends JComponent
 			// send device attributes (secondary DA)
 			System.out.println(String
 					.format("||TODO: DEVICE ATTRIBUTES, PLEASE||"));
-
 		} else if (csi.suffix1 == 'm') {
 			int n = csi.nums.size();
 			if (n == 0) {
@@ -805,6 +808,34 @@ public class TerminalWidget extends JComponent
 			return true;
 		}
 		return false;
+	}
+
+	private void eraseToTheRight()
+	{
+		int pr = screen.getCurrentRow();
+		int pc = screen.getCurrentColumn();
+		if (screen.getRows().size() < pr) {
+			return;
+		}
+		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
+		if (row.size() >= 1) {
+			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
+				row.remove(x);
+			}
+		}
+		for (int x = screen.getCurrentColumn(); x <= terminal.getNumberOfCols(); x++) {
+			row.add(createPixel(' '));
+		}
+	}
+
+	private void eraseToTheLeft()
+	{
+		System.out.println("TODO: erase to the left");
+	}
+
+	private void eraseLine()
+	{
+		System.out.println("TODO: erase line");
 	}
 
 	private void eraseAll()
@@ -1047,8 +1078,9 @@ public class TerminalWidget extends JComponent
 		if (pixels.size() < screen.getCurrentColumn() - 1) {
 			int fill = screen.getCurrentColumn() - pixels.size() - 1;
 			for (int x = 0; x < fill; x++) {
-				pixels.add(createPixel(c));
+				pixels.add(createOpaquePixel(' '));
 			}
+			pixels.add(createPixel(c));
 		} else if (pixels.size() == screen.getCurrentColumn() - 1) {
 			// No padding needed, cursor is exactly at insertion position
 			pixels.add(createPixel(c));
@@ -1084,6 +1116,18 @@ public class TerminalWidget extends JComponent
 		pixel.setFgBright(fgBright);
 		pixel.setHighlighted(highlighted);
 		pixel.setReverse(reverse);
+	}
+
+	private Pixel createOpaquePixel(char c)
+	{
+		Pixel pixel = new Pixel(0, c);
+		pixel.setFg(16);
+		pixel.setBg(17);
+		pixel.setBgBright(false);
+		pixel.setFgBright(false);
+		pixel.setHighlighted(false);
+		pixel.setReverse(false);
+		return pixel;
 	}
 
 	private void appendRow()
