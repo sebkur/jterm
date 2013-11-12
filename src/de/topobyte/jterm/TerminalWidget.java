@@ -22,6 +22,10 @@ public class TerminalWidget extends JComponent
 	private int charHeight = 11;
 
 	private Screen screen;
+	private Screen screenNormal;
+	private Screen screenSpecial;
+
+	private int historyPos = 0;
 	private History history;
 
 	private int fg = 16;
@@ -42,7 +46,9 @@ public class TerminalWidget extends JComponent
 
 		history = new History();
 
-		screen = new Screen(1, terminal.getNumberOfRows());
+		screenNormal = new Screen(1, terminal.getNumberOfRows());
+		screenSpecial = new Screen(1, terminal.getNumberOfRows());
+		screen = screenNormal;
 
 		terminal.start();
 
@@ -144,11 +150,23 @@ public class TerminalWidget extends JComponent
 			}
 		}
 
+		/*
+		 * Cursor
+		 */
+
 		g.setColor(new Color(0x99ff0000, true));
 		g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
 				(screen.getCurrentRow() - 1) * charHeight, charWidth,
 				charHeight);
 
+		/*
+		 * Scrolling region
+		 */
+
+		g.setColor(new Color(0x99ff0000, true));
+		g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
+				terminal.getNumberOfCols() * charWidth,
+				screen.getScrollBottom() * charHeight);
 	}
 
 	private enum State {
@@ -194,11 +212,11 @@ public class TerminalWidget extends JComponent
 			// handle Language setting
 			state = State.NORMAL;
 			setCharset(c);
-			break;
+			return true;
 		}
 		case ESC: {
 			if (c <= 15) {
-				break;
+				return false;
 			}
 			switch (c) {
 			case ']': {
@@ -230,16 +248,14 @@ public class TerminalWidget extends JComponent
 			case 'c': // Reset (RIS)
 			case 'H': { // Home Position ()
 				state = State.NORMAL;
-				handleEscaped(c);
-				break;
+				return handleEscaped(c);
 			}
 			default: {
 				// goto to STATE_Normal so that we don't become scrambled
 				state = State.NORMAL;
-				break;
+				return false;
 			}
 			}
-			break;
 		}
 		case TITLE: {
 			if (c == '\07') {
@@ -273,13 +289,12 @@ public class TerminalWidget extends JComponent
 			case ';': {
 				state = State.CSI_NUM;
 				handleSemicolon();
-				break;
+				return true;
 			}
 			default: {
 				return handleSuffix(c);
 			}
 			}
-			break;
 		}
 		case NORMAL: {
 			switch (c) {
@@ -291,7 +306,7 @@ public class TerminalWidget extends JComponent
 				return false;
 			}
 			case '\b': {
-				System.out.println("backspace");
+				System.out.println("CHAR: backspace");
 				screen.setCurrentColumn(screen.getCurrentColumn() - 1);
 				return true;
 			}
@@ -306,7 +321,11 @@ public class TerminalWidget extends JComponent
 			}
 			case '\n': {
 				System.out.println("CHAR: line feed");
-				appendRow();
+				if (screen.getCurrentRow() < screen.getScrollBottom()) {
+					screen.setCurrentRow(screen.getCurrentRow() + 1);
+				} else {
+					insertLines(1);
+				}
 				return true;
 			}
 			case '\t': {
@@ -323,9 +342,8 @@ public class TerminalWidget extends JComponent
 			return true;
 		}
 		default:
-			break;
+			return false;
 		}
-		return false;
 	}
 
 	private void handleNumber(char c)
@@ -376,9 +394,92 @@ public class TerminalWidget extends JComponent
 		return handleCsi(currentCsi);
 	}
 
-	private void handleEscaped(char c)
+	private boolean handleEscaped(char c)
 	{
-		System.out.println("Handle Escaped: " + c);
+		switch (c) {
+		case 'c': { // Reset (RIS)
+			System.out.println(String.format("||Reset||"));
+			reset();
+			return true;
+		}
+		case 'H': { // Reset (RIS)
+			System.out.println(String.format("||Home Position||"));
+			cursorGoto(1, 1);
+			return true;
+		}
+		case 'D': { // Index (IND)
+			System.out.println(String.format("||TODO: Index||"));
+			twIndex();
+			return true;
+		}
+		case 'M': { // Reverse Index (RI)
+			System.out.println(String.format("||Reverse Index||"));
+			twReverseIndex();
+			return true;
+		}
+		case 'E': { // Next Line (NEL)
+			System.out.println(String.format("||TODO: Next Line||"));
+			break;
+		}
+		case '7': { // Save Cursor (DECSC)
+			System.out.println(String.format("||TODO: Save Cursor||"));
+			break;
+		}
+		case '8': { // Restore Cursor (DECRC)
+			System.out.println(String.format("||TODO: Restore Cursor||"));
+			break;
+		}
+		case '=': { // Application Keypad Mode (DECKPAM)
+			System.out.println(String.format("\n\n\n"));
+			System.out.println(String
+					.format("||TODO: Application Keypad Mode||"));
+			break;
+		}
+		case '>': { // Numeric Keypad Mode (DECKPNM)
+			System.out.println(String.format("\n\n\n"));
+			System.out.println(String.format("||TODO: Numeric Keypad Mode||"));
+			break;
+		}
+		case 'N': { // Single Shift 2 (SS2)
+			System.out.println(String.format("||TODO: Single Shift 2||"));
+			break;
+		}
+		case 'O': { // Single Shift 3 (SS3)
+			System.out.println(String.format("||TODO: Single Shift 3||"));
+			break;
+		}
+		default: {
+			System.out.println(String.format("||UNKNOWN ESC<c>%c||", c));
+		}
+		}
+		return false;
+	}
+
+	private void reset()
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void twIndex()
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void twReverseIndex()
+	{
+		System.out.println("ReverseIndex");
+		// check whether we're at the top margin
+		if (screen.getCurrentRow() == screen.getScrollTop()) {
+			// yes we are. scroll down
+			System.out.println("-> scroll down");
+			insertLinesBefore(1);
+		} else {
+			// no. just move the cursor up
+			System.out.println("-> move cursor up");
+			screen.setCurrentRow(screen.getCurrentRow() - 1);
+		}
 	}
 
 	private void printCsi(Csi csi)
@@ -394,14 +495,15 @@ public class TerminalWidget extends JComponent
 
 	private boolean handleCsi(Csi csi)
 	{
-		boolean value = handleCsiInter(csi);
+		printCsi(csi);
+		boolean value = handleCsiIntern(csi);
 		if (!value) {
 			printCsi(csi);
 		}
 		return value;
 	}
 
-	private boolean handleCsiInter(Csi csi)
+	private boolean handleCsiIntern(Csi csi)
 	{
 		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
 			System.out.println("CSI case 1");
@@ -415,7 +517,7 @@ public class TerminalWidget extends JComponent
 					// set: cursor keys transmit control (application) functions
 					// reset: cursor keys transmit ANSI control sequences
 					decCkm = set;
-					break;
+					return true;
 				}
 				case 2: { // VT52 Mode (DECANM)
 					if (csi.suffix1 == 'h') { // only 'h'
@@ -487,7 +589,83 @@ public class TerminalWidget extends JComponent
 				}
 			}
 		} else if (csi.suffix1 == 'H') { // goto
-			// TODO: many cases missing
+			int r = 1, c = 1; // appropriate default values
+			if (csi.nums.size() >= 1) {
+				r = csi.nums.get(0);
+			}
+			if (csi.nums.size() >= 2) {
+				c = csi.nums.get(1);
+			}
+
+			System.out.println(String.format("||GOTO:%d,%d||", r, c));
+
+			cursorGoto(r, c);
+			return true;
+		} else if (csi.suffix1 == 'd') { // this is bogus?
+			int r = 1, c = 1; // appropriate default values
+			if (csi.nums.size() == 1) {
+				r = csi.nums.get(0);
+			}
+			if (csi.nums.size() >= 2) {
+				r = csi.nums.get(0);
+				c = csi.nums.get(0);
+			}
+
+			System.out.println(String.format("||GOTO:%d,%d||", r, c));
+
+			screen.setCurrentRow(r);
+			screen.setCurrentColumn(c >= 1 ? c : 1);
+		} else if (csi.suffix1 == '@') { // insert n blank characters
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||insert %d blank chars||", n));
+
+			insertBlankCharacters(n);
+		} else if (csi.suffix1 == 'X') { // erase n characters
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||erase %d chars||", n));
+
+			eraseCharacters(n);
+		} else if (csi.suffix1 == 'P') { // delete n characters
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||delete %d chars||", n));
+
+			deleteCharacters(n);
+		} else if (csi.suffix1 == 'G') { // cursor character absolute
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||cursor char absolute %d||", n));
+
+			cursorCharacterAbsolute(n);
+		} else if (csi.suffix1 == 'A') { // cursor up n times
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||cursor %d up||", n));
+
+			cursorUp(n);
+		} else if (csi.suffix1 == 'B') { // cursor down n times
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||cursor %d down||", n));
+
+			cursorDown(n);
+		} else if (csi.suffix1 == 'C') { // cursor forward n times
+			int n = getValueOrDefault(csi, 1);
+			System.out.println(String.format("||cursor %d forward||", n));
+			screen.setCurrentColumn(screen.getCurrentColumn() + n);
+			return true;
+		} else if (csi.suffix1 == 'D') { // cursor backward n times
+			int n = getValueOrDefault(csi, 1);
+			System.out.println(String.format("||cursor %d backwards (%d)||", n,
+					screen.getCurrentColumn()));
+			int col = screen.getCurrentColumn() - n;
+			if (col < 1) {
+				col = 1;
+			}
+			screen.setCurrentColumn(col);
+			return true;
 		} else if (csi.suffix1 == 'K') { // erase in line
 			int n = getValueOrDefault(csi, 0);
 			switch (n) {
@@ -507,6 +685,69 @@ public class TerminalWidget extends JComponent
 				// erase line
 				break;
 			}
+		} else if (csi.suffix1 == 'L') { // insert n lines
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("IL: CSI.L"));
+
+			insertLinesBefore(n);
+		} else if (csi.suffix1 == 'S') { // scroll up n lines
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||scroll %d up||", n));
+
+			scrollUp(n);
+		} else if (csi.suffix1 == 'T') { // scroll down n lines
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||scroll %d down||", n));
+
+			scrollDown(n);
+		} else if (csi.suffix1 == 'M') { // delete n lines
+			int n = getValueOrDefault(csi, 1);
+
+			System.out.println(String.format("||delete %d lines||", n));
+
+			deleteLines(n);
+		} else if (csi.suffix1 == 'J') { // erase in display
+			int n = getValueOrDefault(csi, 1);
+			switch (n) { // 0: below, 1: above, 2: all, 3: saved lines (xterm)
+			case 2: {
+
+				System.out.println(String.format("||ERASE IN DISPLAY, ALL||"));
+
+				eraseAll();
+				break;
+			}
+			default: {
+
+				System.out.println(String.format(
+						"||TODO: ERASE IN DISPLAY %d\n||", n));
+
+			}
+			}
+		} else if (csi.suffix1 == 'r' && csi.prefix == '\0') { // set scrolling
+																// region
+			int t = 1;
+			int b = terminal.getNumberOfRows();
+			if (csi.nums.size() >= 2) {
+				t = csi.nums.get(0);
+				b = csi.nums.get(1);
+			}
+
+			System.out
+					.println(String.format("||SCROLLING AREA: %d:%d||", t, b));
+
+			screen.setScrollTop(t);
+			screen.setScrollBottom(b);
+		} else if (csi.suffix1 == 'c' && csi.prefix == '>') { // send device
+																// attributes
+																// (secondary
+																// DA)
+
+			System.out.println(String
+					.format("||TODO: DEVICE ATTRIBUTES, PLEASE||"));
+
 		} else if (csi.suffix1 == 'm') {
 			int n = csi.nums.size();
 			if (n == 0) {
@@ -519,6 +760,143 @@ public class TerminalWidget extends JComponent
 			return true;
 		}
 		return false;
+	}
+
+	private void eraseAll()
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void deleteLines(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void scrollDown(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void scrollUp(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void insertLinesBefore(int n)
+	{
+		System.out.println("Insert lines before cursor: " + n);
+		// ignore if not within scrolling region
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentRow() >= screen.getScrollTop()
+					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+				// ok, we're in the scrolling region
+				System.out.println("Ok, we're in the scrolling region");
+				if (screen.getRows().size() >= screen.getScrollBottom()) {
+					System.out.println("Remove line "
+							+ (screen.getScrollBottom() - 1));
+					screen.getRows().remove(screen.getScrollBottom() - 1);
+				}
+				System.out.println("Add line " + (screen.getCurrentRow() - 1));
+				screen.getRows().add(screen.getCurrentRow() - 1, new Row());
+			}
+		}
+	}
+
+	private void insertLines(int n)
+	{
+		// ignore if not within scrolling region
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentRow() >= screen.getScrollTop()
+					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+				// ok, we're in the scrolling region
+				System.out.println("Ok, we're in the scrolling region");
+				if (screen.getCurrentRow() == screen.getScrollBottom()) {
+					// we're on the last line, have to scroll
+					for (int s = screen.getRows().size(); s < screen
+							.getCurrentRow(); s++) {
+						screen.getRows().add(s, new Row());
+					}
+					screen.getRows().add(screen.getCurrentRow(), new Row());
+					Row drow = screen.getRows().remove(
+							screen.getScrollTop() - 1);
+					if (screen == screenNormal && screen.getScrollTop() == 1) {
+						history.push(drow);
+					}
+					historyPos += 1;
+				} else {
+					for (int x = 0; x < n; x++) {
+						// check whether we have to retain a row at the bottom
+						// of the scrolling region
+						if (screen.getRows().size() >= screen.getScrollBottom()) {
+							// yes, there are too many rows
+							screen.getRows().remove(
+									screen.getScrollBottom() - 1);
+						}
+						// insert new row
+						screen.getRows().add(screen.getCurrentRow(), new Row());
+						screen.setCurrentRow(screen.getCurrentRow() + 1);
+					}
+				}
+			}
+		}
+	}
+
+	private void cursorDown(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void cursorUp(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void cursorCharacterAbsolute(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void deleteCharacters(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void eraseCharacters(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void insertBlankCharacters(int n)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	private void cursorGoto(int r, int c)
+	{
+		screen.setCurrentColumn(c >= 1 ? c : 1);
+		screen.setCurrentRow(r);
+		if (screen.getCurrentRow() > terminal.getNumberOfRows()) { // if we're
+																	// out of
+																	// range
+			// TODO: this disregards the scrolling region; guessed behavior
+			// It's unclear what's supposed to happen if we're moved 'into' the
+			// margin
+			int x = r - terminal.getNumberOfRows();
+			for (int i = 0; i < x; i++) {
+				// TODO: why not without loop?
+				screen.setCurrentRow(screen.getCurrentRow() - 1);
+			}
+		}
 	}
 
 	private void useNormalScreen()
@@ -585,7 +963,7 @@ public class TerminalWidget extends JComponent
 
 	private void setCharset(char c)
 	{
-		System.out.println("Set Charset: '" + c + "'");
+		System.out.println("TODO: Set Charset: '" + c + "'");
 	}
 
 	private void add(char c)
