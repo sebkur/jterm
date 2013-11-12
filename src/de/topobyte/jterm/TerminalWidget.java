@@ -500,7 +500,12 @@ public class TerminalWidget extends JComponent
 
 	private void reset()
 	{
-		System.out.println("TODO: reset");
+		useNormalScreen();
+		screen.getRows().clear();
+		screen.setCurrentColumn(1);
+		screen.setCurrentRow(1);
+		screen.setScrollTop(1);
+		screen.setScrollBottom(terminal.getNumberOfRows());
 	}
 
 	private void twIndex()
