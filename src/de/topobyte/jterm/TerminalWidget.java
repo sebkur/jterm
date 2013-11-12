@@ -27,8 +27,7 @@ public class TerminalWidget extends JComponent
 
 		history = new History();
 
-		screen = new Screen(terminal.getNumberOfCols(),
-				terminal.getNumberOfRows());
+		screen = new Screen();
 
 		terminal.start();
 
@@ -403,7 +402,7 @@ public class TerminalWidget extends JComponent
 
 	private void add(char c)
 	{
-		if (screen.getCurrentColumn() > screen.getWidth()) {
+		if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
 			appendRow();
 			screen.setCurrentColumn(1);
 		}
