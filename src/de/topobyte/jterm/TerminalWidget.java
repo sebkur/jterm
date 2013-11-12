@@ -1,11 +1,9 @@
 package de.topobyte.jterm;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
@@ -347,7 +345,7 @@ public class TerminalWidget extends JComponent
 				return false;
 			}
 			case '\b': {
-				System.out.println("CHAR: backspace");
+				// System.out.println("CHAR: backspace");
 				screen.setCurrentColumn(screen.getCurrentColumn() - 1);
 				return true;
 			}
@@ -502,14 +500,12 @@ public class TerminalWidget extends JComponent
 
 	private void reset()
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: reset");
 	}
 
 	private void twIndex()
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: twIndex");
 	}
 
 	private void twReverseIndex()
@@ -808,26 +804,24 @@ public class TerminalWidget extends JComponent
 
 	private void eraseAll()
 	{
-		// TODO Auto-generated method stub
-
+		screen.getRows().clear();
+		screen.setCurrentColumn(1);
+		screen.setCurrentRow(1);
 	}
 
 	private void deleteLines(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: deleteLines");
 	}
 
 	private void scrollDown(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: scrollDown");
 	}
 
 	private void scrollUp(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: scrollUp");
 	}
 
 	private void insertLinesBefore(int n)
@@ -887,20 +881,17 @@ public class TerminalWidget extends JComponent
 
 	private void cursorDown(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: cursorDown");
 	}
 
 	private void cursorUp(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: cursorUp");
 	}
 
 	private void cursorCharacterAbsolute(int n)
 	{
-		// TODO Auto-generated method stub
-
+		screen.setCurrentColumn(n >= 1 ? n : 1);
 	}
 
 	private void deleteCharacters(int n)
@@ -919,14 +910,23 @@ public class TerminalWidget extends JComponent
 
 	private void eraseCharacters(int n)
 	{
-		// TODO Auto-generated method stub
-
+		if (screen.getCurrentRow() <= screen.getRows().size()) {
+			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
+			for (int i = 0; i < n; i++) {
+				int c = screen.getCurrentColumn() - 1 + i;
+				if (c < row.getPixels().size()) {
+					Pixel pixel = row.getPixels().get(c);
+					changePixel(pixel, ' ');
+				} else {
+					row.getPixels().add(createPixel(' '));
+				}
+			}
+		}
 	}
 
 	private void insertBlankCharacters(int n)
 	{
-		// TODO Auto-generated method stub
-
+		System.out.println("TODO: insertBlankCharacters");
 	}
 
 	private void cursorGoto(int r, int c)
@@ -1054,13 +1054,24 @@ public class TerminalWidget extends JComponent
 	private Pixel createPixel(char c)
 	{
 		Pixel pixel = new Pixel(0, c);
+		setColors(pixel);
+		return pixel;
+	}
+
+	private void changePixel(Pixel pixel, char c)
+	{
+		pixel.setChar(c);
+		setColors(pixel);
+	}
+
+	private void setColors(Pixel pixel)
+	{
 		pixel.setFg(fg);
 		pixel.setBg(bg);
 		pixel.setBgBright(bgBright);
 		pixel.setFgBright(fgBright);
 		pixel.setHighlighted(highlighted);
 		pixel.setReverse(reverse);
-		return pixel;
 	}
 
 	private void appendRow()
