@@ -886,12 +886,12 @@ public class TerminalWidget extends JComponent
 
 	private void cursorDown(int n)
 	{
-		System.out.println("TODO: cursorDown");
+		screen.setCurrentRow(screen.getCurrentRow() + n);
 	}
 
 	private void cursorUp(int n)
 	{
-		System.out.println("TODO: cursorUp");
+		screen.setCurrentRow(screen.getCurrentRow() - n);
 	}
 
 	private void cursorCharacterAbsolute(int n)
