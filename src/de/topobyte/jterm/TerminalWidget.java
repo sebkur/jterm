@@ -27,7 +27,7 @@ public class TerminalWidget extends JComponent
 
 		history = new History();
 
-		screen = new Screen();
+		screen = new Screen(1, terminal.getNumberOfRows());
 
 		terminal.start();
 
