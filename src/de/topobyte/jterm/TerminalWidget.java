@@ -526,7 +526,8 @@ public class TerminalWidget extends JComponent
 			System.out.println("CSI case 1");
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
-			boolean set = csi.prefix == 'h'; // SET / RESET
+			printCsi(csi);
+			boolean set = csi.suffix1 == 'h'; // SET / RESET
 			for (int i = 0; i < csi.nums.size(); i++) {
 				int n = csi.nums.get(i);
 				switch (n) {
@@ -534,6 +535,7 @@ public class TerminalWidget extends JComponent
 					// set: cursor keys transmit control (application) functions
 					// reset: cursor keys transmit ANSI control sequences
 					decCkm = set;
+					System.out.println("DEC CKM: " + decCkm);
 					return true;
 				}
 				case 2: { // VT52 Mode (DECANM)
