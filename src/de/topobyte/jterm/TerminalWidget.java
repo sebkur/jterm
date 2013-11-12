@@ -122,24 +122,6 @@ public class TerminalWidget extends JComponent
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		/*
-		 * Raster
-		 */
-
-		int width = charWidth * terminal.getNumberOfCols();
-		int height = charHeight * terminal.getNumberOfRows();
-
-		g.setColor(Color.GRAY.darker().darker());
-
-		for (int i = 0; i <= terminal.getNumberOfRows(); i++) {
-			int y = i * charHeight;
-			g.drawLine(0, y, width, y);
-		}
-		for (int i = 0; i <= terminal.getNumberOfCols(); i++) {
-			int x = i * charWidth;
-			g.drawLine(x, 0, x, height);
-		}
-
-		/*
 		 * Screen
 		 */
 
@@ -156,10 +138,30 @@ public class TerminalWidget extends JComponent
 			for (int k = 0; k < pixels.size(); k++) {
 				int x = charWidth * k;
 				Pixel pixel = pixels.get(k);
+				g.setColor(palette.getColor(pixel.getIndexBG()));
+				g.fillRect(x, y, charWidth, charHeight);
 				g.setColor(palette.getColor(pixel.getIndexFG()));
 				String s = String.format("%c", pixel.getChar());
 				g.drawString(s, x, y + charHeight);
 			}
+		}
+
+		/*
+		 * Raster
+		 */
+
+		int width = charWidth * terminal.getNumberOfCols();
+		int height = charHeight * terminal.getNumberOfRows();
+
+		g.setColor(Color.GRAY.darker().darker());
+
+		for (int i = 0; i <= terminal.getNumberOfRows(); i++) {
+			int y = i * charHeight;
+			g.drawLine(0, y, width, y);
+		}
+		for (int i = 0; i <= terminal.getNumberOfCols(); i++) {
+			int x = i * charWidth;
+			g.drawLine(x, 0, x, height);
 		}
 
 		/*
