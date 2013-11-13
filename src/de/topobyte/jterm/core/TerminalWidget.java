@@ -512,32 +512,7 @@ public class TerminalWidget extends JComponent
 
 	private void setCurrentColumn(String name, int col)
 	{
-		if (col < 1 || col > terminal.getNumberOfCols()) {
-			if (col < 1) {
-				System.out.println("request to go to a col < 1");
-			} else {
-				System.out.println("request to go to a col beyond end");
-			}
-			System.out.println("DECAWM: " + decAwm);
-			System.out.println("crow: " + screen.getCurrentRow());
-			System.out.println("scrollTop: " + screen.getScrollTop());
-			System.out.println("scrollBottom: " + screen.getScrollBottom());
-			if (decAwm) {
-				// TODO: check scrolling region
-				// TODO: do not on cursor reposition, but on char insertion
-				if (col < 1) {
-					screen.setCurrentRow(screen.getCurrentRow() - 1);
-					screen.setCurrentColumn("x1",
-							terminal.getNumberOfCols() - 1);
-				}
-				if (col >= terminal.getNumberOfCols()) {
-					screen.setCurrentRow(screen.getCurrentRow() + 1);
-					screen.setCurrentColumn("x2", 1);
-				}
-			}
-		} else {
-			screen.setCurrentColumn(name, col);
-		}
+		screen.setCurrentColumn(name, col);
 	}
 
 	private void handleNumber(char c)
@@ -1215,29 +1190,55 @@ public class TerminalWidget extends JComponent
 			c = replacement == null ? c : replacement;
 		}
 
-		if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
-			appendRow();
-			setCurrentColumn("j", 1);
+		if (screen == screenNormal) {
+			if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
+				appendRow();
+				setCurrentColumn("j", 1);
+			}
 		}
 
-		int r = screen.getCurrentRow();
+		int row = screen.getCurrentRow();
+		int col = screen.getCurrentColumn();
 
-		while (screen.getRows().size() < r) {
+		while (screen.getRows().size() < row) {
 			screen.getRows().add(new Row());
 		}
 
-		Row row = screen.getRows().get(r - 1);
-		List<Pixel> pixels = row.getPixels();
+		if (col < 1 || col > terminal.getNumberOfCols()) {
+			if (col < 1) {
+				System.out.println("request to go to a col < 1");
+			} else {
+				System.out.println("request to go to a col beyond end");
+			}
+			System.out.println("DECAWM: " + decAwm);
+			System.out.println("crow: " + screen.getCurrentRow());
+			System.out.println("scrollTop: " + screen.getScrollTop());
+			System.out.println("scrollBottom: " + screen.getScrollBottom());
+			if (decAwm) {
+				// TODO: check scrolling region
+				if (col < 1) {
+					screen.setCurrentRow(screen.getCurrentRow() - 1);
+					screen.setCurrentColumn("x1",
+							terminal.getNumberOfCols() - 1);
+				}
+				if (col >= terminal.getNumberOfCols()) {
+					screen.setCurrentRow(screen.getCurrentRow() + 1);
+					screen.setCurrentColumn("x2", 1);
+				}
+			}
+		}
+
+		List<Pixel> pixels = screen.getRows().get(row - 1).getPixels();
 
 		if (pixels.size() < screen.getCurrentColumn() - 1) {
 			int fill = screen.getCurrentColumn() - pixels.size() - 1;
 			for (int x = 0; x < fill; x++) {
-				pixels.add(createOpaquePixel(' '));
+				addPixel(createOpaquePixel(' '));
 			}
-			pixels.add(createPixel(c));
+			addPixel(createPixel(c));
 		} else if (pixels.size() == screen.getCurrentColumn() - 1) {
 			// No padding needed, cursor is exactly at insertion position
-			pixels.add(createPixel(c));
+			addPixel(createPixel(c));
 		} else {
 			// Overwriting
 			if (screen.getCurrentColumn() - 1 < pixels.size()) {
@@ -1247,6 +1248,13 @@ public class TerminalWidget extends JComponent
 		}
 
 		setCurrentColumn("k", screen.getCurrentColumn() + 1);
+	}
+
+	private void addPixel(Pixel pixel)
+	{
+		int row = screen.getCurrentRow();
+		List<Pixel> pixels = screen.getRows().get(row - 1).getPixels();
+		pixels.add(pixel);
 	}
 
 	private Pixel createPixel(char c)
