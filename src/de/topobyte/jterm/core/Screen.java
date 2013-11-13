@@ -38,8 +38,10 @@ public class Screen
 		return crow;
 	}
 
-	public void setCurrentColumn(int ccol)
+	public void setCurrentColumn(String pos, int ccol)
 	{
+//		System.out.println("Set column (" + pos + "): " + this.ccol + " -> "
+//				+ ccol);
 		this.ccol = ccol;
 	}
 

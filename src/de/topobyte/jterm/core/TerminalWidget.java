@@ -60,6 +60,7 @@ public class TerminalWidget extends JComponent
 	private Palette palette = new Palette();
 
 	private boolean decCkm = false;
+	private boolean decAwm = false;
 	private boolean cursorVisible = true;
 
 	private Semaphore mutex = new Semaphore(1);
@@ -466,7 +467,7 @@ public class TerminalWidget extends JComponent
 			}
 			case '\b': {
 				// System.out.println("CHAR: backspace");
-				screen.setCurrentColumn(screen.getCurrentColumn() - 1);
+				setCurrentColumn("a", screen.getCurrentColumn() - 1);
 				return true;
 			}
 			case '\7': {
@@ -477,7 +478,7 @@ public class TerminalWidget extends JComponent
 				if (DEBUG_NEWLINES) {
 					System.out.println("CHAR: carriage return");
 				}
-				screen.setCurrentColumn(1);
+				setCurrentColumn("b", 1);
 				return true;
 			}
 			case '\n': {
@@ -506,6 +507,36 @@ public class TerminalWidget extends JComponent
 		}
 		default:
 			return false;
+		}
+	}
+
+	private void setCurrentColumn(String name, int col)
+	{
+		if (col < 1 || col > terminal.getNumberOfCols()) {
+			if (col < 1) {
+				System.out.println("request to go to a col < 1");
+			} else {
+				System.out.println("request to go to a col beyond end");
+			}
+			System.out.println("DECAWM: " + decAwm);
+			System.out.println("crow: " + screen.getCurrentRow());
+			System.out.println("scrollTop: " + screen.getScrollTop());
+			System.out.println("scrollBottom: " + screen.getScrollBottom());
+			if (decAwm) {
+				// TODO: check scrolling region
+				// TODO: do not on cursor reposition, but on char insertion
+				if (col < 1) {
+					screen.setCurrentRow(screen.getCurrentRow() - 1);
+					screen.setCurrentColumn("x1",
+							terminal.getNumberOfCols() - 1);
+				}
+				if (col >= terminal.getNumberOfCols()) {
+					screen.setCurrentRow(screen.getCurrentRow() + 1);
+					screen.setCurrentColumn("x2", 1);
+				}
+			}
+		} else {
+			screen.setCurrentColumn(name, col);
 		}
 	}
 
@@ -622,7 +653,7 @@ public class TerminalWidget extends JComponent
 	{
 		useNormalScreen();
 		screen.getRows().clear();
-		screen.setCurrentColumn(1);
+		setCurrentColumn("c", 1);
 		screen.setCurrentRow(1);
 		screen.setScrollTop(1);
 		screen.setScrollBottom(terminal.getNumberOfRows());
@@ -674,7 +705,6 @@ public class TerminalWidget extends JComponent
 			System.out.println("CSI case 1");
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
-			printCsi(csi);
 			boolean set = csi.suffix1 == 'h'; // SET / RESET
 			for (int i = 0; i < csi.nums.size(); i++) {
 				int n = csi.nums.get(i);
@@ -717,12 +747,10 @@ public class TerminalWidget extends JComponent
 					break;
 				}
 				case 7: { // Wrap Mode (DECAWM)
-							// set: auto wrap (goto next line; scroll if
-							// neccessary)
-							// reset: diable auto wrap (overwrite chars at end
-							// of line)
-					System.out.println(String.format("|TODO: DECAWM|"));
-					break;
+					// set: auto wrap (goto next line; scroll if neccessary)
+					// reset: diable auto wrap (overwrite chars at end of line)
+					decAwm = set;
+					return true;
 				}
 				case 8: { // Auto Repeat Mode (DECARM)
 							// enable / disable auto repeat of pressed keys
@@ -780,7 +808,7 @@ public class TerminalWidget extends JComponent
 			// System.out.println(String.format("||GOTO:%d,%d||", r, c));
 
 			screen.setCurrentRow(r);
-			screen.setCurrentColumn(c >= 1 ? c : 1);
+			setCurrentColumn("d", c >= 1 ? c : 1);
 			return true;
 		} else if (csi.suffix1 == '@') { // insert n blank characters
 			int n = getValueOrDefault(csi, 1);
@@ -828,7 +856,7 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
 			// System.out.println(String.format("||cursor %d forward||", n));
-			screen.setCurrentColumn(screen.getCurrentColumn() + n);
+			setCurrentColumn("e", screen.getCurrentColumn() + n);
 			return true;
 		} else if (csi.suffix1 == 'D') { // cursor backward n times
 			int n = getValueOrDefault(csi, 1);
@@ -838,7 +866,7 @@ public class TerminalWidget extends JComponent
 			if (col < 1) {
 				col = 1;
 			}
-			screen.setCurrentColumn(col);
+			setCurrentColumn("f", col);
 			return true;
 		} else if (csi.suffix1 == 'K') { // erase in line
 			int n = getValueOrDefault(csi, 0);
@@ -962,7 +990,7 @@ public class TerminalWidget extends JComponent
 	private void eraseAll()
 	{
 		screen.getRows().clear();
-		screen.setCurrentColumn(1);
+		setCurrentColumn("g", 1);
 		screen.setCurrentRow(1);
 	}
 
@@ -1048,7 +1076,7 @@ public class TerminalWidget extends JComponent
 
 	private void cursorCharacterAbsolute(int n)
 	{
-		screen.setCurrentColumn(n >= 1 ? n : 1);
+		setCurrentColumn("h", n >= 1 ? n : 1);
 	}
 
 	private void deleteCharacters(int n)
@@ -1094,7 +1122,7 @@ public class TerminalWidget extends JComponent
 
 	private void cursorGoto(int r, int c)
 	{
-		screen.setCurrentColumn(c >= 1 ? c : 1);
+		setCurrentColumn("i", c >= 1 ? c : 1);
 		screen.setCurrentRow(r);
 		if (screen.getCurrentRow() > terminal.getNumberOfRows()) { // if we're
 																	// out of
@@ -1189,7 +1217,7 @@ public class TerminalWidget extends JComponent
 
 		if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
 			appendRow();
-			screen.setCurrentColumn(1);
+			setCurrentColumn("j", 1);
 		}
 
 		int r = screen.getCurrentRow();
@@ -1218,7 +1246,7 @@ public class TerminalWidget extends JComponent
 			}
 		}
 
-		screen.setCurrentColumn(screen.getCurrentColumn() + 1);
+		setCurrentColumn("k", screen.getCurrentColumn() + 1);
 	}
 
 	private Pixel createPixel(char c)
