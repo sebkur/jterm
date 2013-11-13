@@ -1,31 +1,21 @@
 package de.topobyte.jterm;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class History
+public class History extends RingBuffer<Row>
 {
 
-	private List<Row> rows = new ArrayList<Row>();
-
-	public int getLength()
+	public History(int maximumSize)
 	{
-		return rows.size();
-	}
-
-	public Row get(int i)
-	{
-		return rows.get(i);
+		super(Row.class, maximumSize);
 	}
 
 	public void push(Row row)
 	{
-		rows.add(row);
+		append(row);
 	}
 
 	public Row pop()
 	{
-		return rows.remove(rows.size() - 1);
+		return removeFirst();
 	}
 
 }

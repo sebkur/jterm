@@ -65,7 +65,7 @@ public class TerminalWidget extends JComponent
 	{
 		terminal = new Terminal();
 
-		history = new History();
+		history = new History(500);
 
 		screenNormal = new Screen(1, terminal.getNumberOfRows());
 		screenAlternate = new Screen(1, terminal.getNumberOfRows());
