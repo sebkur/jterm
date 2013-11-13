@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import de.topobyte.jterm.core.TerminalWidget;
+import de.topobyte.jterm.ui.Toolbar;
 
 public class TestTerminalWidget
 {
@@ -19,6 +20,9 @@ public class TestTerminalWidget
 
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
+		
+		Toolbar toolbar = new Toolbar();
+		content.add(toolbar, BorderLayout.NORTH);
 
 		TerminalWidget terminalWidget = new TerminalWidget();
 		content.add(terminalWidget, BorderLayout.CENTER);
