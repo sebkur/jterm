@@ -45,11 +45,12 @@ public class RingBuffer<T>
 		T old = null;
 		if (length == buffer.length) {
 			old = (T) buffer[pos];
+			start = (start + 1) % buffer.length;
 		} else {
 			length += 1;
 		}
 		buffer[pos] = data;
-		return null;
+		return old;
 	}
 
 	public T removeFirst()
