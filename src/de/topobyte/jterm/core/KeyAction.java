@@ -1,4 +1,4 @@
-package de.topobyte.jterm;
+package de.topobyte.jterm.core;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

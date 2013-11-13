@@ -1,5 +1,7 @@
 package de.topobyte.jterm;
 
+import de.topobyte.jterm.core.Terminal;
+
 public class TestTerminal
 {
 	public static void main(String[] args)

@@ -1,4 +1,4 @@
-package de.topobyte.jterm;
+package de.topobyte.jterm.core;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;

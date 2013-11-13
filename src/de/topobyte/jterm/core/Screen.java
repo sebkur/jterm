@@ -1,4 +1,4 @@
-package de.topobyte.jterm;
+package de.topobyte.jterm.core;
 
 import java.util.ArrayList;
 import java.util.List;

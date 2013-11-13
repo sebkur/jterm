@@ -1,5 +1,5 @@
 #include <jni.h>
-#include "de_topobyte_jterm_Terminal.h"
+#include "de_topobyte_jterm_core_Terminal.h"
 
 #define BUFSIZE 10000
 
@@ -15,7 +15,7 @@
 #include <signal.h>
 #include <pthread.h>
 
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_test
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_test
   (JNIEnv * env, jobject this)
 {
     printf("Hi! This is the JNI speaking\n");
@@ -25,7 +25,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_test
     return;
 }
 
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_write
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_write
   (JNIEnv * env, jobject this, jstring message)
 {
     if (message == NULL) {
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_write
     }
 }
 
-JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_Terminal_testStringCreation
+JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_testStringCreation
   (JNIEnv * env, jobject this)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
@@ -62,7 +62,7 @@ JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_Terminal_testStringCreation
 
 extern char ** environ;
 
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
   (JNIEnv * env, jobject this)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
@@ -179,7 +179,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
 //    }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
+JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_core_Terminal_read
   (JNIEnv * env, jobject this)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
@@ -201,7 +201,7 @@ JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
     return array;
 }
 
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_setSize
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_setSize
   (JNIEnv * env, jobject this, jint width, jint height)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
