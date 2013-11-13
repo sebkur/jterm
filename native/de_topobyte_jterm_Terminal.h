@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_start
 JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
   (JNIEnv *, jobject);
 
+/*
+ * Class:     de_topobyte_jterm_Terminal
+ * Method:    setSize
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_setSize
+  (JNIEnv *, jobject, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

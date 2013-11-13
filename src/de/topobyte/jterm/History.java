@@ -23,4 +23,9 @@ public class History
 		rows.add(row);
 	}
 
+	public Row pop()
+	{
+		return rows.remove(rows.size() - 1);
+	}
+
 }

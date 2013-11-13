@@ -6,6 +6,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
@@ -97,6 +99,16 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_PAGE_UP);
 		keyUtil.addKeyAction(KeyEvent.VK_PAGE_DOWN);
 
+		addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				sizeChanged();
+			}
+
+		});
+
 		TerminalReader terminalReader = new TerminalReader(terminal) {
 
 			@Override
@@ -127,6 +139,68 @@ public class TerminalWidget extends JComponent
 
 		Thread t = new Thread(terminalReader);
 		t.start();
+	}
+
+	protected void sizeChanged()
+	{
+		int w = getWidth();
+		int h = getHeight();
+		int cols = w / charWidth;
+		int rows = h / charHeight;
+		if (terminal.getNumberOfCols() != cols
+				|| terminal.getNumberOfRows() != rows) {
+			setTerminalSize(cols, rows);
+		}
+	}
+
+	private void setTerminalSize(int cols, int rows)
+	{
+		System.out.println("Setting size: " + cols + " x " + rows);
+
+		boolean smaller = rows < terminal.getNumberOfRows();
+		boolean bigger = rows > terminal.getNumberOfRows();
+
+		int nRowsOld = terminal.getNumberOfRows();
+
+		terminal.setNumberOfCols(cols);
+		terminal.setNumberOfRows(rows);
+
+		terminal.setSize(cols, rows);
+
+		if (smaller
+				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
+			// the terminal has become smaller
+			int rem = screen.getRows().size() - rows;
+			for (int i = 0; i < rem; i++) {
+				Row row = screen.getRows().remove(0);
+				history.push(row);
+			}
+			if (screen.getCurrentRow() > rows) {
+				screen.setCurrentRow(screen.getCurrentRow() - rem);
+			}
+			screen.setScrollTop(1);
+			screen.setScrollBottom(rows);
+		}
+		if (bigger
+				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
+			// the terminal has become larger
+			int add = rows - screen.getRows().size();
+			int hlen = history.getLength();
+			int addReal = hlen >= add ? add : hlen;
+			for (int a = 0; a < addReal; a++) {
+				Row row = history.pop();
+				screen.getRows().add(0, row);
+				historyPos -= 1;
+				screen.setCurrentRow(screen.getCurrentRow() + 1);
+			}
+			screen.setScrollTop(1);
+			screen.setScrollBottom(rows);
+		}
+
+		if (screenAlternate.getScrollTop() == 1
+				&& screenAlternate.getScrollBottom() == nRowsOld) {
+			screenAlternate.setScrollBottom(rows);
+		}
 	}
 
 	@Override

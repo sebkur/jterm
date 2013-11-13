@@ -200,3 +200,17 @@ JNIEXPORT jbyteArray JNICALL Java_de_topobyte_jterm_Terminal_read
     (*env)->SetByteArrayRegion(env, array, 0, c, buf);
     return array;
 }
+
+JNIEXPORT void JNICALL Java_de_topobyte_jterm_Terminal_setSize
+  (JNIEnv * env, jobject this, jint width, jint height)
+{
+    jclass thisClass = (*env)->GetObjectClass(env, this);
+    jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
+    jint mfd = (*env)->GetIntField(env, this, fidMfd);
+
+    struct winsize size;
+    memset(&size, 0, sizeof(size));
+    size.ws_row = height;
+    size.ws_col = width;
+    ioctl(mfd, TIOCSWINSZ, &size);
+}

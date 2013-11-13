@@ -18,6 +18,8 @@ public class Terminal
 
 	public native byte[] read();
 
+	public native void setSize(int width, int height);
+
 	public void printInfo()
 	{
 		System.out.println("MFD: " + mfd);
@@ -31,5 +33,15 @@ public class Terminal
 	public int getNumberOfRows()
 	{
 		return rows;
+	}
+
+	public void setNumberOfCols(int cols)
+	{
+		this.cols = cols;
+	}
+
+	public void setNumberOfRows(int rows)
+	{
+		this.rows = rows;
 	}
 }
