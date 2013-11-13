@@ -10,6 +10,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -60,6 +61,8 @@ public class TerminalWidget extends JComponent
 
 	private boolean decCkm = false;
 	private boolean cursorVisible = true;
+
+	private Semaphore mutex = new Semaphore(1);
 
 	public TerminalWidget()
 	{
@@ -120,6 +123,14 @@ public class TerminalWidget extends JComponent
 			@Override
 			public void handleAscii(byte b)
 			{
+				while (true) {
+					try {
+						mutex.acquire();
+						break;
+					} catch (InterruptedException e) {
+						continue;
+					}
+				}
 				char c = (char) b;
 				State before = state;
 				boolean handled = TerminalWidget.this.handle(c);
@@ -127,12 +138,22 @@ public class TerminalWidget extends JComponent
 					System.out.println("STATE: " + before + " Byte: " + b
 							+ "..." + c);
 				}
+				mutex.release();
 			}
 
 			@Override
 			public void handleUtf8(char c)
 			{
+				while (true) {
+					try {
+						mutex.acquire();
+						break;
+					} catch (InterruptedException e) {
+						continue;
+					}
+				}
 				TerminalWidget.this.handle(c);
+				mutex.release();
 			}
 
 		};
@@ -214,6 +235,15 @@ public class TerminalWidget extends JComponent
 		 * Background
 		 */
 
+		while (true) {
+			try {
+				mutex.acquire();
+				break;
+			} catch (InterruptedException e) {
+				continue;
+			}
+		}
+
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -289,6 +319,8 @@ public class TerminalWidget extends JComponent
 		g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
 				terminal.getNumberOfCols() * charWidth,
 				screen.getScrollBottom() * charHeight);
+
+		mutex.release();
 	}
 
 	// @formatter:off
@@ -619,8 +651,8 @@ public class TerminalWidget extends JComponent
 	private void printCsi(Csi csi)
 	{
 		System.out.println("Handle CSI. prefix: '" + csi.prefix
-				+ "', suffix1: '" + csi.suffix1
-				+ "', suffix2: '" + csi.suffix2 + "'");
+				+ "', suffix1: '" + csi.suffix1 + "', suffix2: '" + csi.suffix2
+				+ "'");
 		for (int i = 0; i < csi.nums.size(); i++) {
 			int num = csi.nums.get(i);
 			System.out.println("CSI number: " + num);
