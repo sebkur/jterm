@@ -18,6 +18,10 @@ public class TerminalKeyAdapter extends KeyAdapter
 	{
 		// System.out.println("key typed: " + e.getKeyChar());
 		String message = String.format("%c", e.getKeyChar());
+		if (e.getKeyChar() == '\010') {
+			byte ec = terminal.getEraseCharacter();
+			message = String.format("%c", ec);
+		}
 		terminal.write(message);
 	}
 

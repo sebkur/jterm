@@ -214,3 +214,16 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_setSize
     size.ws_col = width;
     ioctl(mfd, TIOCSWINSZ, &size);
 }
+
+JNIEXPORT jbyte JNICALL Java_de_topobyte_jterm_core_Terminal_getEraseCharacter
+  (JNIEnv * env, jobject this)
+{
+    jclass thisClass = (*env)->GetObjectClass(env, this);
+    jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
+    jint mfd = (*env)->GetIntField(env, this, fidMfd);
+
+    struct termios tio;
+    tcgetattr(mfd, &tio);
+    cc_t c = tio.c_cc[VERASE];
+    return c;
+}

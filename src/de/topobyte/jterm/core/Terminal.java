@@ -19,6 +19,8 @@ public class Terminal
 	public native byte[] read();
 
 	public native void setSize(int width, int height);
+	
+	public native byte getEraseCharacter();
 
 	public void printInfo()
 	{
