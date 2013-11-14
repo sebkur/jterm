@@ -588,34 +588,34 @@ public class TerminalWidget extends JComponent
 		}
 		case 'E': { // Next Line (NEL)
 			System.out.println(String.format("||TODO: Next Line||"));
-			break;
+			return true;
 		}
 		case '7': { // Save Cursor (DECSC)
 			System.out.println(String.format("||TODO: Save Cursor||"));
-			break;
+			return true;
 		}
 		case '8': { // Restore Cursor (DECRC)
 			System.out.println(String.format("||TODO: Restore Cursor||"));
-			break;
+			return true;
 		}
 		case '=': { // Application Keypad Mode (DECKPAM)
 			System.out.println(String.format("\n\n\n"));
 			System.out.println(String
 					.format("||TODO: Application Keypad Mode||"));
-			break;
+			return true;
 		}
 		case '>': { // Numeric Keypad Mode (DECKPNM)
 			System.out.println(String.format("\n\n\n"));
 			System.out.println(String.format("||TODO: Numeric Keypad Mode||"));
-			break;
+			return true;
 		}
 		case 'N': { // Single Shift 2 (SS2)
 			System.out.println(String.format("||TODO: Single Shift 2||"));
-			break;
+			return true;
 		}
 		case 'O': { // Single Shift 3 (SS3)
 			System.out.println(String.format("||TODO: Single Shift 3||"));
-			break;
+			return true;
 		}
 		default: {
 			System.out.println(String.format("||UNKNOWN ESC<c>%c||", c));
@@ -677,7 +677,8 @@ public class TerminalWidget extends JComponent
 	private boolean handleCsiIntern(Csi csi)
 	{
 		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
-			System.out.println("CSI case 1");
+			System.out.println("CSI case 1: all not handled yet in vexterm");
+			return true;
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
 			boolean set = csi.suffix1 == 'h'; // SET / RESET
@@ -696,30 +697,32 @@ public class TerminalWidget extends JComponent
 						// TODO: ?
 					}
 					System.out.println(String.format("|TODO: DECANM|"));
-					break;
+					return true;
 				}
 				case 3: { // Column Mode (DECCOLM)
 							// set: 132 cols/line; reset: 80 cols/line
 					System.out.println(String.format("|TODO: DECCOLM|"));
-					break;
+					return true;
 				}
 				case 4: { // Scroll Mode (DECSCLM)
 							// set: smooth (6 lines/sec); reset: jump (fast as
 							// possible)
-					System.out.println(String.format("|TODO: DECSCLM|"));
-					break;
+					String s = set ? "SMOOTH" : "JUMP";
+					System.out
+							.println(String.format("|TODO: DECSCLM : %s|", s));
+					return true;
 				}
 				case 5: { // Screen Mode (DECSCNM)
 							// set: reverse screen (white screen, black chars)
 							// reset: normal screen (black screen, white chars)
 					System.out.println(String.format("|TODO: DECSCNM|"));
-					break;
+					return true;
 				}
 				case 6: { // Origin Mode (DECOM)
 							// set: relative to scrolling region; reset:
 							// absolute
 					System.out.println(String.format("|TODO: DECOM|"));
-					break;
+					return true;
 				}
 				case 7: { // Wrap Mode (DECAWM)
 					// set: auto wrap (goto next line; scroll if neccessary)
@@ -734,8 +737,9 @@ public class TerminalWidget extends JComponent
 				}
 				case 12: {
 					String s = set ? "START" : "STOP";
-					System.out.println(String.format("||%s BLINKING||", s));
-					break;
+					System.out.println(String
+							.format("||TODO: %s BLINKING||", s));
+					return true;
 				}
 				case 25: {
 					String s = set ? "SHOW" : "HIDE";
@@ -853,11 +857,11 @@ public class TerminalWidget extends JComponent
 			case 1:
 				// erase to the left
 				eraseToTheLeft();
-				break;
+				return true;
 			case 2:
 				// erase line
 				eraseLine();
-				break;
+				return true;
 			}
 		} else if (csi.suffix1 == 'L') { // insert n lines
 			int n = getValueOrDefault(csi, 1);
