@@ -872,18 +872,21 @@ public class TerminalWidget extends JComponent
 			System.out.println(String.format("||scroll %d up||", n));
 
 			scrollUp(n);
+			return true;
 		} else if (csi.suffix1 == 'T') { // scroll down n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||TODO: scroll %d down||", n));
+			System.out.println(String.format("||scroll %d down||", n));
 
 			scrollDown(n);
+			return true;
 		} else if (csi.suffix1 == 'M') { // delete n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||TODO: delete %d lines||", n));
+			System.out.println(String.format("||delete %d lines||", n));
 
 			deleteLines(n);
+			return true;
 		} else if (csi.suffix1 == 'J') { // erase in display
 			int n = getValueOrDefault(csi, 1);
 			switch (n) { // 0: below, 1: above, 2: all, 3: saved lines (xterm)
@@ -971,17 +974,42 @@ public class TerminalWidget extends JComponent
 
 	private void deleteLines(int n)
 	{
-		System.out.println("TODO: deleteLines");
+		if (screen.getCurrentRow() >= screen.getScrollTop()
+				&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+			// ok we're in the scrolling region
+			for (int i = 0; i < n; i++) {
+				screen.getRows().remove(screen.getCurrentRow() - 1);
+				int insPos = screen.getScrollBottom() - 1;
+				if (insPos > screen.getRows().size()) {
+					insPos = screen.getRows().size();
+				}
+				screen.getRows().add(insPos, new Row());
+			}
+		}
 	}
 
 	private void scrollDown(int n)
 	{
-		System.out.println("TODO: scrollDown");
+		for (int i = 0; i < n; i++) {
+			screen.getRows().remove(screen.getScrollBottom() - 1);
+			int insPos = screen.getScrollTop() - 1;
+			if (insPos > screen.getRows().size()) {
+				insPos = screen.getRows().size();
+			}
+			screen.getRows().add(insPos, new Row());
+		}
 	}
 
 	private void scrollUp(int n)
 	{
-		System.out.println("TODO: scrollUp");
+		for (int i = 0; i < n; i++) {
+			screen.getRows().remove(screen.getScrollTop() - 1);
+			int insPos = screen.getScrollBottom() - 1;
+			if (insPos > screen.getRows().size()) {
+				insPos = screen.getRows().size();
+			}
+			screen.getRows().add(insPos, new Row());
+		}
 	}
 
 	private void insertLinesBefore(int n)
