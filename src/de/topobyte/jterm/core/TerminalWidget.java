@@ -1,5 +1,6 @@
 package de.topobyte.jterm.core;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -24,7 +25,6 @@ public class TerminalWidget extends JComponent
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
 
-	private Color colorFrame = new Color(0xffffff);
 	private Color colorRaster = new Color(0x333333);
 	private Color colorCursor = new Color(0x99ff0000, true);
 	private Color colorScrollingRegion = new Color(0x99ff0000, true);
@@ -245,11 +245,11 @@ public class TerminalWidget extends JComponent
 			}
 		}
 
-		g.setColor(Color.BLACK);
+		g.setColor(palette.getColor(17));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		if (drawFrame) {
-			g.setColor(colorFrame);
+			g.setColor(palette.getColor(16));
 			g.drawRect(0, 0, terminal.getNumberOfCols() * charWidth,
 					terminal.getNumberOfRows() * charHeight);
 		}
@@ -317,6 +317,7 @@ public class TerminalWidget extends JComponent
 		 */
 
 		g.setColor(colorScrollingRegion);
+		g.setStroke(new BasicStroke(2.0f));
 		g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
 				terminal.getNumberOfCols() * charWidth,
 				screen.getScrollBottom() * charHeight);
