@@ -959,6 +959,7 @@ public class TerminalWidget extends JComponent
 	{
 		int pr = screen.getCurrentRow();
 		int pc = screen.getCurrentColumn();
+		log("Erase to the right row: " + pr + "col: " + pc);
 		if (screen.getRows().size() < pr) {
 			return;
 		}
@@ -1251,15 +1252,17 @@ public class TerminalWidget extends JComponent
 		}
 
 		if (col < 1 || col > terminal.getNumberOfCols()) {
+			StringBuilder buffer = new StringBuilder();
 			if (col < 1) {
-				log("request to go to a col < 1");
+				buffer.append("request to go to a col < 1");
 			} else {
-				log("request to go to a col beyond end");
+				buffer.append("request to go to a col beyond end");
 			}
-			log("DECAWM: " + decAwm);
-			log("crow: " + screen.getCurrentRow());
-			log("scrollTop: " + screen.getScrollTop());
-			log("scrollBottom: " + screen.getScrollBottom());
+			buffer.append(", DECAWM: " + decAwm);
+			buffer.append(", crow: " + screen.getCurrentRow());
+			buffer.append(", scrollTop: " + screen.getScrollTop());
+			buffer.append(", scrollBottom: " + screen.getScrollBottom());
+			log(buffer.toString());
 			if (decAwm) {
 				// TODO: check scrolling region
 				if (col < 1) {
