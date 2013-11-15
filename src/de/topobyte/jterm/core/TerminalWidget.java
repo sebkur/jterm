@@ -102,6 +102,18 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_DELETE);
 		keyUtil.addKeyAction(KeyEvent.VK_PAGE_UP);
 		keyUtil.addKeyAction(KeyEvent.VK_PAGE_DOWN);
+		keyUtil.addKeyAction(KeyEvent.VK_F1);
+		keyUtil.addKeyAction(KeyEvent.VK_F2);
+		keyUtil.addKeyAction(KeyEvent.VK_F3);
+		keyUtil.addKeyAction(KeyEvent.VK_F4);
+		keyUtil.addKeyAction(KeyEvent.VK_F5);
+		keyUtil.addKeyAction(KeyEvent.VK_F6);
+		keyUtil.addKeyAction(KeyEvent.VK_F7);
+		keyUtil.addKeyAction(KeyEvent.VK_F8);
+		keyUtil.addKeyAction(KeyEvent.VK_F9);
+		keyUtil.addKeyAction(KeyEvent.VK_F10);
+		keyUtil.addKeyAction(KeyEvent.VK_F11);
+		keyUtil.addKeyAction(KeyEvent.VK_F12);
 
 		addComponentListener(new ComponentAdapter() {
 
@@ -161,6 +173,11 @@ public class TerminalWidget extends JComponent
 
 		Thread t = new Thread(terminalReader);
 		t.start();
+	}
+
+	public Terminal getTerminal()
+	{
+		return terminal;
 	}
 
 	protected void sizeChanged()

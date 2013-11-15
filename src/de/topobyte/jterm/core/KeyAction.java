@@ -37,6 +37,30 @@ public class KeyAction extends AbstractAction
 		case KeyEvent.VK_PAGE_DOWN:
 			terminal.sendKeypad(keyCode);
 			break;
+		case KeyEvent.VK_F1:
+		case KeyEvent.VK_F2:
+		case KeyEvent.VK_F3:
+		case KeyEvent.VK_F4:
+		case KeyEvent.VK_F5:
+			int fn = keyCode - KeyEvent.VK_F1 + 1;
+			int fc = fn + 10;
+			terminal.getTerminal().write(String.format("\033[%d~", fc));
+			break;
+		case KeyEvent.VK_F6:
+		case KeyEvent.VK_F7:
+		case KeyEvent.VK_F8:
+		case KeyEvent.VK_F9:
+		case KeyEvent.VK_F10:
+			fn = keyCode - KeyEvent.VK_F1 + 1;
+			fc = fn + 11;
+			terminal.getTerminal().write(String.format("\033[%d~", fc));
+			break;
+		case KeyEvent.VK_F11:
+		case KeyEvent.VK_F12:
+			fn = keyCode - KeyEvent.VK_F1 + 1;
+			fc = fn + 12;
+			terminal.getTerminal().write(String.format("\033[%d~", fc));
+			break;
 		}
 	}
 }
