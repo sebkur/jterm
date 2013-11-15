@@ -592,58 +592,56 @@ public class TerminalWidget extends JComponent
 	{
 		switch (c) {
 		case 'c': { // Reset (RIS)
-			log(String.format("||Reset||"));
+			log(String.format("Reset"));
 			reset();
 			return true;
 		}
 		case 'H': { // Reset (RIS)
-			log(String.format("||Home Position||"));
+			log(String.format("Home Position"));
 			cursorGoto(1, 1);
 			return true;
 		}
 		case 'D': { // Index (IND)
-			log(String.format("||TODO: Index||"));
+			log(String.format("TODO: Index"));
 			twIndex();
 			return true;
 		}
 		case 'M': { // Reverse Index (RI)
-			log(String.format("||Reverse Index||"));
+			log(String.format("Reverse Index"));
 			twReverseIndex();
 			return true;
 		}
 		case 'E': { // Next Line (NEL)
-			log(String.format("||TODO: Next Line||"));
+			log(String.format("TODO: Next Line"));
 			return true;
 		}
 		case '7': { // Save Cursor (DECSC)
-			log(String.format("||TODO: Save Cursor||"));
+			log(String.format("TODO: Save Cursor"));
 			return true;
 		}
 		case '8': { // Restore Cursor (DECRC)
-			log(String.format("||TODO: Restore Cursor||"));
+			log(String.format("TODO: Restore Cursor"));
 			return true;
 		}
 		case '=': { // Application Keypad Mode (DECKPAM)
-			log(String.format("\n\n\n"));
 			log(String
-					.format("||TODO: Application Keypad Mode||"));
+					.format("TODO: Application Keypad Mode"));
 			return true;
 		}
 		case '>': { // Numeric Keypad Mode (DECKPNM)
-			log(String.format("\n\n\n"));
-			log(String.format("||TODO: Numeric Keypad Mode||"));
+			log(String.format("TODO: Numeric Keypad Mode"));
 			return true;
 		}
 		case 'N': { // Single Shift 2 (SS2)
-			log(String.format("||TODO: Single Shift 2||"));
+			log(String.format("TODO: Single Shift 2"));
 			return true;
 		}
 		case 'O': { // Single Shift 3 (SS3)
-			log(String.format("||TODO: Single Shift 3||"));
+			log(String.format("TODO: Single Shift 3"));
 			return true;
 		}
 		default: {
-			log(String.format("||UNKNOWN ESC<c>%c||", c));
+			log(String.format("UNKNOWN ESC<c>%c", c));
 		}
 		}
 		return false;
@@ -721,31 +719,31 @@ public class TerminalWidget extends JComponent
 					if (csi.suffix1 == 'h') { // only 'h'
 						// TODO: ?
 					}
-					log(String.format("|TODO: DECANM|"));
+					log(String.format("TODO: DECANM"));
 					return true;
 				}
 				case 3: { // Column Mode (DECCOLM)
 							// set: 132 cols/line; reset: 80 cols/line
-					log(String.format("|TODO: DECCOLM|"));
+					log(String.format("TODO: DECCOLM"));
 					return true;
 				}
 				case 4: { // Scroll Mode (DECSCLM)
 							// set: smooth (6 lines/sec); reset: jump (fast as
 							// possible)
 					String s = set ? "SMOOTH" : "JUMP";
-					log(String.format("|TODO: DECSCLM : %s|", s));
+					log(String.format("TODO: DECSCLM : %s", s));
 					return true;
 				}
 				case 5: { // Screen Mode (DECSCNM)
 							// set: reverse screen (white screen, black chars)
 							// reset: normal screen (black screen, white chars)
-					log(String.format("|TODO: DECSCNM|"));
+					log(String.format("TODO: DECSCNM"));
 					return true;
 				}
 				case 6: { // Origin Mode (DECOM)
 							// set: relative to scrolling region; reset:
 							// absolute
-					log(String.format("|TODO: DECOM|"));
+					log(String.format("TODO: DECOM"));
 					return true;
 				}
 				case 7: { // Wrap Mode (DECAWM)
@@ -756,24 +754,22 @@ public class TerminalWidget extends JComponent
 				}
 				case 8: { // Auto Repeat Mode (DECARM)
 							// enable / disable auto repeat of pressed keys
-					log(String.format("|TODO: DECARM|"));
+					log(String.format("TODO: DECARM"));
 					break;
 				}
 				case 12: {
-					String s = set ? "START" : "STOP";
+					String s = set ? "Start" : "Stop";
 					log(String
-							.format("||TODO: %s BLINKING||", s));
+							.format("TODO: %s Blinking", s));
 					return true;
 				}
 				case 25: {
-					String s = set ? "SHOW" : "HIDE";
-					log(String.format("||%s CURSOR||", s));
+					String s = set ? "Show" : "Hide";
+					log(String.format("%s Cursor", s));
 					cursorVisible = set;
 					return true;
 				}
 				case 1049: {
-					String s = set ? "alternate" : "normal";
-					log(String.format("||%s SCREEN||", s));
 					if (set) {
 						useAlternateScreen();
 					} else {
@@ -794,7 +790,7 @@ public class TerminalWidget extends JComponent
 			if (csi.nums.size() >= 2) {
 				c = csi.nums.get(1);
 			}
-			// log(String.format("||GOTO:%d,%d||", r, c));
+			// log(String.format("GOTO:%d,%d", r, c));
 
 			cursorGoto(r, c);
 			return true;
@@ -808,7 +804,7 @@ public class TerminalWidget extends JComponent
 				c = csi.nums.get(0);
 			}
 
-			// log(String.format("||GOTO:%d,%d||", r, c));
+			// log(String.format("GOTO:%d,%d", r, c));
 
 			screen.setCurrentRow(r);
 			setCurrentColumn("d", c >= 1 ? c : 1);
@@ -816,28 +812,28 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == '@') { // insert n blank characters
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||insert %d blank chars||", n));
+			log(String.format("insert %d blank chars", n));
 
 			insertBlankCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'X') { // erase n characters
 			int n = getValueOrDefault(csi, 1);
 
-			// log(String.format("||erase %d chars||", n));
+			// log(String.format("erase %d chars", n));
 
 			eraseCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'P') { // delete n characters
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||delete %d chars||", n));
+			log(String.format("delete %d chars", n));
 
 			deleteCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'G') { // cursor character absolute
 			int n = getValueOrDefault(csi, 1);
 
-			// log(String.format("||cursor char absolute %d||",
+			// log(String.format("cursor char absolute %d",
 			// n));
 
 			cursorCharacterAbsolute(n);
@@ -845,25 +841,25 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'A') { // cursor up n times
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||cursor %d up||", n));
+			log(String.format("cursor %d up", n));
 
 			cursorUp(n);
 			return true;
 		} else if (csi.suffix1 == 'B') { // cursor down n times
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||cursor %d down||", n));
+			log(String.format("cursor %d down", n));
 
 			cursorDown(n);
 			return true;
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
-			// log(String.format("||cursor %d forward||", n));
+			// log(String.format("cursor %d forward", n));
 			setCurrentColumn("e", screen.getCurrentColumn() + n);
 			return true;
 		} else if (csi.suffix1 == 'D') { // cursor backward n times
 			int n = getValueOrDefault(csi, 1);
-			log(String.format("||cursor %d backwards (%d)||", n,
+			log(String.format("cursor %d backwards (%d)", n,
 					screen.getCurrentColumn()));
 			int col = screen.getCurrentColumn() - n;
 			if (col < 1) {
@@ -897,21 +893,21 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'S') { // scroll up n lines
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||scroll %d up||", n));
+			log(String.format("scroll %d up", n));
 
 			scrollUp(n);
 			return true;
 		} else if (csi.suffix1 == 'T') { // scroll down n lines
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||scroll %d down||", n));
+			log(String.format("scroll %d down", n));
 
 			scrollDown(n);
 			return true;
 		} else if (csi.suffix1 == 'M') { // delete n lines
 			int n = getValueOrDefault(csi, 1);
 
-			log(String.format("||delete %d lines||", n));
+			log(String.format("delete %d lines", n));
 
 			deleteLines(n);
 			return true;
@@ -919,17 +915,12 @@ public class TerminalWidget extends JComponent
 			int n = getValueOrDefault(csi, 1);
 			switch (n) { // 0: below, 1: above, 2: all, 3: saved lines (xterm)
 			case 2: {
-
-				log(String.format("||ERASE IN DISPLAY, ALL||"));
-
 				eraseAll();
 				return true;
 			}
 			default: {
-
 				log(String.format(
-						"||TODO: ERASE IN DISPLAY %d\n||", n));
-
+						"TODO: ERASE IN DISPLAY %d\n", n));
 			}
 			}
 		} else if (csi.suffix1 == 'r' && csi.prefix == '\0') {
@@ -941,7 +932,7 @@ public class TerminalWidget extends JComponent
 				b = csi.nums.get(1);
 			}
 
-			log(String.format("||SCROLLING AREA: %d:%d||", t, b));
+			log(String.format("SCROLLING AREA: %d:%d", t, b));
 
 			screen.setScrollTop(t);
 			screen.setScrollBottom(b);
@@ -949,7 +940,7 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'c' && csi.prefix == '>') {
 			// send device attributes (secondary DA)
 			log(String
-					.format("||TODO: DEVICE ATTRIBUTES, PLEASE||"));
+					.format("TODO: DEVICE ATTRIBUTES, PLEASE"));
 		} else if (csi.suffix1 == 'm') {
 			int n = csi.nums.size();
 			if (n == 0) {
