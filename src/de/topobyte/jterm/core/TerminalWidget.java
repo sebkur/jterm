@@ -149,7 +149,7 @@ public class TerminalWidget extends JComponent
 				State before = state;
 				boolean handled = TerminalWidget.this.handle(c);
 				if (!handled) {
-					System.out.println("STATE: " + before + " Byte: " + b
+					log("STATE: " + before + " Byte: " + b
 							+ "..." + c);
 				}
 				mutex.release();
@@ -181,6 +181,11 @@ public class TerminalWidget extends JComponent
 		return terminal;
 	}
 
+	private void log(String message)
+	{
+		System.out.println(message);
+	}
+
 	protected void sizeChanged()
 	{
 		int w = getWidth();
@@ -195,7 +200,7 @@ public class TerminalWidget extends JComponent
 
 	private void setTerminalSize(int cols, int rows)
 	{
-		System.out.println("Setting size: " + cols + " x " + rows);
+		log("Setting size: " + cols + " x " + rows);
 
 		boolean smaller = rows < terminal.getNumberOfRows();
 		boolean bigger = rows > terminal.getNumberOfRows();
@@ -486,24 +491,24 @@ public class TerminalWidget extends JComponent
 				return false;
 			}
 			case '\b': {
-				// System.out.println("CHAR: backspace");
+				// log("CHAR: backspace");
 				setCurrentColumn("a", screen.getCurrentColumn() - 1);
 				return true;
 			}
 			case '\7': {
-				System.out.println("CHAR: BELL");
+				log("CHAR: BELL");
 				return true;
 			}
 			case '\r': {
 				if (DEBUG_NEWLINES) {
-					System.out.println("CHAR: carriage return");
+					log("CHAR: carriage return");
 				}
 				setCurrentColumn("b", 1);
 				return true;
 			}
 			case '\n': {
 				if (DEBUG_NEWLINES) {
-					System.out.println("CHAR: line feed");
+					log("CHAR: line feed");
 				}
 				if (screen.getCurrentRow() < screen.getScrollBottom()) {
 					screen.setCurrentRow(screen.getCurrentRow() + 1);
@@ -513,7 +518,7 @@ public class TerminalWidget extends JComponent
 				return true;
 			}
 			case '\t': {
-				System.out.println("CHAR: tab");
+				log("CHAR: tab");
 				int x = screen.getCurrentColumn();
 				int m = (x - 1) % 8;
 				for (int i = 0; i < 8 - m; i++) {
@@ -587,58 +592,58 @@ public class TerminalWidget extends JComponent
 	{
 		switch (c) {
 		case 'c': { // Reset (RIS)
-			System.out.println(String.format("||Reset||"));
+			log(String.format("||Reset||"));
 			reset();
 			return true;
 		}
 		case 'H': { // Reset (RIS)
-			System.out.println(String.format("||Home Position||"));
+			log(String.format("||Home Position||"));
 			cursorGoto(1, 1);
 			return true;
 		}
 		case 'D': { // Index (IND)
-			System.out.println(String.format("||TODO: Index||"));
+			log(String.format("||TODO: Index||"));
 			twIndex();
 			return true;
 		}
 		case 'M': { // Reverse Index (RI)
-			System.out.println(String.format("||Reverse Index||"));
+			log(String.format("||Reverse Index||"));
 			twReverseIndex();
 			return true;
 		}
 		case 'E': { // Next Line (NEL)
-			System.out.println(String.format("||TODO: Next Line||"));
+			log(String.format("||TODO: Next Line||"));
 			return true;
 		}
 		case '7': { // Save Cursor (DECSC)
-			System.out.println(String.format("||TODO: Save Cursor||"));
+			log(String.format("||TODO: Save Cursor||"));
 			return true;
 		}
 		case '8': { // Restore Cursor (DECRC)
-			System.out.println(String.format("||TODO: Restore Cursor||"));
+			log(String.format("||TODO: Restore Cursor||"));
 			return true;
 		}
 		case '=': { // Application Keypad Mode (DECKPAM)
-			System.out.println(String.format("\n\n\n"));
-			System.out.println(String
+			log(String.format("\n\n\n"));
+			log(String
 					.format("||TODO: Application Keypad Mode||"));
 			return true;
 		}
 		case '>': { // Numeric Keypad Mode (DECKPNM)
-			System.out.println(String.format("\n\n\n"));
-			System.out.println(String.format("||TODO: Numeric Keypad Mode||"));
+			log(String.format("\n\n\n"));
+			log(String.format("||TODO: Numeric Keypad Mode||"));
 			return true;
 		}
 		case 'N': { // Single Shift 2 (SS2)
-			System.out.println(String.format("||TODO: Single Shift 2||"));
+			log(String.format("||TODO: Single Shift 2||"));
 			return true;
 		}
 		case 'O': { // Single Shift 3 (SS3)
-			System.out.println(String.format("||TODO: Single Shift 3||"));
+			log(String.format("||TODO: Single Shift 3||"));
 			return true;
 		}
 		default: {
-			System.out.println(String.format("||UNKNOWN ESC<c>%c||", c));
+			log(String.format("||UNKNOWN ESC<c>%c||", c));
 		}
 		}
 		return false;
@@ -656,32 +661,32 @@ public class TerminalWidget extends JComponent
 
 	private void twIndex()
 	{
-		System.out.println("TODO: twIndex");
+		log("TODO: twIndex");
 	}
 
 	private void twReverseIndex()
 	{
-		System.out.println("ReverseIndex");
+		log("ReverseIndex");
 		// check whether we're at the top margin
 		if (screen.getCurrentRow() == screen.getScrollTop()) {
 			// yes we are. scroll down
-			System.out.println("-> scroll down");
+			log("-> scroll down");
 			insertLinesBefore(1);
 		} else {
 			// no. just move the cursor up
-			System.out.println("-> move cursor up");
+			log("-> move cursor up");
 			screen.setCurrentRow(screen.getCurrentRow() - 1);
 		}
 	}
 
 	private void printCsi(Csi csi)
 	{
-		System.out.println("Handle CSI. prefix: '" + csi.prefix
+		log("Handle CSI. prefix: '" + csi.prefix
 				+ "', suffix1: '" + csi.suffix1 + "', suffix2: '" + csi.suffix2
 				+ "'");
 		for (int i = 0; i < csi.nums.size(); i++) {
 			int num = csi.nums.get(i);
-			System.out.println("CSI number: " + num);
+			log("CSI number: " + num);
 		}
 	}
 
@@ -697,7 +702,7 @@ public class TerminalWidget extends JComponent
 	private boolean handleCsiIntern(Csi csi)
 	{
 		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
-			System.out.println("CSI case 1: all not handled yet in vexterm");
+			log("CSI case 1: all not handled yet in vexterm");
 			return true;
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
@@ -709,39 +714,38 @@ public class TerminalWidget extends JComponent
 					// set: cursor keys transmit control (application) functions
 					// reset: cursor keys transmit ANSI control sequences
 					decCkm = set;
-					System.out.println("DEC CKM: " + decCkm);
+					log("DEC CKM: " + decCkm);
 					return true;
 				}
 				case 2: { // VT52 Mode (DECANM)
 					if (csi.suffix1 == 'h') { // only 'h'
 						// TODO: ?
 					}
-					System.out.println(String.format("|TODO: DECANM|"));
+					log(String.format("|TODO: DECANM|"));
 					return true;
 				}
 				case 3: { // Column Mode (DECCOLM)
 							// set: 132 cols/line; reset: 80 cols/line
-					System.out.println(String.format("|TODO: DECCOLM|"));
+					log(String.format("|TODO: DECCOLM|"));
 					return true;
 				}
 				case 4: { // Scroll Mode (DECSCLM)
 							// set: smooth (6 lines/sec); reset: jump (fast as
 							// possible)
 					String s = set ? "SMOOTH" : "JUMP";
-					System.out
-							.println(String.format("|TODO: DECSCLM : %s|", s));
+					log(String.format("|TODO: DECSCLM : %s|", s));
 					return true;
 				}
 				case 5: { // Screen Mode (DECSCNM)
 							// set: reverse screen (white screen, black chars)
 							// reset: normal screen (black screen, white chars)
-					System.out.println(String.format("|TODO: DECSCNM|"));
+					log(String.format("|TODO: DECSCNM|"));
 					return true;
 				}
 				case 6: { // Origin Mode (DECOM)
 							// set: relative to scrolling region; reset:
 							// absolute
-					System.out.println(String.format("|TODO: DECOM|"));
+					log(String.format("|TODO: DECOM|"));
 					return true;
 				}
 				case 7: { // Wrap Mode (DECAWM)
@@ -752,24 +756,24 @@ public class TerminalWidget extends JComponent
 				}
 				case 8: { // Auto Repeat Mode (DECARM)
 							// enable / disable auto repeat of pressed keys
-					System.out.println(String.format("|TODO: DECARM|"));
+					log(String.format("|TODO: DECARM|"));
 					break;
 				}
 				case 12: {
 					String s = set ? "START" : "STOP";
-					System.out.println(String
+					log(String
 							.format("||TODO: %s BLINKING||", s));
 					return true;
 				}
 				case 25: {
 					String s = set ? "SHOW" : "HIDE";
-					System.out.println(String.format("||%s CURSOR||", s));
+					log(String.format("||%s CURSOR||", s));
 					cursorVisible = set;
 					return true;
 				}
 				case 1049: {
 					String s = set ? "alternate" : "normal";
-					System.out.println(String.format("||%s SCREEN||", s));
+					log(String.format("||%s SCREEN||", s));
 					if (set) {
 						useAlternateScreen();
 					} else {
@@ -790,7 +794,7 @@ public class TerminalWidget extends JComponent
 			if (csi.nums.size() >= 2) {
 				c = csi.nums.get(1);
 			}
-			// System.out.println(String.format("||GOTO:%d,%d||", r, c));
+			// log(String.format("||GOTO:%d,%d||", r, c));
 
 			cursorGoto(r, c);
 			return true;
@@ -804,7 +808,7 @@ public class TerminalWidget extends JComponent
 				c = csi.nums.get(0);
 			}
 
-			// System.out.println(String.format("||GOTO:%d,%d||", r, c));
+			// log(String.format("||GOTO:%d,%d||", r, c));
 
 			screen.setCurrentRow(r);
 			setCurrentColumn("d", c >= 1 ? c : 1);
@@ -812,28 +816,28 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == '@') { // insert n blank characters
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||insert %d blank chars||", n));
+			log(String.format("||insert %d blank chars||", n));
 
 			insertBlankCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'X') { // erase n characters
 			int n = getValueOrDefault(csi, 1);
 
-			// System.out.println(String.format("||erase %d chars||", n));
+			// log(String.format("||erase %d chars||", n));
 
 			eraseCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'P') { // delete n characters
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||delete %d chars||", n));
+			log(String.format("||delete %d chars||", n));
 
 			deleteCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'G') { // cursor character absolute
 			int n = getValueOrDefault(csi, 1);
 
-			// System.out.println(String.format("||cursor char absolute %d||",
+			// log(String.format("||cursor char absolute %d||",
 			// n));
 
 			cursorCharacterAbsolute(n);
@@ -841,25 +845,25 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'A') { // cursor up n times
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||cursor %d up||", n));
+			log(String.format("||cursor %d up||", n));
 
 			cursorUp(n);
 			return true;
 		} else if (csi.suffix1 == 'B') { // cursor down n times
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||cursor %d down||", n));
+			log(String.format("||cursor %d down||", n));
 
 			cursorDown(n);
 			return true;
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
-			// System.out.println(String.format("||cursor %d forward||", n));
+			// log(String.format("||cursor %d forward||", n));
 			setCurrentColumn("e", screen.getCurrentColumn() + n);
 			return true;
 		} else if (csi.suffix1 == 'D') { // cursor backward n times
 			int n = getValueOrDefault(csi, 1);
-			System.out.println(String.format("||cursor %d backwards (%d)||", n,
+			log(String.format("||cursor %d backwards (%d)||", n,
 					screen.getCurrentColumn()));
 			int col = screen.getCurrentColumn() - n;
 			if (col < 1) {
@@ -886,28 +890,28 @@ public class TerminalWidget extends JComponent
 		} else if (csi.suffix1 == 'L') { // insert n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("IL: CSI.L"));
+			log(String.format("IL: CSI.L"));
 
 			insertLinesBefore(n);
 			return true;
 		} else if (csi.suffix1 == 'S') { // scroll up n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||scroll %d up||", n));
+			log(String.format("||scroll %d up||", n));
 
 			scrollUp(n);
 			return true;
 		} else if (csi.suffix1 == 'T') { // scroll down n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||scroll %d down||", n));
+			log(String.format("||scroll %d down||", n));
 
 			scrollDown(n);
 			return true;
 		} else if (csi.suffix1 == 'M') { // delete n lines
 			int n = getValueOrDefault(csi, 1);
 
-			System.out.println(String.format("||delete %d lines||", n));
+			log(String.format("||delete %d lines||", n));
 
 			deleteLines(n);
 			return true;
@@ -916,14 +920,14 @@ public class TerminalWidget extends JComponent
 			switch (n) { // 0: below, 1: above, 2: all, 3: saved lines (xterm)
 			case 2: {
 
-				System.out.println(String.format("||ERASE IN DISPLAY, ALL||"));
+				log(String.format("||ERASE IN DISPLAY, ALL||"));
 
 				eraseAll();
 				return true;
 			}
 			default: {
 
-				System.out.println(String.format(
+				log(String.format(
 						"||TODO: ERASE IN DISPLAY %d\n||", n));
 
 			}
@@ -937,15 +941,14 @@ public class TerminalWidget extends JComponent
 				b = csi.nums.get(1);
 			}
 
-			System.out
-					.println(String.format("||SCROLLING AREA: %d:%d||", t, b));
+			log(String.format("||SCROLLING AREA: %d:%d||", t, b));
 
 			screen.setScrollTop(t);
 			screen.setScrollBottom(b);
 			return true;
 		} else if (csi.suffix1 == 'c' && csi.prefix == '>') {
 			// send device attributes (secondary DA)
-			System.out.println(String
+			log(String
 					.format("||TODO: DEVICE ATTRIBUTES, PLEASE||"));
 		} else if (csi.suffix1 == 'm') {
 			int n = csi.nums.size();
@@ -981,12 +984,12 @@ public class TerminalWidget extends JComponent
 
 	private void eraseToTheLeft()
 	{
-		System.out.println("TODO: erase to the left");
+		log("TODO: erase to the left");
 	}
 
 	private void eraseLine()
 	{
-		System.out.println("TODO: erase line");
+		log("TODO: erase line");
 	}
 
 	private void eraseAll()
@@ -1044,7 +1047,7 @@ public class TerminalWidget extends JComponent
 					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
 				// ok, we're in the scrolling region
 				if (screen.getRows().size() >= screen.getScrollBottom()) {
-					System.out.println("Remove line "
+					log("Remove line "
 							+ (screen.getScrollBottom() - 1));
 					screen.getRows().remove(screen.getScrollBottom() - 1);
 				}
@@ -1167,13 +1170,13 @@ public class TerminalWidget extends JComponent
 
 	private void useNormalScreen()
 	{
-		System.out.println("Switch to normal Screen!");
+		log("Switch to normal Screen!");
 		screen = screenNormal;
 	}
 
 	private void useAlternateScreen()
 	{
-		System.out.println("Switch to alternate Screen!");
+		log("Switch to alternate Screen!");
 		screen = screenAlternate;
 	}
 
@@ -1217,7 +1220,7 @@ public class TerminalWidget extends JComponent
 			bg = c;
 			bgBright = true;
 		} else {
-			System.out.println("color: " + code);
+			log("color: " + code);
 		}
 	}
 
@@ -1231,7 +1234,7 @@ public class TerminalWidget extends JComponent
 
 	private void setCharset(char c)
 	{
-		// System.out.println("Set Charset: '" + c + "'");
+		// log("Set Charset: '" + c + "'");
 		screen.setCharacterSet(c);
 	}
 
@@ -1258,14 +1261,14 @@ public class TerminalWidget extends JComponent
 
 		if (col < 1 || col > terminal.getNumberOfCols()) {
 			if (col < 1) {
-				System.out.println("request to go to a col < 1");
+				log("request to go to a col < 1");
 			} else {
-				System.out.println("request to go to a col beyond end");
+				log("request to go to a col beyond end");
 			}
-			System.out.println("DECAWM: " + decAwm);
-			System.out.println("crow: " + screen.getCurrentRow());
-			System.out.println("scrollTop: " + screen.getScrollTop());
-			System.out.println("scrollBottom: " + screen.getScrollBottom());
+			log("DECAWM: " + decAwm);
+			log("crow: " + screen.getCurrentRow());
+			log("scrollTop: " + screen.getScrollTop());
+			log("scrollBottom: " + screen.getScrollBottom());
 			if (decAwm) {
 				// TODO: check scrolling region
 				if (col < 1) {
@@ -1356,7 +1359,7 @@ public class TerminalWidget extends JComponent
 
 		if (rows.size() > terminal.getNumberOfRows()) {
 			if (DEBUG_HISTORY) {
-				System.out.println("pushing row to history");
+				log("pushing row to history");
 			}
 			Row row = rows.remove(0);
 			history.push(row);
@@ -1402,6 +1405,6 @@ public class TerminalWidget extends JComponent
 		// @formatter:on
 		String message = String.format("\033[%c~", letter);
 		terminal.write(message);
-		System.out.println("message: '" + message + "'");
+		log("message: '" + message + "'");
 	}
 }
