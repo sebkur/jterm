@@ -17,6 +17,9 @@ public class TerminalKeyAdapter extends KeyAdapter
 	public void keyTyped(KeyEvent e)
 	{
 		// System.out.println("key typed: " + e.getKeyChar());
+		if (e.getKeyChar() == 10) {
+			return;
+		}
 		String message = String.format("%c", e.getKeyChar());
 		if (e.getKeyChar() == '\010') {
 			byte ec = terminal.getEraseCharacter();

@@ -61,6 +61,9 @@ public class KeyAction extends AbstractAction
 			fc = fn + 12;
 			terminal.getTerminal().write(String.format("\033[%d~", fc));
 			break;
+		case KeyEvent.VK_ENTER:
+			terminal.getTerminal().write(String.format("%c", 015));
+			break;
 		}
 	}
 }

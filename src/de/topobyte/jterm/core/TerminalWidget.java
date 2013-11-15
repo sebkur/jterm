@@ -114,6 +114,7 @@ public class TerminalWidget extends JComponent
 		keyUtil.addKeyAction(KeyEvent.VK_F10);
 		keyUtil.addKeyAction(KeyEvent.VK_F11);
 		keyUtil.addKeyAction(KeyEvent.VK_F12);
+		keyUtil.addKeyAction(KeyEvent.VK_ENTER);
 
 		addComponentListener(new ComponentAdapter() {
 
