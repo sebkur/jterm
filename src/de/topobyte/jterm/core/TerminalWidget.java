@@ -39,8 +39,8 @@ public class TerminalWidget extends JComponent
 
 	private Font font;
 
-	private int charWidth = 7;
-	private int charHeight = 11;
+	int charWidth = 7;
+	int charHeight = 11;
 	private int descent = 3;
 
 	private Screen screen;
