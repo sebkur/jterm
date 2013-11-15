@@ -189,6 +189,7 @@ public class TerminalWidget extends JComponent
 
 		terminal.setSize(cols, rows);
 
+		Screen screen = screenNormal;
 		if (smaller
 				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
 			// the terminal has become smaller
