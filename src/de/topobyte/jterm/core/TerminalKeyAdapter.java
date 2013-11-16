@@ -22,8 +22,11 @@ public class TerminalKeyAdapter extends KeyAdapter
 		}
 		String message = String.format("%c", e.getKeyChar());
 		if (e.getKeyChar() == '\010') {
+			// Backspace character. Get erase character and use it if != 0
 			byte ec = terminal.getEraseCharacter();
-			message = String.format("%c", ec);
+			if (ec != 0) {
+				message = String.format("%c", ec);
+			}
 		}
 		terminal.write(message);
 	}
