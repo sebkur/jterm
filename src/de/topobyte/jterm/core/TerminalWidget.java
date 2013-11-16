@@ -24,6 +24,10 @@ public class TerminalWidget extends JComponent
 
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
+	private boolean DEBUG_SET_COLUMN = false;
+	private boolean DEBUG_CURSOR = false;
+	private boolean DEBUG_ERASE_DELETE = false;
+	private boolean DEBUG_SCROLLING_AREA = false;
 
 	private Color colorRaster = new Color(0x333333);
 	private Color colorCursor = new Color(0x99ff0000, true);
@@ -537,9 +541,13 @@ public class TerminalWidget extends JComponent
 		}
 	}
 
-	private void setCurrentColumn(String name, int col)
+	private void setCurrentColumn(String pos, int col)
 	{
-		screen.setCurrentColumn(name, col);
+		if (DEBUG_SET_COLUMN) {
+			System.out.println("Set column (" + pos + "): "
+					+ screen.getCurrentColumn() + " -> " + col);
+		}
+		screen.setCurrentColumn(col);
 	}
 
 	private void handleNumber(char c)
@@ -808,8 +816,11 @@ public class TerminalWidget extends JComponent
 				c = csi.nums.get(0);
 			}
 
-			log(String.format("FROM: %d,%d GOTO:%d,%d", screen.getCurrentRow(),
-					screen.getCurrentColumn(), r, c));
+			if (DEBUG_CURSOR) {
+				log(String.format("FROM: %d,%d GOTO:%d,%d",
+						screen.getCurrentRow(),
+						screen.getCurrentColumn(), r, c));
+			}
 
 			screen.setCurrentRow(r);
 			setCurrentColumn("d", c >= 1 ? c : 1);
@@ -911,7 +922,9 @@ public class TerminalWidget extends JComponent
 				b = csi.nums.get(1);
 			}
 
-			log(String.format("SCROLLING AREA: %d:%d", t, b));
+			if (DEBUG_SCROLLING_AREA) {
+				log(String.format("SCROLLING AREA: %d:%d", t, b));
+			}
 
 			screen.setScrollTop(t);
 			screen.setScrollBottom(b);
@@ -1102,12 +1115,12 @@ public class TerminalWidget extends JComponent
 				// TODO: check scrolling region
 				if (col < 1) {
 					screen.setCurrentRow(screen.getCurrentRow() - 1);
-					screen.setCurrentColumn("x1",
+					setCurrentColumn("x1",
 							terminal.getNumberOfCols() - 1);
 				}
 				if (col >= terminal.getNumberOfCols()) {
 					screen.setCurrentRow(screen.getCurrentRow() + 1);
-					screen.setCurrentColumn("x2", 1);
+					setCurrentColumn("x2", 1);
 				}
 			}
 		}
@@ -1136,14 +1149,18 @@ public class TerminalWidget extends JComponent
 
 	private void cursorForward(int n)
 	{
-		log(String.format("cursor %d forward", n));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor %d forward", n));
+		}
 		setCurrentColumn("e", screen.getCurrentColumn() + n);
 	}
 
 	private void cursorBackward(int n)
 	{
-		log(String.format("cursor %d backwards (%d)", n,
-				screen.getCurrentColumn()));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor %d backwards (%d)", n,
+					screen.getCurrentColumn()));
+		}
 		int col = screen.getCurrentColumn() - n;
 		if (col < 1) {
 			col = 1;
@@ -1153,25 +1170,33 @@ public class TerminalWidget extends JComponent
 
 	private void cursorDown(int n)
 	{
-		log(String.format("cursor %d down", n));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor %d down", n));
+		}
 		screen.setCurrentRow(screen.getCurrentRow() + n);
 	}
 
 	private void cursorUp(int n)
 	{
-		log(String.format("cursor %d up", n));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor %d up", n));
+		}
 		screen.setCurrentRow(screen.getCurrentRow() - n);
 	}
 
 	private void cursorCharacterAbsolute(int n)
 	{
-		// log(String.format("cursor char absolute %d", n));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor char absolute %d", n));
+		}
 		setCurrentColumn("h", n >= 1 ? n : 1);
 	}
 
 	private void cursorGoto(int r, int c)
 	{
-		log(String.format("cursor go to row: %d, col: %d", r, c));
+		if (DEBUG_CURSOR) {
+			log(String.format("cursor go to row: %d, col: %d", r, c));
+		}
 		setCurrentColumn("i", c >= 1 ? c : 1);
 		screen.setCurrentRow(r);
 		if (screen.getCurrentRow() > terminal.getNumberOfRows()) { // if we're
@@ -1190,6 +1215,9 @@ public class TerminalWidget extends JComponent
 
 	private void scrollDown(int n)
 	{
+		if (DEBUG_CURSOR) {
+			log(String.format("scroll down: %d", n));
+		}
 		for (int i = 0; i < n; i++) {
 			screen.getRows().remove(screen.getScrollBottom() - 1);
 			int insPos = screen.getScrollTop() - 1;
@@ -1202,6 +1230,9 @@ public class TerminalWidget extends JComponent
 
 	private void scrollUp(int n)
 	{
+		if (DEBUG_CURSOR) {
+			log(String.format("scroll up: %d", n));
+		}
 		for (int i = 0; i < n; i++) {
 			screen.getRows().remove(screen.getScrollTop() - 1);
 			int insPos = screen.getScrollBottom() - 1;
@@ -1214,6 +1245,9 @@ public class TerminalWidget extends JComponent
 
 	private void eraseAll()
 	{
+		if (DEBUG_ERASE_DELETE) {
+			log("erase all");
+		}
 		screen.getRows().clear();
 		setCurrentColumn("g", 1);
 		screen.setCurrentRow(1);
@@ -1228,7 +1262,9 @@ public class TerminalWidget extends JComponent
 	{
 		int pr = screen.getCurrentRow();
 		int pc = screen.getCurrentColumn();
-		log("Erase to the right row: " + pr + ", col: " + pc);
+		if (DEBUG_ERASE_DELETE) {
+			log("Erase to the right row: " + pr + ", col: " + pc);
+		}
 		if (screen.getRows().size() < pr) {
 			return;
 		}
@@ -1250,8 +1286,10 @@ public class TerminalWidget extends JComponent
 
 	private void eraseCharacters(int n)
 	{
-		log(String.format("erase %d chars, row: %d, col: %d", n,
-				screen.getCurrentRow(), screen.getCurrentColumn()));
+		if (DEBUG_ERASE_DELETE) {
+			log(String.format("erase %d chars, row: %d, col: %d", n,
+					screen.getCurrentRow(), screen.getCurrentColumn()));
+		}
 		if (screen.getCurrentRow() <= screen.getRows().size()) {
 			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
 			for (int i = 0; i < n; i++) {
@@ -1268,6 +1306,9 @@ public class TerminalWidget extends JComponent
 
 	private void deleteLines(int n)
 	{
+		if (DEBUG_ERASE_DELETE) {
+			log(String.format("delete %d lines", n));
+		}
 		if (screen.getCurrentRow() >= screen.getScrollTop()
 				&& screen.getCurrentRow() <= screen.getScrollBottom()) {
 			// ok we're in the scrolling region
@@ -1284,7 +1325,9 @@ public class TerminalWidget extends JComponent
 
 	private void deleteCharacters(int n)
 	{
-		log(String.format("delete %d chars", n));
+		if (DEBUG_ERASE_DELETE) {
+			log(String.format("delete %d chars", n));
+		}
 		if (screen.getCurrentRow() <= screen.getRows().size()) {
 			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
 			List<Pixel> pixels = row.getPixels();
