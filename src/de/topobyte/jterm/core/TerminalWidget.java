@@ -23,6 +23,7 @@ public class TerminalWidget extends JComponent
 
 	private static final long serialVersionUID = 6198367149770918349L;
 
+	private boolean DEBUG_RENDERING_TIME = false;
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
 	private boolean DEBUG_SET_COLUMN = false;
@@ -377,11 +378,13 @@ public class TerminalWidget extends JComponent
 
 		mutex.release();
 
-		long end = System.currentTimeMillis();
-		System.out.println("Time for paint(): " + (end - start));
-		System.out.println("Pixels painted: " + total);
-		System.out.println("Hit rate: " + (hits / (double) total));
-		System.out.println("Cache size: " + cache.size());
+		if (DEBUG_RENDERING_TIME) {
+			long end = System.currentTimeMillis();
+			System.out.println("Time for paint(): " + (end - start));
+			System.out.println("Pixels painted: " + total);
+			System.out.println("Hit rate: " + (hits / (double) total));
+			System.out.println("Cache size: " + cache.size());
+		}
 	}
 
 	// @formatter:off
@@ -913,23 +916,14 @@ public class TerminalWidget extends JComponent
 			return true;
 		} else if (csi.suffix1 == 'S') { // scroll up n lines
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("scroll %d up", n));
-
 			scrollUp(n);
 			return true;
 		} else if (csi.suffix1 == 'T') { // scroll down n lines
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("scroll %d down", n));
-
 			scrollDown(n);
 			return true;
 		} else if (csi.suffix1 == 'M') { // delete n lines
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("delete %d lines", n));
-
 			deleteLines(n);
 			return true;
 		} else if (csi.suffix1 == 'J') { // erase in display
