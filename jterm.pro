@@ -16,6 +16,8 @@ META-INF/MANIFEST.MF,
     int mfd;
 }
 
+-dontwarn de.topobyte.misc.util.**
+
 -keep public class de.topobyte.jterm.JTerm {
 	public static void main(java.lang.String[]);
 }

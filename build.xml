@@ -52,6 +52,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="de.topobyte.jterm.JTerm" />
 			</manifest>
+			<zipgroupfileset dir="lib" includes="*.jar" />
 		</jar>
 	</target>
 
