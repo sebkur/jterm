@@ -4,13 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 public class TabbedPaneTabbed extends Tabbed
 {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTabbedPane tabbed = new JTabbedPane();
+	private JTabbedPane tabbed = new JTabbedPane(SwingConstants.TOP,
+			JTabbedPane.SCROLL_TAB_LAYOUT);
 
 	public TabbedPaneTabbed()
 	{
