@@ -11,7 +11,6 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import de.topobyte.jterm.core.TerminalClosedListener;
@@ -19,6 +18,8 @@ import de.topobyte.jterm.core.TerminalMouseAdapter;
 import de.topobyte.jterm.core.TerminalWidget;
 import de.topobyte.jterm.ui.Statusbar;
 import de.topobyte.jterm.ui.Toolbar;
+import de.topobyte.jterm.ui.tabs.Tabbed;
+import de.topobyte.jterm.ui.tabs.TabbedPaneTabbed;
 
 public class JTerm
 {
@@ -31,7 +32,7 @@ public class JTerm
 	}
 
 	private JFrame frame;
-	private JTabbedPane tabbed;
+	private Tabbed tabbed;
 	private Toolbar toolbar;
 	private Statusbar statusbar;
 
@@ -46,9 +47,8 @@ public class JTerm
 		toolbar = new Toolbar();
 		content.add(toolbar, BorderLayout.NORTH);
 
-		tabbed = new JTabbedPane();
+		tabbed = new TabbedPaneTabbed();
 		content.add(tabbed, BorderLayout.CENTER);
-		tabbed.setFocusable(false);
 
 		statusbar = new Statusbar();
 		content.add(statusbar, BorderLayout.SOUTH);
@@ -84,7 +84,7 @@ public class JTerm
 	{
 		final String title = "term";
 		TerminalWidget terminalWidget = new TerminalWidget();
-		tabbed.add(title, terminalWidget);
+		tabbed.addTab(title, terminalWidget);
 
 		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
 				terminalWidget, statusbar);
@@ -107,8 +107,8 @@ public class JTerm
 		@Override
 		public void terminalClosed()
 		{
-			tabbed.remove(terminalWidget);
-			if (tabbed.getComponentCount() == 0) {
+			tabbed.removeTab(terminalWidget);
+			if (tabbed.getNumberOfTabs() == 0) {
 				System.exit(0);
 			}
 		}
