@@ -492,7 +492,9 @@ public class TerminalWidget extends JComponent
 			}
 			case '\b': {
 				// log("CHAR: backspace");
-				setCurrentColumn("a", screen.getCurrentColumn() - 1);
+				if (screen.getCurrentColumn() > 1) {
+					setCurrentColumn("a", screen.getCurrentColumn() - 1);
+				}
 				return true;
 			}
 			case '\7': {
