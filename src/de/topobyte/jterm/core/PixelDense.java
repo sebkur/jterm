@@ -160,4 +160,20 @@ public class PixelDense implements Pixel
 		}
 		return v;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return c + flags * 1000;
+	}
+
+	@Override
+	public boolean equals(Object other)
+	{
+		if (!(other instanceof PixelDense)) {
+			return false;
+		}
+		PixelDense o = (PixelDense) other;
+		return o.c == c && o.flags == flags;
+	}
 }

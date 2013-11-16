@@ -10,6 +10,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -46,6 +47,9 @@ public class TerminalWidget extends JComponent
 	int charWidth = 7;
 	int charHeight = 11;
 	private int descent = 3;
+
+	private Cache<Pixel, BufferedImage> cache = new Cache<Pixel, BufferedImage>(
+			300);
 
 	private Screen screen;
 	private Screen screenNormal;
@@ -258,6 +262,7 @@ public class TerminalWidget extends JComponent
 	{
 		super.paint(graphics);
 
+		long start = System.currentTimeMillis();
 		Graphics2D g = (Graphics2D) graphics;
 
 		/*
@@ -293,19 +298,38 @@ public class TerminalWidget extends JComponent
 
 		g.setFont(font);
 
+		int hits = 0;
+		int total = 0;
 		List<Row> rows = screen.getRows();
 		for (int i = 0; i < rows.size(); i++) {
 			Row row = rows.get(i);
 			List<Pixel> pixels = row.getPixels();
 			int y = charHeight * i;
 			for (int k = 0; k < pixels.size(); k++) {
-				int x = charWidth * k;
+				total++;
 				Pixel pixel = pixels.get(k);
-				g.setColor(palette.getColor(pixel.getIndexBG()));
-				g.fillRect(x, y, charWidth, charHeight);
-				g.setColor(palette.getColor(pixel.getIndexFG()));
 				String s = String.format("%c", pixel.getChar());
-				g.drawString(s, x, y + charHeight - descent);
+
+				BufferedImage image = cache.get(pixel);
+				if (image != null) {
+					hits++;
+				} else {
+					image = new BufferedImage(charWidth, charHeight,
+							BufferedImage.TYPE_3BYTE_BGR);
+					cache.put(pixel, image);
+
+					Graphics2D h = image.createGraphics();
+					h.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+							RenderingHints.VALUE_ANTIALIAS_ON);
+					h.setFont(font);
+					h.setColor(palette.getColor(pixel.getIndexBG()));
+					h.fillRect(0, 0, charWidth, charHeight);
+					h.setColor(palette.getColor(pixel.getIndexFG()));
+					h.drawString(s, 0, 0 + charHeight - descent);
+				}
+
+				int x = charWidth * k;
+				g.drawImage(image, x, y, null);
 			}
 		}
 
@@ -351,6 +375,12 @@ public class TerminalWidget extends JComponent
 				screen.getScrollBottom() * charHeight);
 
 		mutex.release();
+
+		long end = System.currentTimeMillis();
+		System.out.println("Time for paint(): " + (end - start));
+		System.out.println("Pixels painted: " + total);
+		System.out.println("Hit rate: " + (hits / (double) total));
+		System.out.println("Cache size: " + cache.size());
 	}
 
 	// @formatter:off

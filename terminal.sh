@@ -5,6 +5,7 @@ DIR=`dirname $0`
 #echo "we are operating from: $DIR"
 CLASSPATH=.
 CLASSPATH+=:$DIR/bin/
+CLASSPATH+=:$DIR/lib/*
 CLASSPATH+=:$DIR
 
 NATIVE=$DIR/native/

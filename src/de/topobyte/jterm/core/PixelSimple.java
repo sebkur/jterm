@@ -135,4 +135,24 @@ public class PixelSimple implements Pixel
 		}
 		return v;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return c + fg * 32 + bg * 16 + (highlighted ? 8 : 0)
+				+ (reverse ? 4 : 0) + (fgBright ? 2 : 0) + (bgBright ? 1 : 0);
+	}
+
+	@Override
+	public boolean equals(Object other)
+	{
+		if (!(other instanceof PixelSimple)) {
+			return false;
+		}
+		PixelSimple o = (PixelSimple) other;
+		return o.c == c && o.fg == fg && o.bg == bg
+				&& o.highlighted == highlighted
+				&& o.reverse == reverse && o.fgBright == fgBright
+				&& o.bgBright == bgBright;
+	}
 }
