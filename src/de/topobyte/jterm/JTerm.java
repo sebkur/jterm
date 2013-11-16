@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
+import de.topobyte.jterm.core.TerminalClosedListener;
 import de.topobyte.jterm.core.TerminalMouseAdapter;
 import de.topobyte.jterm.core.TerminalWidget;
 import de.topobyte.jterm.ui.Statusbar;
@@ -26,30 +27,33 @@ public class JTerm
 	{
 		System.loadLibrary("terminal");
 
-		JFrame frame = new JFrame("JTerm");
+		new JTerm();
+	}
+
+	private JFrame frame;
+	private JTabbedPane tabbed;
+	private Toolbar toolbar;
+	private Statusbar statusbar;
+
+	public JTerm()
+	{
+		frame = new JFrame("JTerm");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
 
-		Toolbar toolbar = new Toolbar();
+		toolbar = new Toolbar();
 		content.add(toolbar, BorderLayout.NORTH);
 
-		final JTabbedPane tabbed = new JTabbedPane();
+		tabbed = new JTabbedPane();
 		content.add(tabbed, BorderLayout.CENTER);
 		tabbed.setFocusable(false);
 
-		final String title = "term";
-
-		TerminalWidget terminalWidget = new TerminalWidget();
-		tabbed.add(title, terminalWidget);
-
-		Statusbar statusbar = new Statusbar();
+		statusbar = new Statusbar();
 		content.add(statusbar, BorderLayout.SOUTH);
 
-		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
-				terminalWidget, statusbar);
-		terminalWidget.addMouseMotionListener(mouseAdapter);
+		addTab();
 
 		frame.setLocationByPlatform(true);
 		frame.setSize(600, 500);
@@ -70,10 +74,44 @@ public class JTerm
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				TerminalWidget terminalWidget = new TerminalWidget();
-				tabbed.add(title, terminalWidget);
+				addTab();
 			}
 		});
 
 	}
+
+	protected void addTab()
+	{
+		final String title = "term";
+		TerminalWidget terminalWidget = new TerminalWidget();
+		tabbed.add(title, terminalWidget);
+
+		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
+				terminalWidget, statusbar);
+		terminalWidget.addMouseMotionListener(mouseAdapter);
+
+		terminalWidget.addTerminalClosedListener(new RemovalListener(
+				terminalWidget));
+	}
+
+	public class RemovalListener implements TerminalClosedListener
+	{
+
+		private TerminalWidget terminalWidget;
+
+		public RemovalListener(TerminalWidget terminalWidget)
+		{
+			this.terminalWidget = terminalWidget;
+		}
+
+		@Override
+		public void terminalClosed()
+		{
+			tabbed.remove(terminalWidget);
+			if (tabbed.getComponentCount() == 0) {
+				System.exit(0);
+			}
+		}
+	}
+
 }

@@ -1,6 +1,8 @@
 package de.topobyte.jterm.core;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TerminalReader implements Runnable
 {
@@ -17,6 +19,25 @@ public abstract class TerminalReader implements Runnable
 
 	public abstract void handleUtf8(char c);
 
+	private List<TerminalClosedListener> listeners = new ArrayList<TerminalClosedListener>();
+
+	public void addTerminalClosedListener(TerminalClosedListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void removeTerminalClosedListener(TerminalClosedListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	private void fireTerminalClosedListeners()
+	{
+		for (TerminalClosedListener listener : listeners) {
+			listener.terminalClosed();
+		}
+	}
+
 	@Override
 	public void run()
 	{
@@ -28,6 +49,7 @@ public abstract class TerminalReader implements Runnable
 			parseBytes(bytes);
 			chunkHandled();
 		}
+		fireTerminalClosedListeners();
 	}
 
 	byte[] unhandled = null;

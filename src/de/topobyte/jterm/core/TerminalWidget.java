@@ -11,6 +11,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -18,7 +19,8 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 
-public class TerminalWidget extends JComponent
+public class TerminalWidget extends JComponent implements
+		TerminalClosedListener
 {
 
 	private static final long serialVersionUID = 6198367149770918349L;
@@ -182,6 +184,8 @@ public class TerminalWidget extends JComponent
 
 		};
 
+		terminalReader.addTerminalClosedListener(this);
+
 		Thread t = new Thread(terminalReader);
 		t.start();
 	}
@@ -256,6 +260,31 @@ public class TerminalWidget extends JComponent
 		if (screenAlternate.getScrollTop() == 1
 				&& screenAlternate.getScrollBottom() == nRowsOld) {
 			screenAlternate.setScrollBottom(rows);
+		}
+	}
+
+	private List<TerminalClosedListener> listeners = new ArrayList<TerminalClosedListener>();
+
+	public void addTerminalClosedListener(TerminalClosedListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void removeTerminalClosedListener(TerminalClosedListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	@Override
+	public void terminalClosed()
+	{
+		fireTerminalClosedListeners();
+	}
+
+	private void fireTerminalClosedListeners()
+	{
+		for (TerminalClosedListener listener : listeners) {
+			listener.terminalClosed();
 		}
 	}
 
