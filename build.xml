@@ -9,6 +9,10 @@
 	<property name="dist" location="dist" />
 	<property name="lib" location="lib" />
 	<property name="doc" location="javadoc" />
+	<property name="proguard.dir" location="proguard" />
+
+	<taskdef resource="proguard/ant/task.properties"
+		classpath="${proguard.dir}/proguard.jar" />
 
 	<target name="init">
 		<tstamp />
@@ -45,7 +49,14 @@
 
 	<target name="dist" depends="compile" description="generate the distribution">
 		<jar jarfile="${dist}/jterm.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="de.topobyte.jterm.TestTerminalWidget" />
+			</manifest>
 		</jar>
+	</target>
+
+	<target name="shrink" depends="dist">
+		<proguard configuration="jterm.pro" />
 	</target>
 
 	<target name="clean" description="clean up">
