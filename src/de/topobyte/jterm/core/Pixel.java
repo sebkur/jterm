@@ -1,135 +1,38 @@
 package de.topobyte.jterm.core;
 
-public class Pixel
+public interface Pixel
 {
 
-	private int flags;
-	private char c;
+	public abstract char getChar();
 
-	// Could all be encoded in 'flags'
-	private int fg = 16;
-	private int bg = 17;
-	private boolean highlighted = false;
-	private boolean reverse = false;
-	private boolean fgBright = false;
-	private boolean bgBright = false;
+	public abstract void setChar(char c);
 
-	public Pixel(int flags, char c)
-	{
-		this.flags = flags;
-		this.c = c;
-	}
+	public abstract int getFg();
 
-	public int getFlags()
-	{
-		return flags;
-	}
+	public abstract void setFg(int fg);
 
-	public char getChar()
-	{
-		return c;
-	}
+	public abstract int getBg();
 
-	public void setFlags(int flags)
-	{
-		this.flags = flags;
-	}
+	public abstract void setBg(int bg);
 
-	public void setChar(char c)
-	{
-		this.c = c;
-	}
+	public abstract boolean isHighlighted();
 
-	public int getFg()
-	{
-		return fg;
-	}
+	public abstract void setHighlighted(boolean highlighted);
 
-	public void setFg(int fg)
-	{
-		this.fg = fg;
-	}
+	public abstract boolean isReverse();
 
-	public int getBg()
-	{
-		return bg;
-	}
+	public abstract void setReverse(boolean reverse);
 
-	public void setBg(int bg)
-	{
-		this.bg = bg;
-	}
+	public abstract boolean isFgBright();
 
-	public boolean isHighlighted()
-	{
-		return highlighted;
-	}
+	public abstract void setFgBright(boolean fgBright);
 
-	public void setHighlighted(boolean highlighted)
-	{
-		this.highlighted = highlighted;
-	}
+	public abstract boolean isBgBright();
 
-	public boolean isReverse()
-	{
-		return reverse;
-	}
+	public abstract void setBgBright(boolean bgBright);
 
-	public void setReverse(boolean reverse)
-	{
-		this.reverse = reverse;
-	}
+	public abstract int getIndexFG();
 
-	public boolean isFgBright()
-	{
-		return fgBright;
-	}
+	public abstract int getIndexBG();
 
-	public void setFgBright(boolean fgBright)
-	{
-		this.fgBright = fgBright;
-	}
-
-	public boolean isBgBright()
-	{
-		return bgBright;
-	}
-
-	public void setBgBright(boolean bgBright)
-	{
-		this.bgBright = bgBright;
-	}
-
-	public int getIndexFG()
-	{
-		int v = reverse ? getIndexBackground() : getIndexForeground();
-		if (highlighted && v <= 7) {
-			v += 8;
-		}
-		return v;
-	}
-
-	public int getIndexBG()
-	{
-		int v = reverse ? getIndexForeground() : getIndexBackground();
-		return v;
-	}
-
-	private int getIndexForeground()
-	{
-		int v = fg;
-		if (v != 16 && fgBright) {
-			v += 8;
-		}
-		return v;
-	}
-
-	private int getIndexBackground()
-	{
-		int v = bg;
-		if (v != 17 && bgBright) {
-			v += 8;
-		}
-		return v;
-	}
 }

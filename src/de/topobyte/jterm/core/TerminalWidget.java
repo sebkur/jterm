@@ -985,9 +985,14 @@ public class TerminalWidget extends JComponent
 		pixels.add(pixel);
 	}
 
+	private Pixel newPixel(char c)
+	{
+		return new PixelSimple(c);
+	}
+
 	private Pixel createPixel(char c)
 	{
-		Pixel pixel = new Pixel(0, c);
+		Pixel pixel = newPixel(c);
 		setColors(pixel);
 		return pixel;
 	}
@@ -1010,7 +1015,7 @@ public class TerminalWidget extends JComponent
 
 	private Pixel createOpaquePixel(char c)
 	{
-		Pixel pixel = new Pixel(0, c);
+		Pixel pixel = newPixel(c);
 		pixel.setFg(16);
 		pixel.setBg(17);
 		pixel.setBgBright(false);
