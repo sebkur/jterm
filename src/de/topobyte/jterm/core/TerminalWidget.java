@@ -1112,14 +1112,27 @@ public class TerminalWidget extends JComponent
 			buffer.append(", scrollBottom: " + screen.getScrollBottom());
 			log(buffer.toString());
 			if (decAwm) {
-				// TODO: check scrolling region
 				if (col < 1) {
+					// TODO: is this behaviour desired at all?
+					// TODO: check scrolling region
 					screen.setCurrentRow(screen.getCurrentRow() - 1);
 					setCurrentColumn("x1",
 							terminal.getNumberOfCols() - 1);
 				}
 				if (col >= terminal.getNumberOfCols()) {
-					screen.setCurrentRow(screen.getCurrentRow() + 1);
+					if (screen.getCurrentRow() == screen.getScrollBottom()) {
+						// we're on the last line, have to scroll
+						screen.getRows().add(screen.getCurrentRow(), new Row());
+						Row drow = screen.getRows().remove(
+								screen.getScrollTop() - 1);
+						if (screen == screenNormal
+								&& screen.getScrollTop() == 1) {
+							history.push(drow);
+						}
+						historyPos += 1;
+					} else {
+						screen.setCurrentRow(screen.getCurrentRow() + 1);
+					}
 					setCurrentColumn("x2", 1);
 				}
 			}
