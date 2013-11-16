@@ -10,7 +10,7 @@ import de.topobyte.jterm.core.TerminalWidget;
 import de.topobyte.jterm.ui.Statusbar;
 import de.topobyte.jterm.ui.Toolbar;
 
-public class TestTerminalWidget
+public class JTerm
 {
 
 	public static void main(String[] args)

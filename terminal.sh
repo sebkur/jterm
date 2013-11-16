@@ -13,4 +13,4 @@ NATIVE=$DIR/native/
 echo "CLASSPATH=$CLASSPATH"
 echo "NATIVE=$NATIVE"
 
-java -Djava.library.path="$NATIVE" -cp "$CLASSPATH" de.topobyte.jterm.TestTerminalWidget
+java -Djava.library.path="$NATIVE" -cp "$CLASSPATH" de.topobyte.jterm.JTerm

@@ -16,6 +16,6 @@ META-INF/MANIFEST.MF,
     int mfd;
 }
 
--keep public class de.topobyte.jterm.TestTerminalWidget {
+-keep public class de.topobyte.jterm.JTerm {
 	public static void main(java.lang.String[]);
 }

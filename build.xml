@@ -50,7 +50,7 @@
 	<target name="dist" depends="compile" description="generate the distribution">
 		<jar jarfile="${dist}/jterm.jar" basedir="${build}">
 			<manifest>
-				<attribute name="Main-Class" value="de.topobyte.jterm.TestTerminalWidget" />
+				<attribute name="Main-Class" value="de.topobyte.jterm.JTerm" />
 			</manifest>
 		</jar>
 	</target>
