@@ -797,8 +797,9 @@ public class TerminalWidget extends JComponent
 
 			cursorGoto(r, c);
 			return true;
-		} else if (csi.suffix1 == 'd') { // this is bogus?
-			int r = 1, c = 1; // appropriate default values
+		} else if (csi.suffix1 == 'd') { // If col not present, don't change it
+			// This behavior has been guessed
+			int r = 1, c = screen.getCurrentColumn();
 			if (csi.nums.size() == 1) {
 				r = csi.nums.get(0);
 			}
@@ -807,7 +808,8 @@ public class TerminalWidget extends JComponent
 				c = csi.nums.get(0);
 			}
 
-			// log(String.format("GOTO:%d,%d", r, c));
+			log(String.format("FROM: %d,%d GOTO:%d,%d", screen.getCurrentRow(),
+					screen.getCurrentColumn(), r, c));
 
 			screen.setCurrentRow(r);
 			setCurrentColumn("d", c >= 1 ? c : 1);
