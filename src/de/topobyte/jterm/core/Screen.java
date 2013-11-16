@@ -40,8 +40,8 @@ public class Screen
 
 	public void setCurrentColumn(String pos, int ccol)
 	{
-//		System.out.println("Set column (" + pos + "): " + this.ccol + " -> "
-//				+ ccol);
+		System.out.println("Set column (" + pos + "): " + this.ccol + " -> "
+				+ ccol);
 		this.ccol = ccol;
 	}
 

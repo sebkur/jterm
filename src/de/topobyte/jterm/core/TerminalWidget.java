@@ -59,8 +59,8 @@ public class TerminalWidget extends JComponent
 
 	private Palette palette = new Palette();
 
-	boolean decCkm = false;
-	boolean decAwm = false;
+	boolean decCkm = false; // Cursor Keys Mode
+	boolean decAwm = false; // Auto Wrap Mode
 	private boolean cursorVisible = true;
 
 	private Semaphore mutex = new Semaphore(1);
@@ -607,7 +607,6 @@ public class TerminalWidget extends JComponent
 			return true;
 		}
 		case 'M': { // Reverse Index (RI)
-			log(String.format("Reverse Index"));
 			twReverseIndex();
 			return true;
 		}
@@ -664,17 +663,19 @@ public class TerminalWidget extends JComponent
 
 	private void twReverseIndex()
 	{
-		log("ReverseIndex");
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("ReverseIndex");
 		// check whether we're at the top margin
 		if (screen.getCurrentRow() == screen.getScrollTop()) {
 			// yes we are. scroll down
-			log("-> scroll down");
+			buffer.append(" -> scroll down");
 			insertLinesBefore(1);
 		} else {
 			// no. just move the cursor up
-			log("-> move cursor up");
+			buffer.append(" -> move cursor up");
 			screen.setCurrentRow(screen.getCurrentRow() - 1);
 		}
+		log(buffer.toString());
 	}
 
 	private void printCsi(Csi csi)
@@ -811,61 +812,35 @@ public class TerminalWidget extends JComponent
 			return true;
 		} else if (csi.suffix1 == '@') { // insert n blank characters
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("insert %d blank chars", n));
-
 			insertBlankCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'X') { // erase n characters
 			int n = getValueOrDefault(csi, 1);
-
-			// log(String.format("erase %d chars", n));
-
 			eraseCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'P') { // delete n characters
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("delete %d chars", n));
-
 			deleteCharacters(n);
 			return true;
 		} else if (csi.suffix1 == 'G') { // cursor character absolute
 			int n = getValueOrDefault(csi, 1);
-
-			// log(String.format("cursor char absolute %d",
-			// n));
-
 			cursorCharacterAbsolute(n);
 			return true;
 		} else if (csi.suffix1 == 'A') { // cursor up n times
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("cursor %d up", n));
-
 			cursorUp(n);
 			return true;
 		} else if (csi.suffix1 == 'B') { // cursor down n times
 			int n = getValueOrDefault(csi, 1);
-
-			log(String.format("cursor %d down", n));
-
 			cursorDown(n);
 			return true;
 		} else if (csi.suffix1 == 'C') { // cursor forward n times
 			int n = getValueOrDefault(csi, 1);
-			// log(String.format("cursor %d forward", n));
-			setCurrentColumn("e", screen.getCurrentColumn() + n);
+			cursorForward(n);
 			return true;
 		} else if (csi.suffix1 == 'D') { // cursor backward n times
 			int n = getValueOrDefault(csi, 1);
-			log(String.format("cursor %d backwards (%d)", n,
-					screen.getCurrentColumn()));
-			int col = screen.getCurrentColumn() - n;
-			if (col < 1) {
-				col = 1;
-			}
-			setCurrentColumn("f", col);
+			cursorBackward(n);
 			return true;
 		} else if (csi.suffix1 == 'K') { // erase in line
 			int n = getValueOrDefault(csi, 0);
@@ -955,211 +930,6 @@ public class TerminalWidget extends JComponent
 		return false;
 	}
 
-	private void eraseToTheRight()
-	{
-		int pr = screen.getCurrentRow();
-		int pc = screen.getCurrentColumn();
-		log("Erase to the right row: " + pr + "col: " + pc);
-		if (screen.getRows().size() < pr) {
-			return;
-		}
-		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
-		if (row.size() >= 1) {
-			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
-				row.remove(x);
-			}
-		}
-		for (int x = screen.getCurrentColumn(); x <= terminal.getNumberOfCols(); x++) {
-			row.add(createPixel(' '));
-		}
-	}
-
-	private void eraseToTheLeft()
-	{
-		log("TODO: erase to the left");
-	}
-
-	private void eraseLine()
-	{
-		log("TODO: erase line");
-	}
-
-	private void eraseAll()
-	{
-		screen.getRows().clear();
-		setCurrentColumn("g", 1);
-		screen.setCurrentRow(1);
-	}
-
-	private void deleteLines(int n)
-	{
-		if (screen.getCurrentRow() >= screen.getScrollTop()
-				&& screen.getCurrentRow() <= screen.getScrollBottom()) {
-			// ok we're in the scrolling region
-			for (int i = 0; i < n; i++) {
-				screen.getRows().remove(screen.getCurrentRow() - 1);
-				int insPos = screen.getScrollBottom() - 1;
-				if (insPos > screen.getRows().size()) {
-					insPos = screen.getRows().size();
-				}
-				screen.getRows().add(insPos, new Row());
-			}
-		}
-	}
-
-	private void scrollDown(int n)
-	{
-		for (int i = 0; i < n; i++) {
-			screen.getRows().remove(screen.getScrollBottom() - 1);
-			int insPos = screen.getScrollTop() - 1;
-			if (insPos > screen.getRows().size()) {
-				insPos = screen.getRows().size();
-			}
-			screen.getRows().add(insPos, new Row());
-		}
-	}
-
-	private void scrollUp(int n)
-	{
-		for (int i = 0; i < n; i++) {
-			screen.getRows().remove(screen.getScrollTop() - 1);
-			int insPos = screen.getScrollBottom() - 1;
-			if (insPos > screen.getRows().size()) {
-				insPos = screen.getRows().size();
-			}
-			screen.getRows().add(insPos, new Row());
-		}
-	}
-
-	private void insertLinesBefore(int n)
-	{
-		// ignore if not within scrolling region
-		for (int i = 0; i < n; i++) {
-			if (screen.getCurrentRow() >= screen.getScrollTop()
-					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
-				// ok, we're in the scrolling region
-				if (screen.getRows().size() >= screen.getScrollBottom()) {
-					log("Remove line "
-							+ (screen.getScrollBottom() - 1));
-					screen.getRows().remove(screen.getScrollBottom() - 1);
-				}
-				screen.getRows().add(screen.getCurrentRow() - 1, new Row());
-			}
-		}
-	}
-
-	private void insertLines(int n)
-	{
-		// ignore if not within scrolling region
-		for (int i = 0; i < n; i++) {
-			if (screen.getCurrentRow() >= screen.getScrollTop()
-					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
-				// ok, we're in the scrolling region
-				if (screen.getCurrentRow() == screen.getScrollBottom()) {
-					// we're on the last line, have to scroll
-					for (int s = screen.getRows().size(); s < screen
-							.getCurrentRow(); s++) {
-						screen.getRows().add(s, new Row());
-					}
-					screen.getRows().add(screen.getCurrentRow(), new Row());
-					Row drow = screen.getRows().remove(
-							screen.getScrollTop() - 1);
-					if (screen == screenNormal && screen.getScrollTop() == 1) {
-						history.push(drow);
-					}
-					historyPos += 1;
-				} else {
-					for (int x = 0; x < n; x++) {
-						// check whether we have to retain a row at the bottom
-						// of the scrolling region
-						if (screen.getRows().size() >= screen.getScrollBottom()) {
-							// yes, there are too many rows
-							screen.getRows().remove(
-									screen.getScrollBottom() - 1);
-						}
-						// insert new row
-						screen.getRows().add(screen.getCurrentRow(), new Row());
-						screen.setCurrentRow(screen.getCurrentRow() + 1);
-					}
-				}
-			}
-		}
-	}
-
-	private void cursorDown(int n)
-	{
-		screen.setCurrentRow(screen.getCurrentRow() + n);
-	}
-
-	private void cursorUp(int n)
-	{
-		screen.setCurrentRow(screen.getCurrentRow() - n);
-	}
-
-	private void cursorCharacterAbsolute(int n)
-	{
-		setCurrentColumn("h", n >= 1 ? n : 1);
-	}
-
-	private void deleteCharacters(int n)
-	{
-		if (screen.getCurrentRow() <= screen.getRows().size()) {
-			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
-			List<Pixel> pixels = row.getPixels();
-			for (int i = 0; i < n; i++) {
-				// TODO: changed from < to <= (compared to vexterm)
-				if (screen.getCurrentColumn() <= pixels.size()) {
-					pixels.remove(screen.getCurrentColumn() - 1);
-				}
-			}
-		}
-	}
-
-	private void eraseCharacters(int n)
-	{
-		if (screen.getCurrentRow() <= screen.getRows().size()) {
-			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
-			for (int i = 0; i < n; i++) {
-				int c = screen.getCurrentColumn() - 1 + i;
-				if (c < row.getPixels().size()) {
-					Pixel pixel = row.getPixels().get(c);
-					changePixel(pixel, ' ');
-				} else {
-					row.getPixels().add(createPixel(' '));
-				}
-			}
-		}
-	}
-
-	private void insertBlankCharacters(int n)
-	{
-		List<Pixel> row = screen.getRows().get(screen.getCurrentRow() - 1)
-				.getPixels();
-		for (int i = 0; i < n; i++) {
-			if (screen.getCurrentColumn() <= row.size()) {
-				row.add(screen.getCurrentColumn() - 1, createPixel(' '));
-			}
-		}
-	}
-
-	private void cursorGoto(int r, int c)
-	{
-		setCurrentColumn("i", c >= 1 ? c : 1);
-		screen.setCurrentRow(r);
-		if (screen.getCurrentRow() > terminal.getNumberOfRows()) { // if we're
-																	// out of
-																	// range
-			// TODO: this disregards the scrolling region; guessed behavior
-			// It's unclear what's supposed to happen if we're moved 'into' the
-			// margin
-			int x = r - terminal.getNumberOfRows();
-			for (int i = 0; i < x; i++) {
-				// TODO: why not without loop?
-				screen.setCurrentRow(screen.getCurrentRow() - 1);
-			}
-		}
-	}
-
 	private void useNormalScreen()
 	{
 		log("Switch to normal Screen!");
@@ -1170,6 +940,67 @@ public class TerminalWidget extends JComponent
 	{
 		log("Switch to alternate Screen!");
 		screen = screenAlternate;
+	}
+
+	private void appendRow()
+	{
+		int r = screen.getCurrentRow();
+		if (r < terminal.getNumberOfRows()) {
+			screen.setCurrentRow(r + 1);
+		}
+
+		List<Row> rows = screen.getRows();
+		rows.add(new Row());
+
+		if (rows.size() > terminal.getNumberOfRows()) {
+			if (DEBUG_HISTORY) {
+				log("pushing row to history");
+			}
+			Row row = rows.remove(0);
+			history.push(row);
+		}
+	}
+
+	private void addPixel(Pixel pixel)
+	{
+		int row = screen.getCurrentRow();
+		List<Pixel> pixels = screen.getRows().get(row - 1).getPixels();
+		pixels.add(pixel);
+	}
+
+	private Pixel createPixel(char c)
+	{
+		Pixel pixel = new Pixel(0, c);
+		setColors(pixel);
+		return pixel;
+	}
+
+	private void changePixel(Pixel pixel, char c)
+	{
+		pixel.setChar(c);
+		setColors(pixel);
+	}
+
+	private void setColors(Pixel pixel)
+	{
+		pixel.setFg(fg);
+		pixel.setBg(bg);
+		pixel.setBgBright(bgBright);
+		pixel.setFgBright(fgBright);
+		pixel.setHighlighted(highlighted);
+		pixel.setReverse(reverse);
+	}
+
+	private Pixel createOpaquePixel(char c)
+	{
+		Pixel pixel = new Pixel(0, c);
+		pixel.setFg(16);
+		pixel.setBg(17);
+		pixel.setBgBright(false);
+		pixel.setFgBright(false);
+		pixel.setHighlighted(false);
+		pixel.setReverse(false);
+		return pixel;
 	}
 
 	private void setColors(int code)
@@ -1216,18 +1047,18 @@ public class TerminalWidget extends JComponent
 		}
 	}
 
+	private void setCharset(char c)
+	{
+		// log("Set Charset: '" + c + "'");
+		screen.setCharacterSet(c);
+	}
+
 	private int getValueOrDefault(Csi csi, int v)
 	{
 		if (csi.nums.size() > 0) {
 			return csi.nums.get(0);
 		}
 		return v;
-	}
-
-	private void setCharset(char c)
-	{
-		// log("Set Charset: '" + c + "'");
-		screen.setCharacterSet(c);
 	}
 
 	private void add(char c)
@@ -1299,64 +1130,233 @@ public class TerminalWidget extends JComponent
 		setCurrentColumn("k", screen.getCurrentColumn() + 1);
 	}
 
-	private void addPixel(Pixel pixel)
+	private void cursorForward(int n)
 	{
-		int row = screen.getCurrentRow();
-		List<Pixel> pixels = screen.getRows().get(row - 1).getPixels();
-		pixels.add(pixel);
+		log(String.format("cursor %d forward", n));
+		setCurrentColumn("e", screen.getCurrentColumn() + n);
 	}
 
-	private Pixel createPixel(char c)
+	private void cursorBackward(int n)
 	{
-		Pixel pixel = new Pixel(0, c);
-		setColors(pixel);
-		return pixel;
-	}
-
-	private void changePixel(Pixel pixel, char c)
-	{
-		pixel.setChar(c);
-		setColors(pixel);
-	}
-
-	private void setColors(Pixel pixel)
-	{
-		pixel.setFg(fg);
-		pixel.setBg(bg);
-		pixel.setBgBright(bgBright);
-		pixel.setFgBright(fgBright);
-		pixel.setHighlighted(highlighted);
-		pixel.setReverse(reverse);
-	}
-
-	private Pixel createOpaquePixel(char c)
-	{
-		Pixel pixel = new Pixel(0, c);
-		pixel.setFg(16);
-		pixel.setBg(17);
-		pixel.setBgBright(false);
-		pixel.setFgBright(false);
-		pixel.setHighlighted(false);
-		pixel.setReverse(false);
-		return pixel;
-	}
-
-	private void appendRow()
-	{
-		int r = screen.getCurrentRow();
-		if (r < terminal.getNumberOfRows()) {
-			screen.setCurrentRow(r + 1);
+		log(String.format("cursor %d backwards (%d)", n,
+				screen.getCurrentColumn()));
+		int col = screen.getCurrentColumn() - n;
+		if (col < 1) {
+			col = 1;
 		}
+		setCurrentColumn("f", col);
+	}
 
-		List<Row> rows = screen.getRows();
-		rows.add(new Row());
+	private void cursorDown(int n)
+	{
+		log(String.format("cursor %d down", n));
+		screen.setCurrentRow(screen.getCurrentRow() + n);
+	}
 
-		if (rows.size() > terminal.getNumberOfRows()) {
-			if (DEBUG_HISTORY) {
-				log("pushing row to history");
+	private void cursorUp(int n)
+	{
+		log(String.format("cursor %d up", n));
+		screen.setCurrentRow(screen.getCurrentRow() - n);
+	}
+
+	private void cursorCharacterAbsolute(int n)
+	{
+		// log(String.format("cursor char absolute %d", n));
+		setCurrentColumn("h", n >= 1 ? n : 1);
+	}
+
+	private void cursorGoto(int r, int c)
+	{
+		log(String.format("cursor go to row: %d, col: %d", r, c));
+		setCurrentColumn("i", c >= 1 ? c : 1);
+		screen.setCurrentRow(r);
+		if (screen.getCurrentRow() > terminal.getNumberOfRows()) { // if we're
+																	// out of
+																	// range
+			// TODO: this disregards the scrolling region; guessed behavior
+			// It's unclear what's supposed to happen if we're moved 'into' the
+			// margin
+			int x = r - terminal.getNumberOfRows();
+			for (int i = 0; i < x; i++) {
+				// TODO: why not without loop?
+				screen.setCurrentRow(screen.getCurrentRow() - 1);
 			}
-			Row row = rows.remove(0);
-			history.push(row);
+		}
+	}
+
+	private void scrollDown(int n)
+	{
+		for (int i = 0; i < n; i++) {
+			screen.getRows().remove(screen.getScrollBottom() - 1);
+			int insPos = screen.getScrollTop() - 1;
+			if (insPos > screen.getRows().size()) {
+				insPos = screen.getRows().size();
+			}
+			screen.getRows().add(insPos, new Row());
+		}
+	}
+
+	private void scrollUp(int n)
+	{
+		for (int i = 0; i < n; i++) {
+			screen.getRows().remove(screen.getScrollTop() - 1);
+			int insPos = screen.getScrollBottom() - 1;
+			if (insPos > screen.getRows().size()) {
+				insPos = screen.getRows().size();
+			}
+			screen.getRows().add(insPos, new Row());
+		}
+	}
+
+	private void eraseAll()
+	{
+		screen.getRows().clear();
+		setCurrentColumn("g", 1);
+		screen.setCurrentRow(1);
+	}
+
+	private void eraseLine()
+	{
+		log("TODO: erase line");
+	}
+
+	private void eraseToTheRight()
+	{
+		int pr = screen.getCurrentRow();
+		int pc = screen.getCurrentColumn();
+		log("Erase to the right row: " + pr + ", col: " + pc);
+		if (screen.getRows().size() < pr) {
+			return;
+		}
+		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
+		if (row.size() >= 1) {
+			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
+				row.remove(x);
+			}
+		}
+		for (int x = screen.getCurrentColumn(); x <= terminal.getNumberOfCols(); x++) {
+			row.add(createPixel(' '));
+		}
+	}
+
+	private void eraseToTheLeft()
+	{
+		log("TODO: erase to the left");
+	}
+
+	private void eraseCharacters(int n)
+	{
+		log(String.format("erase %d chars, row: %d, col: %d", n,
+				screen.getCurrentRow(), screen.getCurrentColumn()));
+		if (screen.getCurrentRow() <= screen.getRows().size()) {
+			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
+			for (int i = 0; i < n; i++) {
+				int c = screen.getCurrentColumn() - 1 + i;
+				if (c < row.getPixels().size()) {
+					Pixel pixel = row.getPixels().get(c);
+					changePixel(pixel, ' ');
+				} else {
+					row.getPixels().add(createPixel(' '));
+				}
+			}
+		}
+	}
+
+	private void deleteLines(int n)
+	{
+		if (screen.getCurrentRow() >= screen.getScrollTop()
+				&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+			// ok we're in the scrolling region
+			for (int i = 0; i < n; i++) {
+				screen.getRows().remove(screen.getCurrentRow() - 1);
+				int insPos = screen.getScrollBottom() - 1;
+				if (insPos > screen.getRows().size()) {
+					insPos = screen.getRows().size();
+				}
+				screen.getRows().add(insPos, new Row());
+			}
+		}
+	}
+
+	private void deleteCharacters(int n)
+	{
+		log(String.format("delete %d chars", n));
+		if (screen.getCurrentRow() <= screen.getRows().size()) {
+			Row row = screen.getRows().get(screen.getCurrentRow() - 1);
+			List<Pixel> pixels = row.getPixels();
+			for (int i = 0; i < n; i++) {
+				// TODO: changed from < to <= (compared to vexterm)
+				if (screen.getCurrentColumn() <= pixels.size()) {
+					pixels.remove(screen.getCurrentColumn() - 1);
+				}
+			}
+		}
+	}
+
+	private void insertLinesBefore(int n)
+	{
+		// ignore if not within scrolling region
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentRow() >= screen.getScrollTop()
+					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+				// ok, we're in the scrolling region
+				if (screen.getRows().size() >= screen.getScrollBottom()) {
+					log("Remove line "
+							+ (screen.getScrollBottom() - 1));
+					screen.getRows().remove(screen.getScrollBottom() - 1);
+				}
+				screen.getRows().add(screen.getCurrentRow() - 1, new Row());
+			}
+		}
+	}
+
+	private void insertLines(int n)
+	{
+		// ignore if not within scrolling region
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentRow() >= screen.getScrollTop()
+					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+				// ok, we're in the scrolling region
+				if (screen.getCurrentRow() == screen.getScrollBottom()) {
+					// we're on the last line, have to scroll
+					for (int s = screen.getRows().size(); s < screen
+							.getCurrentRow(); s++) {
+						screen.getRows().add(s, new Row());
+					}
+					screen.getRows().add(screen.getCurrentRow(), new Row());
+					Row drow = screen.getRows().remove(
+							screen.getScrollTop() - 1);
+					if (screen == screenNormal && screen.getScrollTop() == 1) {
+						history.push(drow);
+					}
+					historyPos += 1;
+				} else {
+					for (int x = 0; x < n; x++) {
+						// check whether we have to retain a row at the bottom
+						// of the scrolling region
+						if (screen.getRows().size() >= screen.getScrollBottom()) {
+							// yes, there are too many rows
+							screen.getRows().remove(
+									screen.getScrollBottom() - 1);
+						}
+						// insert new row
+						screen.getRows().add(screen.getCurrentRow(), new Row());
+						screen.setCurrentRow(screen.getCurrentRow() + 1);
+					}
+				}
+			}
+		}
+	}
+
+	private void insertBlankCharacters(int n)
+	{
+		log(String.format("insert %d blank chars", n));
+		List<Pixel> row = screen.getRows().get(screen.getCurrentRow() - 1)
+				.getPixels();
+		for (int i = 0; i < n; i++) {
+			if (screen.getCurrentColumn() <= row.size()) {
+				row.add(screen.getCurrentColumn() - 1, createPixel(' '));
+			}
 		}
 	}
 
