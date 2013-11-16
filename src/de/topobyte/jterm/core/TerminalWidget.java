@@ -59,8 +59,8 @@ public class TerminalWidget extends JComponent
 
 	private Palette palette = new Palette();
 
-	private boolean decCkm = false;
-	private boolean decAwm = false;
+	boolean decCkm = false;
+	boolean decAwm = false;
 	private boolean cursorVisible = true;
 
 	private Semaphore mutex = new Semaphore(1);
@@ -1360,45 +1360,4 @@ public class TerminalWidget extends JComponent
 		}
 	}
 
-	// See: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
-	// Section: PC-Style Function Keys
-
-	void sendCursor(int keyCode) // xterm doc
-	// depends on DECCKM
-	{
-		char letter = 'A';
-		// @formatter:off
-		switch (keyCode) {
-			case KeyEvent.VK_UP:    letter = 'A'; break;
-			case KeyEvent.VK_DOWN:  letter = 'B'; break;
-			case KeyEvent.VK_RIGHT: letter = 'C'; break;
-			case KeyEvent.VK_LEFT:  letter = 'D'; break;
-			case KeyEvent.VK_HOME:  letter = 'H'; break;
-			case KeyEvent.VK_END:   letter = 'F'; break;
-		}
-		// @formatter:on
-		String message;
-		if (decCkm) {
-			message = String.format("\033O%c", letter);
-		} else {
-			message = String.format("\033[%c", letter);
-		}
-		terminal.write(message);
-	}
-
-	void sendKeypad(int keyCode)
-	{
-		char letter = '2';
-		// @formatter:off
-		switch (keyCode) {
-		case KeyEvent.VK_INSERT:    letter = '2'; break;
-		case KeyEvent.VK_DELETE:    letter = '3'; break;
-		case KeyEvent.VK_PAGE_UP:   letter = '5'; break;
-		case KeyEvent.VK_PAGE_DOWN: letter = '6'; break;
-		}
-		// @formatter:on
-		String message = String.format("\033[%c~", letter);
-		terminal.write(message);
-		log("message: '" + message + "'");
-	}
 }
