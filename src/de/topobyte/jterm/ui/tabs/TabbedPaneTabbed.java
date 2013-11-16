@@ -34,7 +34,7 @@ public class TabbedPaneTabbed extends Tabbed
 	@Override
 	public int getNumberOfTabs()
 	{
-		return tabbed.getComponentCount();
+		return tabbed.getTabCount();
 	}
 
 }
