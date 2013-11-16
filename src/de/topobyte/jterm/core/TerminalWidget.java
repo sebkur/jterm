@@ -987,7 +987,7 @@ public class TerminalWidget extends JComponent
 
 	private Pixel newPixel(char c)
 	{
-		return new PixelSimple(c);
+		return new PixelDense(c);
 	}
 
 	private Pixel createPixel(char c)
