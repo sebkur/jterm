@@ -39,4 +39,16 @@ public class TabbedPaneTabbed extends Tabbed
 		return tabbed.getTabCount();
 	}
 
+	@Override
+	public void setSelectedIndex(int index)
+	{
+		tabbed.setSelectedIndex(index);
+	}
+
+	@Override
+	public void setSelectedComponent(Component component)
+	{
+		tabbed.setSelectedComponent(component);
+	}
+
 }

@@ -85,7 +85,6 @@ public class JTerm
 	{
 		final String title = "term";
 		TerminalWidget terminalWidget = new TerminalWidget();
-		tabbed.addTab(title, terminalWidget);
 
 		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
 				terminalWidget, statusbar);
@@ -93,6 +92,9 @@ public class JTerm
 
 		terminalWidget.addTerminalClosedListener(new RemovalListener(
 				terminalWidget));
+
+		tabbed.addTab(title, terminalWidget);
+		tabbed.setSelectedComponent(terminalWidget);
 	}
 
 	public class RemovalListener implements TerminalClosedListener

@@ -58,4 +58,15 @@ public class CustomTabbed extends Tabbed
 		container.removeTab(component);
 	}
 
+	@Override
+	public void setSelectedIndex(int index)
+	{
+		container.setSelectedIndex(index);
+	}
+
+	@Override
+	public void setSelectedComponent(Component component)
+	{
+		container.setSelectedComponent(component);
+	}
 }

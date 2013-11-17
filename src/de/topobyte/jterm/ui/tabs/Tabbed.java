@@ -15,4 +15,8 @@ public abstract class Tabbed extends JPanel
 
 	public abstract int getNumberOfTabs();
 
+	public abstract void setSelectedIndex(int index);
+
+	public abstract void setSelectedComponent(Component component);
+
 }

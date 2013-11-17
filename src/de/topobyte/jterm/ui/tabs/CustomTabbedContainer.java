@@ -167,6 +167,9 @@ public class CustomTabbedContainer extends JPanel
 	private void setTab(int index)
 	{
 		Component c = components.get(index);
+		if (c == current) {
+			return;
+		}
 		remove(current);
 		current = c;
 		add(current, BorderLayout.CENTER);
@@ -220,5 +223,19 @@ public class CustomTabbedContainer extends JPanel
 	protected void movePageUp()
 	{
 		// TODO implement
+	}
+
+	public void setSelectedIndex(int index)
+	{
+		setTab(index);
+	}
+
+	public void setSelectedComponent(Component component)
+	{
+		int index = components.indexOf(component);
+		if (index < 0) {
+			return;
+		}
+		setSelectedIndex(index);
 	}
 }
