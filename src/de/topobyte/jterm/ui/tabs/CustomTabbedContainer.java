@@ -225,6 +225,11 @@ public class CustomTabbedContainer extends JPanel
 		// TODO implement
 	}
 
+	public int getSelectedIndex()
+	{
+		return getActivePage();
+	}
+
 	public void setSelectedIndex(int index)
 	{
 		setTab(index);
@@ -237,5 +242,10 @@ public class CustomTabbedContainer extends JPanel
 			return;
 		}
 		setSelectedIndex(index);
+	}
+
+	public Component getComponentAt(int index)
+	{
+		return components.get(index);
 	}
 }

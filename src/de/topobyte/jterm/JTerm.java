@@ -44,9 +44,6 @@ public class JTerm
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
 
-		toolbar = new Toolbar();
-		content.add(toolbar, BorderLayout.NORTH);
-
 		// tabbed = new TabbedPaneTabbed();
 		tabbed = new CustomTabbed();
 		content.add(tabbed, BorderLayout.CENTER);
@@ -55,6 +52,9 @@ public class JTerm
 		content.add(statusbar, BorderLayout.SOUTH);
 
 		addTab();
+
+		toolbar = new Toolbar(this);
+		content.add(toolbar, BorderLayout.NORTH);
 
 		frame.setLocationByPlatform(true);
 		frame.setSize(600, 500);
@@ -93,6 +93,10 @@ public class JTerm
 		terminalWidget.addTerminalClosedListener(new RemovalListener(
 				terminalWidget));
 
+		if (tabbed.getNumberOfTabs() != 0) {
+			terminalWidget.setDrawScrollingArea(isShowScrollingArea());
+		}
+
 		tabbed.addTab(title, terminalWidget);
 		tabbed.setSelectedComponent(terminalWidget);
 	}
@@ -113,6 +117,23 @@ public class JTerm
 			tabbed.removeTab(terminalWidget);
 			if (tabbed.getNumberOfTabs() == 0) {
 				System.exit(0);
+			}
+		}
+	}
+
+	public boolean isShowScrollingArea()
+	{
+		TerminalWidget widget = (TerminalWidget) tabbed.getComponentAt(0);
+		return widget.isDrawScrollingArea();
+	}
+
+	public void setShowScrollingArea(boolean showScrollingArea)
+	{
+		for (int i = 0; i < tabbed.getNumberOfTabs(); i++) {
+			TerminalWidget widget = (TerminalWidget) tabbed.getComponentAt(i);
+			widget.setDrawScrollingArea(showScrollingArea);
+			if (tabbed.getSelectedIndex() == i) {
+				widget.repaint();
 			}
 		}
 	}

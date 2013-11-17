@@ -37,8 +37,9 @@ public class TerminalWidget extends JComponent implements
 	private Color colorCursor = new Color(0x99ff0000, true);
 	private Color colorScrollingRegion = new Color(0x99ff0000, true);
 
-	private boolean drawFrame = true;
+	private boolean drawFrame = false;
 	private boolean drawRaster = false;
+	private boolean drawScrollingArea = false;
 
 	private Terminal terminal;
 
@@ -188,6 +189,36 @@ public class TerminalWidget extends JComponent implements
 
 		Thread t = new Thread(terminalReader);
 		t.start();
+	}
+
+	public boolean isDrawFrame()
+	{
+		return drawFrame;
+	}
+
+	public void setDrawFrame(boolean drawFrame)
+	{
+		this.drawFrame = drawFrame;
+	}
+
+	public boolean isDrawRaster()
+	{
+		return drawRaster;
+	}
+
+	public void setDrawRaster(boolean drawRaster)
+	{
+		this.drawRaster = drawRaster;
+	}
+
+	public boolean isDrawScrollingArea()
+	{
+		return drawScrollingArea;
+	}
+
+	public void setDrawScrollingArea(boolean drawScrollingArea)
+	{
+		this.drawScrollingArea = drawScrollingArea;
 	}
 
 	public Terminal getTerminal()
@@ -400,11 +431,13 @@ public class TerminalWidget extends JComponent implements
 		 * Scrolling region
 		 */
 
-		g.setColor(colorScrollingRegion);
-		g.setStroke(new BasicStroke(2.0f));
-		g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
-				terminal.getNumberOfCols() * charWidth,
-				screen.getScrollBottom() * charHeight);
+		if (drawScrollingArea) {
+			g.setColor(colorScrollingRegion);
+			g.setStroke(new BasicStroke(2.0f));
+			g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
+					terminal.getNumberOfCols() * charWidth,
+					screen.getScrollBottom() * charHeight);
+		}
 
 		mutex.release();
 

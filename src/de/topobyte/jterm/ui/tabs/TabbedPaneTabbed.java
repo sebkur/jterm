@@ -40,6 +40,12 @@ public class TabbedPaneTabbed extends Tabbed
 	}
 
 	@Override
+	public int getSelectedIndex()
+	{
+		return tabbed.getSelectedIndex();
+	}
+
+	@Override
 	public void setSelectedIndex(int index)
 	{
 		tabbed.setSelectedIndex(index);
@@ -49,6 +55,12 @@ public class TabbedPaneTabbed extends Tabbed
 	public void setSelectedComponent(Component component)
 	{
 		tabbed.setSelectedComponent(component);
+	}
+
+	@Override
+	public Component getComponentAt(int index)
+	{
+		return tabbed.getComponentAt(index);
 	}
 
 }

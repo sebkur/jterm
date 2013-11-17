@@ -59,6 +59,12 @@ public class CustomTabbed extends Tabbed
 	}
 
 	@Override
+	public int getSelectedIndex()
+	{
+		return container.getSelectedIndex();
+	}
+
+	@Override
 	public void setSelectedIndex(int index)
 	{
 		container.setSelectedIndex(index);
@@ -68,5 +74,11 @@ public class CustomTabbed extends Tabbed
 	public void setSelectedComponent(Component component)
 	{
 		container.setSelectedComponent(component);
+	}
+
+	@Override
+	public Component getComponentAt(int index)
+	{
+		return container.getComponentAt(index);
 	}
 }
