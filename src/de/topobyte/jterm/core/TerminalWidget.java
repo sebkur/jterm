@@ -344,6 +344,7 @@ public class TerminalWidget extends JComponent implements
 				BufferedImage image = cache.get(pixel);
 				if (image != null) {
 					hits++;
+					cache.refresh(pixel);
 				} else {
 					image = new BufferedImage(charWidth, charHeight,
 							BufferedImage.TYPE_3BYTE_BGR);
