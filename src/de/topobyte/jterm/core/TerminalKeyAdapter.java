@@ -27,6 +27,8 @@ public class TerminalKeyAdapter extends KeyAdapter
 			if (ec != 0) {
 				message = String.format("%c", ec);
 			}
+		} else if (e.getKeyChar() == 127) {
+			return;
 		}
 		terminal.write(message);
 	}
