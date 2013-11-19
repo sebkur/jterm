@@ -22,8 +22,8 @@ import de.topobyte.jterm.core.TerminalMouseAdapter;
 import de.topobyte.jterm.core.TerminalWidget;
 import de.topobyte.jterm.ui.Statusbar;
 import de.topobyte.jterm.ui.Toolbar;
-import de.topobyte.jterm.ui.tabs.CustomTabbed;
 import de.topobyte.jterm.ui.tabs.Tabbed;
+import de.topobyte.jterm.ui.tabs.TabbedPaneTabbed;
 
 public class JTerm
 {
@@ -48,8 +48,8 @@ public class JTerm
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
 
-		// tabbed = new TabbedPaneTabbed();
-		tabbed = new CustomTabbed();
+		 tabbed = new TabbedPaneTabbed();
+//		tabbed = new CustomTabbed();
 		content.add(tabbed, BorderLayout.CENTER);
 
 		statusbar = new Statusbar();

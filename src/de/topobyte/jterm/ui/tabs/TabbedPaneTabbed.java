@@ -6,6 +6,8 @@ import java.awt.Component;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
+import de.topobyte.jterm.ui.AquaBarTabbedPaneUI;
+
 public class TabbedPaneTabbed extends Tabbed
 {
 
@@ -19,6 +21,7 @@ public class TabbedPaneTabbed extends Tabbed
 		setLayout(new BorderLayout());
 		add(tabbed, BorderLayout.CENTER);
 		tabbed.setFocusable(false);
+		tabbed.setUI(new AquaBarTabbedPaneUI());
 	}
 
 	@Override
