@@ -48,8 +48,8 @@ public class JTerm
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
 
-		 tabbed = new TabbedPaneTabbed();
-//		tabbed = new CustomTabbed();
+		tabbed = new TabbedPaneTabbed();
+		// tabbed = new CustomTabbed();
 		content.add(tabbed, BorderLayout.CENTER);
 
 		statusbar = new Statusbar();
@@ -58,6 +58,7 @@ public class JTerm
 		addTab();
 
 		toolbar = new Toolbar(this);
+		toolbar.setVisible(false);
 		content.add(toolbar, BorderLayout.NORTH);
 
 		frame.setLocationByPlatform(true);
@@ -65,12 +66,23 @@ public class JTerm
 		frame.setVisible(true);
 
 		String keyCtrlShiftT = "ctrl-shift-t";
+		String keyCtrlShiftF9 = "ctrl-shift-f9";
+		String keyCtrlShiftF10 = "ctrl-shift-f10";
 
 		InputMap inputMap = tabbed
 				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		inputMap.put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK
 						| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftT);
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F9,
+						InputEvent.CTRL_DOWN_MASK
+								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF9);
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F10,
+						InputEvent.CTRL_DOWN_MASK
+								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF10);
+
 		ActionMap actionMap = tabbed.getActionMap();
 		actionMap.put(keyCtrlShiftT, new AbstractAction() {
 
@@ -80,6 +92,27 @@ public class JTerm
 			public void actionPerformed(ActionEvent e)
 			{
 				addTab();
+			}
+		});
+		actionMap.put(keyCtrlShiftF9, new AbstractAction() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				toolbar.setVisible(!toolbar.isVisible());
+			}
+		});
+		actionMap.put(keyCtrlShiftF10, new AbstractAction() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println("F10");
+				// Toggle menu
 			}
 		});
 
