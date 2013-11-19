@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_write
 /*
  * Class:     de_topobyte_jterm_core_Terminal
  * Method:    start
- * Signature: ()V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     de_topobyte_jterm_core_Terminal

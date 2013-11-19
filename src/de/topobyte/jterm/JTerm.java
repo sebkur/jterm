@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import de.topobyte.jterm.core.Terminal;
 import de.topobyte.jterm.core.TerminalClosedListener;
 import de.topobyte.jterm.core.TerminalMouseAdapter;
 import de.topobyte.jterm.core.TerminalWidget;
@@ -101,7 +102,17 @@ public class JTerm
 	protected void addTab()
 	{
 		final String title = "term";
-		TerminalWidget terminalWidget = new TerminalWidget();
+
+		String pwd = null;
+		if (tabbed.getNumberOfTabs() != 0) {
+			int index = tabbed.getSelectedIndex();
+			TerminalWidget widget = (TerminalWidget) tabbed
+					.getComponentAt(index);
+			Terminal terminal = widget.getTerminal();
+			pwd = terminal.getPwd();
+		}
+
+		TerminalWidget terminalWidget = new TerminalWidget(pwd);
 
 		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
 				terminalWidget, statusbar);

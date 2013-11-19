@@ -18,7 +18,7 @@ public class TestTerminal
 		System.out.println("Got: " + terminal.testStringCreation());
 		System.out.println("Got: " + terminal.testStringCreation());
 
-		terminal.start();
+		terminal.start("/tmp");
 
 		terminal.printInfo();
 

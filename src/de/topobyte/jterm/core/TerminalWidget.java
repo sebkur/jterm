@@ -78,7 +78,7 @@ public class TerminalWidget extends JComponent implements
 
 	private Semaphore mutex = new Semaphore(1);
 
-	public TerminalWidget()
+	public TerminalWidget(String pwd)
 	{
 		terminal = new Terminal();
 
@@ -94,7 +94,7 @@ public class TerminalWidget extends JComponent implements
 		charWidth = metrics.charWidth('O');
 		descent = metrics.getDescent();
 
-		terminal.start();
+		terminal.start(pwd);
 
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);

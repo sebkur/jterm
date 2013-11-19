@@ -15,7 +15,7 @@ public class Terminal
 
 	public native void write(String message);
 
-	public native void start();
+	public native void start(String pwd);
 
 	public native byte[] read();
 

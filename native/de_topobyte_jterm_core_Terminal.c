@@ -63,7 +63,7 @@ JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_testStringCreatio
 extern char ** environ;
 
 JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
-  (JNIEnv * env, jobject this)
+  (JNIEnv * env, jobject this, jstring jpwd)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
     jfieldID fidPid = (*env)->GetFieldID(env, thisClass, "pid", "I");
@@ -117,31 +117,35 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
         for (iter = environ; *iter != NULL; iter++){
             ec++;
         }
-        char ** env = malloc(sizeof(char*) * (ec + 2));
+        char ** envi = malloc(sizeof(char*) * (ec + 2));
         int e1 = 0, e2 = 0;
         for (iter = environ; *iter != NULL; iter++){
             char * var = *iter;
             //printf("var: %s\n", var);
             if (strcmp(var, "TERM") == 0){
             }else{
-                //env[e2] = g_strdup(environ[e1]);
-                env[e2] = malloc(sizeof(char) * strlen(environ[e1]) + 1);
-                //strncpy(env[e2], environ[e1], strlen(environ[e1]));
-                strcpy(env[e2], environ[e1]);
+                //envi[e2] = g_strdup(environ[e1]);
+                envi[e2] = malloc(sizeof(char) * strlen(environ[e1]) + 1);
+                //strncpy(envi[e2], environ[e1], strlen(environ[e1]));
+                strcpy(envi[e2], environ[e1]);
                 e2++;
             }
             e1++;
         }
-        //env[e2++] = g_strdup("TERM=xterm");
+        //envi[e2++] = g_strdup("TERM=xterm");
         const char * last = "TERM=xterm";
-        env[e2] = malloc(sizeof(char) * strlen(last) + 1);
-        //strncpy(env[e2], last, strlen(last));
-        strcpy(env[e2], last);
+        envi[e2] = malloc(sizeof(char) * strlen(last) + 1);
+        //strncpy(envi[e2], last, strlen(last));
+        strcpy(envi[e2], last);
         e2++;
-        env[e2] = NULL;
+        envi[e2] = NULL;
 
         /* working directory */
-        // TODO: chdir(terminal -> initial_pwd);
+        if (jpwd != NULL) {
+            const char * pwd = (*env)->GetStringUTFChars(env, jpwd, NULL);
+            chdir(pwd);
+            (*env)->ReleaseStringUTFChars(env, jpwd, pwd);
+        }
 
         fprintf(stderr, "proc id: %d\n", pid);
 
@@ -155,7 +159,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
         char ** argv = malloc(sizeof(char*) * (argc+2));
         argv[0] = command;
         argv[argc] = NULL;
-        execve(command, argv, env);
+        execve(command, argv, envi);
     }
     fprintf(stderr, "proc id: %d\n", pid);
     (*env)->SetIntField(env, this, fidPid, pid);
@@ -232,29 +236,30 @@ JNIEXPORT jbyte JNICALL Java_de_topobyte_jterm_core_Terminal_getEraseCharacter
 
 char * process_get_pwd(pid_t pid)
 {
-	char * file = malloc(sizeof(char) * 100);
-	sprintf(file,"/proc/%d/cwd", pid);
+    char * file = malloc(sizeof(char) * 100);
+    sprintf(file,"/proc/%d/cwd", pid);
 
-	size_t s = 128;
-	char * buf;
-	while (1){
-		buf = malloc(s + 1);
-		size_t r = readlink(file, buf, s);
-		if (r < 0){
-			free(buf); buf = NULL; break;
-		}
-		if (r == s){
-			free(buf);
-			s *= 2;
-			if (s > 1024 * 4){
-				free(buf); buf = NULL; break;
-			}
-			continue;
-		}
-		buf[r] = '\0';
-		break;
-	}
-	return buf;
+    size_t s = 128;
+    char * buf;
+    while (1){
+        buf = malloc(s + 1);
+        size_t r = readlink(file, buf, s);
+        if (r < 0){
+            free(buf); buf = NULL; break;
+        }
+        if (r == s){
+            free(buf);
+            s *= 2;
+            if (s > 1024 * 4){
+                free(buf); buf = NULL; break;
+            }
+            continue;
+        }
+        buf[r] = '\0';
+        break;
+    }
+    free(file);
+    return buf;
 }
 
 JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_getPwd
