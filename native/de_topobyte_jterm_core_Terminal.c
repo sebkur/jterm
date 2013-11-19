@@ -15,16 +15,6 @@
 #include <signal.h>
 #include <pthread.h>
 
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_test
-  (JNIEnv * env, jobject this)
-{
-    printf("Hi! This is the JNI speaking\n");
-
-    printf("My process ID : %d\n", getpid());
-
-    return;
-}
-
 JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_write
   (JNIEnv * env, jobject this, jstring message)
 {
@@ -43,21 +33,6 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_write
 
         (*env)->ReleaseStringUTFChars(env, message, msg);
     }
-}
-
-JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_testStringCreation
-  (JNIEnv * env, jobject this)
-{
-    jclass thisClass = (*env)->GetObjectClass(env, this);
-    jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
-    jint mfd = (*env)->GetIntField(env, this, fidMfd);
-    mfd++;
-    (*env)->SetIntField(env, this, fidMfd, mfd);
-
-    const char * test = "c string in return %d";
-    char * out = malloc(sizeof(char) * (strlen(test) + 20));
-    sprintf(out, test, mfd);
-    return (*env)->NewStringUTF(env, out);
 }
 
 extern char ** environ;

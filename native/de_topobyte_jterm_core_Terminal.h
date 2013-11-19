@@ -9,22 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     de_topobyte_jterm_core_Terminal
- * Method:    test
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_test
-  (JNIEnv *, jobject);
-
-/*
- * Class:     de_topobyte_jterm_core_Terminal
- * Method:    testStringCreation
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_testStringCreation
-  (JNIEnv *, jobject);
-
-/*
- * Class:     de_topobyte_jterm_core_Terminal
  * Method:    write
  * Signature: (Ljava/lang/String;)V
  */

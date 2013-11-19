@@ -9,10 +9,6 @@ public class Terminal
 	private int cols = 80;
 	private int rows = 24;
 
-	public native void test();
-
-	public native String testStringCreation();
-
 	public native void write(String message);
 
 	public native void start(String pwd);
