@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
@@ -39,7 +42,7 @@ public class JTerm
 	public JTerm()
 	{
 		frame = new JFrame("JTerm");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
@@ -79,6 +82,20 @@ public class JTerm
 			}
 		});
 
+		frame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				int status = JOptionPane.showConfirmDialog(frame,
+						"Exit JTerm?",
+						"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
+				if (status == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
+			}
+
+		});
 	}
 
 	protected void addTab()
