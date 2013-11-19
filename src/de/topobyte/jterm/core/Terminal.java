@@ -3,6 +3,7 @@ package de.topobyte.jterm.core;
 public class Terminal
 {
 
+	private int pid = 0;
 	private int mfd = 0;
 
 	private int cols = 80;
@@ -19,12 +20,14 @@ public class Terminal
 	public native byte[] read();
 
 	public native void setSize(int width, int height);
-	
+
 	public native byte getEraseCharacter();
+
+	public native String getPwd();
 
 	public void printInfo()
 	{
-		System.out.println("MFD: " + mfd);
+		System.out.println("PTY PID: " + pid + ", MFD: " + mfd);
 	}
 
 	public int getNumberOfCols()

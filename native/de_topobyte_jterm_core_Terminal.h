@@ -63,6 +63,14 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_setSize
 JNIEXPORT jbyte JNICALL Java_de_topobyte_jterm_core_Terminal_getEraseCharacter
   (JNIEnv *, jobject);
 
+/*
+ * Class:     de_topobyte_jterm_core_Terminal
+ * Method:    getPwd
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_getPwd
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

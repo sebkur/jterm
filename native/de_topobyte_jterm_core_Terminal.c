@@ -66,6 +66,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
   (JNIEnv * env, jobject this)
 {
     jclass thisClass = (*env)->GetObjectClass(env, this);
+    jfieldID fidPid = (*env)->GetFieldID(env, thisClass, "pid", "I");
     jfieldID fidMfd = (*env)->GetFieldID(env, thisClass, "mfd", "I");
 
     // Start virtual terminal
@@ -157,6 +158,7 @@ JNIEXPORT void JNICALL Java_de_topobyte_jterm_core_Terminal_start
         execve(command, argv, env);
     }
     fprintf(stderr, "proc id: %d\n", pid);
+    (*env)->SetIntField(env, this, fidPid, pid);
 
     struct termios st;
     tcgetattr (mfd, &st);
@@ -226,4 +228,42 @@ JNIEXPORT jbyte JNICALL Java_de_topobyte_jterm_core_Terminal_getEraseCharacter
     tcgetattr(mfd, &tio);
     cc_t c = tio.c_cc[VERASE];
     return c;
+}
+
+char * process_get_pwd(pid_t pid)
+{
+	char * file = malloc(sizeof(char) * 100);
+	sprintf(file,"/proc/%d/cwd", pid);
+
+	size_t s = 128;
+	char * buf;
+	while (1){
+		buf = malloc(s + 1);
+		size_t r = readlink(file, buf, s);
+		if (r < 0){
+			free(buf); buf = NULL; break;
+		}
+		if (r == s){
+			free(buf);
+			s *= 2;
+			if (s > 1024 * 4){
+				free(buf); buf = NULL; break;
+			}
+			continue;
+		}
+		buf[r] = '\0';
+		break;
+	}
+	return buf;
+}
+
+JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_getPwd
+  (JNIEnv * env, jobject this)
+{
+    jclass thisClass = (*env)->GetObjectClass(env, this);
+    jfieldID fidPid = (*env)->GetFieldID(env, thisClass, "pid", "I");
+    jint pid = (*env)->GetIntField(env, this, fidPid);
+
+    char * pwd = process_get_pwd(pid);
+    return (*env)->NewStringUTF(env, pwd);
 }
