@@ -390,6 +390,7 @@ public class TerminalWidget extends JComponent implements
 					h.fillRect(0, 0, charWidth, charHeight);
 					h.setColor(palette.getColor(pixel.getIndexFG()));
 					h.drawString(s, 0, 0 + charHeight - descent);
+					h.dispose();
 				}
 
 				int x = charWidth * k;
