@@ -20,7 +20,6 @@ public class KeyUtil
 	public void add(int keyCode, int mask, Action action)
 	{
 		String key = "auto" + mask + "_" + keyCode;
-		System.out.println(key + ": " + mask);
 		inputMap.put(KeyStroke.getKeyStroke(keyCode, mask), key);
 		actionMap.put(key, action);
 	}
