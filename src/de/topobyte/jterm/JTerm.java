@@ -55,6 +55,7 @@ public class JTerm
 		content.add(tabbed, BorderLayout.CENTER);
 
 		statusbar = new Statusbar();
+		statusbar.setVisible(false);
 		content.add(statusbar, BorderLayout.SOUTH);
 
 		addTab();
@@ -68,6 +69,7 @@ public class JTerm
 		frame.setVisible(true);
 
 		String keyCtrlShiftT = "ctrl-shift-t";
+		String keyCtrlShiftF8 = "ctrl-shift-f8";
 		String keyCtrlShiftF9 = "ctrl-shift-f9";
 		String keyCtrlShiftF10 = "ctrl-shift-f10";
 
@@ -76,6 +78,10 @@ public class JTerm
 		inputMap.put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK
 						| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftT);
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F8,
+						InputEvent.CTRL_DOWN_MASK
+								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF8);
 		inputMap.put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_F9,
 						InputEvent.CTRL_DOWN_MASK
@@ -94,6 +100,16 @@ public class JTerm
 			public void actionPerformed(ActionEvent e)
 			{
 				addTab();
+			}
+		});
+		actionMap.put(keyCtrlShiftF8, new AbstractAction() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				statusbar.setVisible(!statusbar.isVisible());
 			}
 		});
 		actionMap.put(keyCtrlShiftF9, new AbstractAction() {
