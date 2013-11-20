@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -357,9 +358,7 @@ public class TerminalWidget extends JComponent implements
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g.setColor(Color.GREEN);
-
-		g.setFont(font);
+		GraphicsConfiguration gc = getGraphicsConfiguration();
 
 		int hits = 0;
 		int total = 0;
@@ -378,8 +377,8 @@ public class TerminalWidget extends JComponent implements
 					hits++;
 					cache.refresh(pixel);
 				} else {
-					image = new BufferedImage(charWidth, charHeight,
-							BufferedImage.TYPE_3BYTE_BGR);
+					image = gc.createCompatibleImage(charWidth, charHeight);
+
 					cache.put(pixel, image);
 
 					Graphics2D h = image.createGraphics();
@@ -395,6 +394,7 @@ public class TerminalWidget extends JComponent implements
 
 				int x = charWidth * k;
 				g.drawImage(image, x, y, null);
+				image.flush();
 			}
 		}
 
@@ -450,6 +450,8 @@ public class TerminalWidget extends JComponent implements
 			System.out.println("Hit rate: " + (hits / (double) total));
 			System.out.println("Cache size: " + cache.size());
 		}
+
+		g.dispose();
 	}
 
 	// @formatter:off
