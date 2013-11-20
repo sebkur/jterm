@@ -40,7 +40,7 @@ public class Cache<K, V>
 	 *            the value.
 	 * @return the key removed or null
 	 */
-	public K put(K key, V value)
+	public Entry put(K key, V value)
 	{
 		if (map.containsKey(key)) {
 			map.put(key, value);
@@ -48,9 +48,9 @@ public class Cache<K, V>
 			map.put(key, value);
 			keys.addFirst(key);
 			if (keys.size() > size) {
-				K removed = keys.removeLast();
-				map.remove(removed);
-				return removed;
+				K removedKey = keys.removeLast();
+				V removedValue = map.remove(removedKey);
+				return new Entry(removedKey, removedValue);
 			}
 		}
 		return null;
@@ -116,5 +116,27 @@ public class Cache<K, V>
 	public int size()
 	{
 		return keys.size();
+	}
+
+	public class Entry
+	{
+		private K key;
+		private V value;
+
+		public Entry(K key, V value)
+		{
+			this.key = key;
+			this.value = value;
+		}
+
+		public K getKey()
+		{
+			return key;
+		}
+
+		public V getValue()
+		{
+			return value;
+		}
 	}
 }
