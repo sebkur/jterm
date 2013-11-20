@@ -2,7 +2,6 @@ package de.topobyte.jterm.ui.tabs;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -70,7 +69,7 @@ public class CustomTabbedTitleBar extends JPanel implements TabListener
 	@Override
 	public void updateTabs()
 	{
-		int total = container.getNumberOfPages();
+		/*int total = container.getNumberOfPages();
 
 		if (total == 1 || total == 2) {
 			if (total == 1) {
@@ -80,7 +79,7 @@ public class CustomTabbedTitleBar extends JPanel implements TabListener
 			}
 			getParent().invalidate();
 			getParent().validate();
-		}
+		}*/
 
 		repaint();
 	}

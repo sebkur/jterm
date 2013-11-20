@@ -1,6 +1,6 @@
 package de.topobyte.jterm.ui.tabs;
 
-import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -21,15 +21,28 @@ public class CustomTabbedContainer extends JPanel
 
 	private static final long serialVersionUID = 1L;
 
-	private JPanel dummy = new JPanel();
 	private Component current = null;
 	private List<Component> components = new ArrayList<Component>();
 	private List<String> titles = new ArrayList<String>();
+	private List<String> ids = new ArrayList<String>();
+
+	private CardLayout cardLayout;
+	private int i = 0;
+
+	private String id()
+	{
+		return "" + i;
+	}
+
+	private void increment()
+	{
+		i++;
+	}
 
 	public CustomTabbedContainer()
 	{
-		setLayout(new BorderLayout());
-		add(dummy, BorderLayout.CENTER);
+		cardLayout = new CardLayout();
+		setLayout(cardLayout);
 
 		setFocusable(true);
 
@@ -171,24 +184,25 @@ public class CustomTabbedContainer extends JPanel
 		if (c == current) {
 			return;
 		}
-		remove(current);
+
+		String id = ids.get(index);
+		cardLayout.show(this, id);
 		current = c;
-		add(current, BorderLayout.CENTER);
-		validate();
-		repaint();
+		c.requestFocus();
 
 		fireTabListeners();
 	}
 
 	public void addTab(String title, Component component)
 	{
+		add(component, id());
 		components.add(component);
 		titles.add(title);
+		ids.add(id());
+		increment();
 
 		if (components.size() == 1) {
 			current = component;
-			remove(dummy);
-			add(component, BorderLayout.CENTER);
 		}
 
 		fireTabListeners();
@@ -197,23 +211,25 @@ public class CustomTabbedContainer extends JPanel
 	public void removeTab(Component component)
 	{
 		int index = components.indexOf(component);
+		if (index < 0) {
+			return;
+		}
 		components.remove(component);
 		titles.remove(index);
+		ids.remove(index);
 		remove(component);
+
+		if (components.size() == 0) {
+			return;
+		}
 
 		int newIndex = index == 0 ? 0 : index - 1;
 
-		if (current == component) {
-			if (components.size() == 0) {
-				current = dummy;
-				add(dummy, BorderLayout.CENTER);
-			} else {
-				current = components.get(newIndex);
-				add(current, BorderLayout.CENTER);
-			}
-		}
-		validate();
-		repaint();
+		String id = ids.get(newIndex);
+		cardLayout.show(this, id);
+		current = components.get(newIndex);
+
+		current.requestFocus();
 
 		fireTabListeners();
 	}
