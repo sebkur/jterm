@@ -245,5 +245,7 @@ JNIEXPORT jstring JNICALL Java_de_topobyte_jterm_core_Terminal_getPwd
     jint pid = (*env)->GetIntField(env, this, fidPid);
 
     char * pwd = process_get_pwd(pid);
-    return (*env)->NewStringUTF(env, pwd);
+    jstring ret = (*env)->NewStringUTF(env, pwd);
+    free(pwd);
+    return ret;
 }
