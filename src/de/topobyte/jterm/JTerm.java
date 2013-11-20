@@ -65,7 +65,7 @@ public class JTerm
 		content.add(toolbar, BorderLayout.NORTH);
 
 		frame.setLocationByPlatform(true);
-		frame.setSize(544, 420);
+		frame.setSize(600, 500);
 		frame.setVisible(true);
 
 		String keyCtrlShiftT = "ctrl-shift-t";

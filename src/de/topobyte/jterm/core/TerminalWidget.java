@@ -46,7 +46,7 @@ public class TerminalWidget extends JComponent implements
 
 	private String fontname = "DejaVu Sans Mono";
 	// private String fontname = "Andale Mono";
-	private int fontsize = 10;
+	private int fontsize = 12;
 
 	private Font font;
 
