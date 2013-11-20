@@ -81,4 +81,11 @@ public class CustomTabbed extends Tabbed
 	{
 		return container.getComponentAt(index);
 	}
+
+	@Override
+	public String getTitleAt(int index)
+	{
+		return container.getTitleAt(index);
+	}
+
 }

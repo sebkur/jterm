@@ -24,6 +24,7 @@ public class CustomTabbedContainer extends JPanel
 	private JPanel dummy = new JPanel();
 	private Component current = null;
 	private List<Component> components = new ArrayList<Component>();
+	private List<String> titles = new ArrayList<String>();
 
 	public CustomTabbedContainer()
 	{
@@ -182,6 +183,7 @@ public class CustomTabbedContainer extends JPanel
 	public void addTab(String title, Component component)
 	{
 		components.add(component);
+		titles.add(title);
 
 		if (components.size() == 1) {
 			current = component;
@@ -196,6 +198,7 @@ public class CustomTabbedContainer extends JPanel
 	{
 		int index = components.indexOf(component);
 		components.remove(component);
+		titles.remove(index);
 		remove(component);
 
 		int newIndex = index == 0 ? 0 : index - 1;
@@ -247,5 +250,10 @@ public class CustomTabbedContainer extends JPanel
 	public Component getComponentAt(int index)
 	{
 		return components.get(index);
+	}
+
+	public String getTitleAt(int index)
+	{
+		return titles.get(index);
 	}
 }

@@ -66,4 +66,10 @@ public class TabbedPaneTabbed extends Tabbed
 		return tabbed.getComponentAt(index);
 	}
 
+	@Override
+	public String getTitleAt(int index)
+	{
+		return tabbed.getTitleAt(index);
+	}
+
 }
