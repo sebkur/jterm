@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -128,6 +129,7 @@ public class TerminalWidget extends JComponent implements
 		keyUtil.addKeyAction(KeyEvent.VK_F11);
 		keyUtil.addKeyAction(KeyEvent.VK_F12);
 		keyUtil.addKeyAction(KeyEvent.VK_ENTER);
+		keyUtil.addKeyAction(KeyEvent.VK_INSERT, InputEvent.SHIFT_DOWN_MASK);
 
 		addComponentListener(new ComponentAdapter() {
 
@@ -162,8 +164,7 @@ public class TerminalWidget extends JComponent implements
 				State before = state;
 				boolean handled = TerminalWidget.this.handle(c);
 				if (!handled) {
-					log("STATE: " + before + " Byte: " + b
-							+ "..." + c);
+					log("STATE: " + before + " Byte: " + b + "..." + c);
 				}
 				mutex.release();
 			}
@@ -730,8 +731,7 @@ public class TerminalWidget extends JComponent implements
 			return true;
 		}
 		case '=': { // Application Keypad Mode (DECKPAM)
-			log(String
-					.format("TODO: Application Keypad Mode"));
+			log(String.format("TODO: Application Keypad Mode"));
 			return true;
 		}
 		case '>': { // Numeric Keypad Mode (DECKPNM)
@@ -787,9 +787,8 @@ public class TerminalWidget extends JComponent implements
 
 	private void printCsi(Csi csi)
 	{
-		log("Handle CSI. prefix: '" + csi.prefix
-				+ "', suffix1: '" + csi.suffix1 + "', suffix2: '" + csi.suffix2
-				+ "'");
+		log("Handle CSI. prefix: '" + csi.prefix + "', suffix1: '"
+				+ csi.suffix1 + "', suffix2: '" + csi.suffix2 + "'");
 		for (int i = 0; i < csi.nums.size(); i++) {
 			int num = csi.nums.get(i);
 			log("CSI number: " + num);
@@ -867,8 +866,7 @@ public class TerminalWidget extends JComponent implements
 				}
 				case 12: {
 					String s = set ? "Start" : "Stop";
-					log(String
-							.format("TODO: %s Blinking", s));
+					log(String.format("TODO: %s Blinking", s));
 					return true;
 				}
 				case 25: {
@@ -914,9 +912,10 @@ public class TerminalWidget extends JComponent implements
 			}
 
 			if (DEBUG_CURSOR) {
-				log(String.format("FROM: %d,%d GOTO:%d,%d",
-						screen.getCurrentRow(),
-						screen.getCurrentColumn(), r, c));
+				log(String
+						.format("FROM: %d,%d GOTO:%d,%d",
+								screen.getCurrentRow(),
+								screen.getCurrentColumn(), r, c));
 			}
 
 			screen.setCurrentRow(r);
@@ -997,8 +996,7 @@ public class TerminalWidget extends JComponent implements
 				return true;
 			}
 			default: {
-				log(String.format(
-						"TODO: ERASE IN DISPLAY %d\n", n));
+				log(String.format("TODO: ERASE IN DISPLAY %d\n", n));
 			}
 			}
 		} else if (csi.suffix1 == 'r' && csi.prefix == '\0') {
@@ -1019,8 +1017,7 @@ public class TerminalWidget extends JComponent implements
 			return true;
 		} else if (csi.suffix1 == 'c' && csi.prefix == '>') {
 			// send device attributes (secondary DA)
-			log(String
-					.format("TODO: DEVICE ATTRIBUTES, PLEASE"));
+			log(String.format("TODO: DEVICE ATTRIBUTES, PLEASE"));
 		} else if (csi.suffix1 == 'm') {
 			int n = csi.nums.size();
 			if (n == 0) {
@@ -1209,8 +1206,7 @@ public class TerminalWidget extends JComponent implements
 					// TODO: is this behaviour desired at all?
 					// TODO: check scrolling region
 					screen.setCurrentRow(screen.getCurrentRow() - 1);
-					setCurrentColumn("x1",
-							terminal.getNumberOfCols() - 1);
+					setCurrentColumn("x1", terminal.getNumberOfCols() - 1);
 				}
 				if (col >= terminal.getNumberOfCols()) {
 					if (screen.getCurrentRow() == screen.getScrollBottom()) {
@@ -1454,8 +1450,7 @@ public class TerminalWidget extends JComponent implements
 					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
 				// ok, we're in the scrolling region
 				if (screen.getRows().size() >= screen.getScrollBottom()) {
-					log("Remove line "
-							+ (screen.getScrollBottom() - 1));
+					log("Remove line " + (screen.getScrollBottom() - 1));
 					screen.getRows().remove(screen.getScrollBottom() - 1);
 				}
 				screen.getRows().add(screen.getCurrentRow() - 1, new Row());

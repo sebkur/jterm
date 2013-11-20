@@ -17,6 +17,11 @@ public class TerminalWidgetKeyUtil extends KeyUtil
 
 	public void addKeyAction(int keyCode)
 	{
-		add(keyCode, new KeyAction(terminal, keyCode));
+		add(keyCode, 0, new KeyAction(terminal, keyCode, 0));
+	}
+
+	public void addKeyAction(int keyCode, int mask)
+	{
+		add(keyCode, mask, new KeyAction(terminal, keyCode, mask));
 	}
 }

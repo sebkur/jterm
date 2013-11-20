@@ -17,10 +17,11 @@ public class KeyUtil
 		this.actionMap = actionMap;
 	}
 
-	public void add(int keyCode, Action action)
+	public void add(int keyCode, int mask, Action action)
 	{
-		String key = "auto" + keyCode;
-		inputMap.put(KeyStroke.getKeyStroke(keyCode, 0), key);
+		String key = "auto" + mask + "_" + keyCode;
+		System.out.println(key + ": " + mask);
+		inputMap.put(KeyStroke.getKeyStroke(keyCode, mask), key);
 		actionMap.put(key, action);
 	}
 
