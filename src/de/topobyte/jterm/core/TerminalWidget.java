@@ -1373,6 +1373,8 @@ public class TerminalWidget extends JComponent implements
 		if (screen.getRows().size() < pr) {
 			return;
 		}
+		boolean reverse = this.reverse;
+		this.reverse = false;
 		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
 		if (row.size() >= 1) {
 			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
@@ -1382,11 +1384,28 @@ public class TerminalWidget extends JComponent implements
 		for (int x = screen.getCurrentColumn(); x <= terminal.getNumberOfCols(); x++) {
 			row.add(createPixel(' '));
 		}
+		this.reverse = reverse;
 	}
 
 	private void eraseToTheLeft()
 	{
-		log("TODO: erase to the left");
+		int pr = screen.getCurrentRow();
+		int pc = screen.getCurrentColumn();
+		if (DEBUG_ERASE_DELETE) {
+			log("Erase to the left row: " + pr + ", col: " + pc);
+		}
+		if (screen.getRows().size() < pr) {
+			return;
+		}
+		boolean reverse = this.reverse;
+		this.reverse = false;
+		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
+		int len = row.size();
+		int del = len > pc ? pc : len;
+		for (int i = 0; i < del; i++) {
+			changePixel(row.get(i), ' ');
+		}
+		this.reverse = reverse;
 	}
 
 	private void eraseCharacters(int n)
