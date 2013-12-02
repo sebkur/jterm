@@ -50,6 +50,7 @@ public class JTerm
 		frame.setContentPane(content);
 
 		// tabbed = new HidingTabbed(new TabbedPaneTabbed());
+		// tabbed = new CustomTabbed();
 		tabbed = new HidingTabbed(new CustomTabbed());
 
 		content.add(tabbed, BorderLayout.CENTER);
@@ -78,18 +79,15 @@ public class JTerm
 		inputMap.put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK
 						| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftT);
-		inputMap.put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F8,
-						InputEvent.CTRL_DOWN_MASK
-								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF8);
-		inputMap.put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F9,
-						InputEvent.CTRL_DOWN_MASK
-								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF9);
-		inputMap.put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F10,
-						InputEvent.CTRL_DOWN_MASK
-								| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftF10);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F8,
+				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+				keyCtrlShiftF8);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9,
+				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+				keyCtrlShiftF9);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10,
+				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+				keyCtrlShiftF10);
 
 		ActionMap actionMap = tabbed.getActionMap();
 		actionMap.put(keyCtrlShiftT, new AbstractAction() {
@@ -140,8 +138,8 @@ public class JTerm
 			public void windowClosing(WindowEvent e)
 			{
 				int status = JOptionPane.showConfirmDialog(frame,
-						"Exit JTerm?",
-						"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
+						"Exit JTerm?", "Confirm Exit",
+						JOptionPane.OK_CANCEL_OPTION);
 				if (status == JOptionPane.YES_OPTION) {
 					System.exit(0);
 				}
