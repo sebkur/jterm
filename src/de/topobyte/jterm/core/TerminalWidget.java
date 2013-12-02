@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -235,8 +236,9 @@ public class TerminalWidget extends JComponent implements
 
 	protected void sizeChanged()
 	{
-		int w = getWidth();
-		int h = getHeight();
+		Insets insets = getInsets();
+		int w = getWidth() - insets.left - insets.right;
+		int h = getHeight() - insets.top - insets.bottom;
 		int cols = w / charWidth;
 		int rows = h / charHeight;
 		if (terminal.getNumberOfCols() != cols
@@ -342,13 +344,17 @@ public class TerminalWidget extends JComponent implements
 			}
 		}
 
+		Insets insets = getInsets();
+		int ih = insets.left + insets.right;
+		int iv = insets.top + insets.bottom;
+
 		g.setColor(palette.getColor(17));
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(insets.left, insets.top, getWidth() - ih, getHeight() - iv);
 
 		if (drawFrame) {
 			g.setColor(palette.getColor(16));
-			g.drawRect(0, 0, terminal.getNumberOfCols() * charWidth,
-					terminal.getNumberOfRows() * charHeight);
+			g.drawRect(insets.left, insets.right, terminal.getNumberOfCols()
+					* charWidth, terminal.getNumberOfRows() * charHeight);
 		}
 
 		/*
@@ -393,7 +399,7 @@ public class TerminalWidget extends JComponent implements
 				}
 
 				int x = charWidth * k;
-				g.drawImage(image, x, y, null);
+				g.drawImage(image, x + insets.left, y + insets.top, null);
 				image.flush();
 			}
 		}
@@ -409,12 +415,12 @@ public class TerminalWidget extends JComponent implements
 			g.setColor(colorRaster);
 
 			for (int i = 0; i <= terminal.getNumberOfRows(); i++) {
-				int y = i * charHeight;
-				g.drawLine(0, y, width, y);
+				int y = insets.top + i * charHeight;
+				g.drawLine(insets.left, y, width - ih, y);
 			}
 			for (int i = 0; i <= terminal.getNumberOfCols(); i++) {
-				int x = i * charWidth;
-				g.drawLine(x, 0, x, height);
+				int x = insets.left + i * charWidth;
+				g.drawLine(x, insets.top, x, height - iv);
 			}
 		}
 
@@ -424,9 +430,9 @@ public class TerminalWidget extends JComponent implements
 
 		if (cursorVisible) {
 			g.setColor(colorCursor);
-			g.fillRect((screen.getCurrentColumn() - 1) * charWidth,
-					(screen.getCurrentRow() - 1) * charHeight, charWidth,
-					charHeight);
+			g.fillRect(insets.left + (screen.getCurrentColumn() - 1)
+					* charWidth, insets.top + (screen.getCurrentRow() - 1)
+					* charHeight, charWidth, charHeight);
 		}
 
 		/*
@@ -436,8 +442,8 @@ public class TerminalWidget extends JComponent implements
 		if (drawScrollingArea) {
 			g.setColor(colorScrollingRegion);
 			g.setStroke(new BasicStroke(2.0f));
-			g.drawRect(0, (screen.getScrollTop() - 1) * charHeight,
-					terminal.getNumberOfCols() * charWidth,
+			g.drawRect(insets.left, insets.top + (screen.getScrollTop() - 1)
+					* charHeight, terminal.getNumberOfCols() * charWidth,
 					screen.getScrollBottom() * charHeight);
 		}
 

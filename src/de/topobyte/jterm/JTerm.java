@@ -9,12 +9,14 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.border.EtchedBorder;
 
 import de.topobyte.jterm.core.Terminal;
 import de.topobyte.jterm.core.TerminalClosedListener;
@@ -162,6 +164,8 @@ public class JTerm
 		}
 
 		TerminalWidget terminalWidget = new TerminalWidget(pwd);
+		terminalWidget.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
 
 		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
 				terminalWidget, statusbar);
