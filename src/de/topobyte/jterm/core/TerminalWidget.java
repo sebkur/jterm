@@ -51,6 +51,7 @@ public class TerminalWidget extends JComponent implements
 	private int fontsize = 12;
 
 	private Font font;
+	private Font fontBold;
 
 	int charWidth = 7;
 	int charHeight = 11;
@@ -92,6 +93,7 @@ public class TerminalWidget extends JComponent implements
 		screen = screenNormal;
 
 		font = new Font(fontname, Font.PLAIN, fontsize);
+		fontBold = new Font(fontname, Font.BOLD, fontsize);
 		FontMetrics metrics = getFontMetrics(font);
 		charHeight = metrics.getHeight();
 		charWidth = metrics.charWidth('O');
@@ -390,7 +392,7 @@ public class TerminalWidget extends JComponent implements
 					Graphics2D h = image.createGraphics();
 					h.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 							RenderingHints.VALUE_ANTIALIAS_ON);
-					h.setFont(font);
+					h.setFont(pixel.isHighlighted() ? fontBold : font);
 					h.setColor(palette.getColor(pixel.getIndexBG()));
 					h.fillRect(0, 0, charWidth, charHeight);
 					h.setColor(palette.getColor(pixel.getIndexFG()));
