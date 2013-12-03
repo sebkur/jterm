@@ -308,7 +308,6 @@ public class TerminalWidget extends JComponent implements
 			for (int a = 0; a < addReal; a++) {
 				Row row = history.pop();
 				screen.getRows().add(0, row);
-				history.setPos(history.getPos() - 1);
 				screen.setCurrentRow(screen.getCurrentRow() + 1);
 			}
 			screen.setScrollTop(1);

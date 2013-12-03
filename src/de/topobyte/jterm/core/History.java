@@ -30,7 +30,7 @@ public class History extends RingBuffer<Row>
 	public Row pop()
 	{
 		pos -= 1;
-		return removeFirst();
+		return removeLast();
 	}
 
 	public int getPos()
