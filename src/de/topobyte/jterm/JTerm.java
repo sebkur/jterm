@@ -1,12 +1,18 @@
 package de.topobyte.jterm;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -47,6 +53,20 @@ public class JTerm
 	{
 		frame = new JFrame("JTerm");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+		String filename = "logo.png";
+		BufferedImage image = null;
+		try {
+			InputStream is = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(filename);
+			image = ImageIO.read(is);
+			is.close();
+		} catch (Exception e) {
+			System.out.println("unable to load icon: " + filename
+					+ " exception message: " + e.getMessage());
+			e.printStackTrace();
+		}
+		frame.setIconImage(image);
 
 		JPanel content = new JPanel(new BorderLayout());
 		frame.setContentPane(content);
