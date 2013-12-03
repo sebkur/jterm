@@ -252,6 +252,14 @@ public class TerminalWidget extends JComponent implements
 	private void setTerminalSize(int cols, int rows)
 	{
 		log("Setting size: " + cols + " x " + rows);
+		while (true) {
+			try {
+				mutex.acquire();
+				break;
+			} catch (InterruptedException e) {
+				continue;
+			}
+		}
 
 		boolean smaller = rows < terminal.getNumberOfRows();
 		boolean bigger = rows > terminal.getNumberOfRows();
@@ -264,6 +272,11 @@ public class TerminalWidget extends JComponent implements
 		terminal.setSize(cols, rows);
 
 		Screen screen = screenNormal;
+		if (smaller) {
+			if (screen.getCurrentRow() > rows) {
+				screen.setCurrentRow(rows);
+			}
+		}
 		if (smaller
 				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
 			// the terminal has become smaller
@@ -298,6 +311,8 @@ public class TerminalWidget extends JComponent implements
 				&& screenAlternate.getScrollBottom() == nRowsOld) {
 			screenAlternate.setScrollBottom(rows);
 		}
+
+		mutex.release();
 	}
 
 	private List<TerminalClosedListener> listeners = new ArrayList<TerminalClosedListener>();
