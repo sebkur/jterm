@@ -1,8 +1,14 @@
 package de.topobyte.jterm.core;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
@@ -121,6 +127,18 @@ public class KeyAction extends AbstractAction
 
 	private void pasteClipboard()
 	{
-		// TODO Auto-generated method stub
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Clipboard clipboard = toolkit.getSystemClipboard();
+		Transferable transferable = clipboard.getContents(null);
+		try {
+			Object data = transferable.getTransferData(DataFlavor.stringFlavor);
+			String text = (String) data;
+			terminal.getTerminal().write(text);
+		} catch (UnsupportedFlavorException e) {
+			System.out.println("Paste Clipboard: Unsupported flavor");
+		} catch (IOException e) {
+			System.out.println("Paste Clipboard: IOException: "
+					+ e.getMessage());
+		}
 	}
 }
