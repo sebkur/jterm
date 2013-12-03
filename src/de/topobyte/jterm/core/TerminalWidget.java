@@ -1109,25 +1109,6 @@ public class TerminalWidget extends JComponent implements
 		screen = screenAlternate;
 	}
 
-	private void appendRow()
-	{
-		int r = screen.getCurrentRow();
-		if (r < terminal.getNumberOfRows()) {
-			screen.setCurrentRow(r + 1);
-		}
-
-		List<Row> rows = screen.getRows();
-		rows.add(new Row());
-
-		if (rows.size() > terminal.getNumberOfRows()) {
-			if (DEBUG_HISTORY) {
-				log("pushing row to history");
-			}
-			Row row = rows.remove(0);
-			history.push(row);
-		}
-	}
-
 	private void addPixel(Pixel pixel)
 	{
 		int row = screen.getCurrentRow();
@@ -1240,11 +1221,21 @@ public class TerminalWidget extends JComponent implements
 			c = replacement == null ? c : replacement;
 		}
 
-		if (screen == screenNormal) {
-			if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
-				appendRow();
-				setCurrentColumn("j", 1);
+		if (screen.getCurrentColumn() > terminal.getNumberOfCols()) {
+			if (screen.getCurrentRow() >= screen.getScrollTop()
+					&& screen.getCurrentRow() <= screen.getScrollBottom()) {
+				if (screen.getCurrentRow() == screen.getScrollBottom()) {
+					insertLines(1);
+				}
+				if (screen.getCurrentRow() != screen.getScrollBottom()) {
+					screen.setCurrentRow(screen.getCurrentRow() + 1);
+				}
+			} else {
+				if (screen.getCurrentRow() != terminal.getNumberOfRows()) {
+					screen.setCurrentRow(screen.getCurrentRow() + 1);
+				}
 			}
+			setCurrentColumn("j", 1);
 		}
 
 		int row = screen.getCurrentRow();
@@ -1310,7 +1301,7 @@ public class TerminalWidget extends JComponent implements
 			}
 		}
 
-		setCurrentColumn("k", screen.getCurrentColumn() + 1);
+		setCurrentColumn("k (" + c + ")", screen.getCurrentColumn() + 1);
 	}
 
 	private void cursorForward(int n)
