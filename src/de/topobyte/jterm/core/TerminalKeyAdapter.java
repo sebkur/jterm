@@ -19,6 +19,9 @@ public class TerminalKeyAdapter extends KeyAdapter
 	public void keyTyped(KeyEvent e)
 	{
 		// System.out.println("key typed: " + e.getKeyChar());
+		if (e.getKeyChar() == 0x14) { // ^T
+			return;
+		}
 		if (e.getKeyChar() == 10) {
 			return;
 		}
