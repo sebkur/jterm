@@ -64,7 +64,6 @@ public class TerminalWidget extends JComponent implements
 	private Screen screenNormal;
 	private Screen screenAlternate;
 
-	private int historyPos = 0;
 	private History history;
 
 	private int fg = 16;
@@ -103,7 +102,7 @@ public class TerminalWidget extends JComponent implements
 
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
-		addKeyListener(new TerminalKeyAdapter(terminal));
+		addKeyListener(new TerminalKeyAdapter(this));
 
 		InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = getActionMap();
@@ -134,6 +133,10 @@ public class TerminalWidget extends JComponent implements
 		keyUtil.addKeyAction(KeyEvent.VK_F12);
 		keyUtil.addKeyAction(KeyEvent.VK_ENTER);
 		keyUtil.addKeyAction(KeyEvent.VK_INSERT, InputEvent.SHIFT_DOWN_MASK);
+		keyUtil.addKeyAction(KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK);
+		keyUtil.addKeyAction(KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK);
+		keyUtil.addKeyAction(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_DOWN_MASK);
+		keyUtil.addKeyAction(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_DOWN_MASK);
 
 		addComponentListener(new ComponentAdapter() {
 
@@ -231,6 +234,11 @@ public class TerminalWidget extends JComponent implements
 		return terminal;
 	}
 
+	History getHistory()
+	{
+		return history;
+	}
+
 	private void log(String message)
 	{
 		System.out.println(message);
@@ -300,7 +308,7 @@ public class TerminalWidget extends JComponent implements
 			for (int a = 0; a < addReal; a++) {
 				Row row = history.pop();
 				screen.getRows().add(0, row);
-				historyPos -= 1;
+				history.setPos(history.getPos() - 1);
 				screen.setCurrentRow(screen.getCurrentRow() + 1);
 			}
 			screen.setScrollTop(1);
@@ -383,41 +391,33 @@ public class TerminalWidget extends JComponent implements
 
 		GraphicsConfiguration gc = getGraphicsConfiguration();
 
-		int hits = 0;
-		int total = 0;
+		CacheStats stats = new CacheStats();
 		List<Row> rows = screen.getRows();
-		for (int i = 0; i < rows.size(); i++) {
-			Row row = rows.get(i);
-			List<Pixel> pixels = row.getPixels();
-			int y = charHeight * i;
-			for (int k = 0; k < pixels.size(); k++) {
-				total++;
-				Pixel pixel = pixels.get(k);
-				String s = String.format("%c", pixel.getChar());
 
-				BufferedImage image = cache.get(pixel);
-				if (image != null) {
-					hits++;
-					cache.refresh(pixel);
-				} else {
-					image = gc.createCompatibleImage(charWidth, charHeight);
-
-					cache.put(pixel, image);
-
-					Graphics2D h = image.createGraphics();
-					h.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-							RenderingHints.VALUE_ANTIALIAS_ON);
-					h.setFont(pixel.isHighlighted() ? fontBold : font);
-					h.setColor(palette.getColor(pixel.getIndexBG()));
-					h.fillRect(0, 0, charWidth, charHeight);
-					h.setColor(palette.getColor(pixel.getIndexFG()));
-					h.drawString(s, 0, 0 + charHeight - descent);
-					h.dispose();
+		int hn = 0;
+		if (screen == screenAlternate) {
+			for (int i = 0; i < rows.size(); i++) {
+				Row row = rows.get(i);
+				drawRow(g, row, i, insets, gc, stats);
+			}
+		} else {
+			int hlen = history.getLength();
+			int slen = rows.size();
+			int hpos = history.getPos();
+			hn = hlen - hpos;
+			int rc = 0;
+			for (int i = 0; i < hn && i < rows.size(); i++) {
+				Row row = history.get(hpos + i);
+				drawRow(g, row, i, insets, gc, stats);
+				rc++;
+			}
+			for (int i = hn; i < rows.size(); i++) {
+				if (i - hn >= slen) {
+					break;
 				}
-
-				int x = charWidth * k;
-				g.drawImage(image, x + insets.left, y + insets.top, null);
-				image.flush();
+				Row row = rows.get(i - hn);
+				drawRow(g, row, i, insets, gc, stats);
+				rc++;
 			}
 		}
 
@@ -445,7 +445,8 @@ public class TerminalWidget extends JComponent implements
 		 * Cursor
 		 */
 
-		if (cursorVisible) {
+		if (cursorVisible
+				&& screen.getCurrentRow() + hn <= screen.getRows().size()) {
 			g.setColor(colorCursor);
 			g.fillRect(insets.left + (screen.getCurrentColumn() - 1)
 					* charWidth, insets.top + (screen.getCurrentRow() - 1)
@@ -469,12 +470,50 @@ public class TerminalWidget extends JComponent implements
 		if (DEBUG_RENDERING_TIME) {
 			long end = System.currentTimeMillis();
 			System.out.println("Time for paint(): " + (end - start));
-			System.out.println("Pixels painted: " + total);
-			System.out.println("Hit rate: " + (hits / (double) total));
+			System.out.println("Pixels painted: " + stats.total);
+			System.out.println("Hit rate: "
+					+ (stats.hits / (double) stats.total));
 			System.out.println("Cache size: " + cache.size());
 		}
 
 		g.dispose();
+	}
+
+	private void drawRow(Graphics g, Row row, int i, Insets insets,
+			GraphicsConfiguration gc, CacheStats stats)
+	{
+		List<Pixel> pixels = row.getPixels();
+		int y = charHeight * i;
+		for (int k = 0; k < pixels.size(); k++) {
+			stats.total++;
+			Pixel pixel = pixels.get(k);
+			String s = String.format("%c", pixel.getChar());
+
+			BufferedImage image = cache.get(pixel);
+			if (image != null) {
+				stats.hits++;
+				cache.refresh(pixel);
+			} else {
+				image = gc.createCompatibleImage(charWidth, charHeight);
+
+				cache.put(pixel, image);
+
+				Graphics2D h = image.createGraphics();
+				h.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				h.setFont(pixel.isHighlighted() ? fontBold : font);
+				h.setColor(palette.getColor(pixel.getIndexBG()));
+				h.fillRect(0, 0, charWidth, charHeight);
+				h.setColor(palette.getColor(pixel.getIndexFG()));
+				h.drawString(s, 0, 0 + charHeight - descent);
+				h.dispose();
+			}
+
+			int x = charWidth * k;
+			g.drawImage(image, x + insets.left, y + insets.top, null);
+			image.flush();
+		}
+
 	}
 
 	// @formatter:off
@@ -1244,7 +1283,6 @@ public class TerminalWidget extends JComponent implements
 								&& screen.getScrollTop() == 1) {
 							history.push(drow);
 						}
-						historyPos += 1;
 					} else {
 						screen.setCurrentRow(screen.getCurrentRow() + 1);
 					}
@@ -1522,7 +1560,6 @@ public class TerminalWidget extends JComponent implements
 					if (screen == screenNormal && screen.getScrollTop() == 1) {
 						history.push(drow);
 					}
-					historyPos += 1;
 				} else {
 					for (int x = 0; x < n; x++) {
 						// check whether we have to retain a row at the bottom
@@ -1550,6 +1587,13 @@ public class TerminalWidget extends JComponent implements
 			if (screen.getCurrentColumn() <= row.size()) {
 				row.add(screen.getCurrentColumn() - 1, createPixel(' '));
 			}
+		}
+	}
+
+	public void ensureBottomLineVisible()
+	{
+		if (history.getPos() != history.getLength()) {
+			history.setPos(history.getLength());
 		}
 	}
 

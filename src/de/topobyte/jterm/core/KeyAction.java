@@ -80,8 +80,47 @@ public class KeyAction extends AbstractAction
 			case KeyEvent.VK_INSERT:
 				pasteClipboard();
 				break;
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_PAGE_UP:
+			case KeyEvent.VK_PAGE_DOWN:
+				scroll(keyCode);
+				break;
 			}
 		}
+	}
+
+	private void scroll(int keyCode)
+	{
+		History history = terminal.getHistory();
+		switch (keyCode) {
+		case KeyEvent.VK_UP:
+			if (history.getPos() > 0) {
+				history.setPos(history.getPos() - 1);
+			}
+			break;
+		case KeyEvent.VK_DOWN:
+			if (history.getPos() < history.getLength()) {
+				history.setPos(history.getPos() + 1);
+			}
+			break;
+		case KeyEvent.VK_PAGE_UP:
+			if (history.getPos() > 0) {
+				int newPos = history.getPos()
+						- terminal.getTerminal().getNumberOfRows();
+				history.setPos(newPos >= 0 ? newPos : 0);
+			}
+			break;
+		case KeyEvent.VK_PAGE_DOWN:
+			int n = history.getLength();
+			if (history.getPos() < n) {
+				int newPos = history.getPos()
+						+ terminal.getTerminal().getNumberOfRows();
+				history.setPos(newPos <= n ? newPos : n);
+			}
+			break;
+		}
+		terminal.repaint();
 	}
 
 	// See: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
@@ -107,6 +146,7 @@ public class KeyAction extends AbstractAction
 		} else {
 			message = String.format("\033[%c", letter);
 		}
+		terminal.ensureBottomLineVisible();
 		terminal.getTerminal().write(message);
 	}
 

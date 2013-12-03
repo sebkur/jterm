@@ -6,11 +6,13 @@ import java.awt.event.KeyEvent;
 public class TerminalKeyAdapter extends KeyAdapter
 {
 
+	private TerminalWidget terminalWidget;
 	private Terminal terminal;
 
-	public TerminalKeyAdapter(Terminal terminal)
+	public TerminalKeyAdapter(TerminalWidget terminalWidget)
 	{
-		this.terminal = terminal;
+		this.terminalWidget = terminalWidget;
+		this.terminal = terminalWidget.getTerminal();
 	}
 
 	@Override
@@ -30,7 +32,7 @@ public class TerminalKeyAdapter extends KeyAdapter
 		} else if (e.getKeyChar() == 127) {
 			return;
 		}
+		terminalWidget.ensureBottomLineVisible();
 		terminal.write(message);
 	}
-
 }
