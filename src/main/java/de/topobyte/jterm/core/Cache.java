@@ -3,7 +3,7 @@ package de.topobyte.jterm.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.topobyte.misc.adt.list.linked.UniqueLinkedList;
+import de.topobyte.adt.misc.uniquedeque.UniqueLinkedList;
 
 /**
  * @author Sebastian Kuerten (sebastian.kuerten@fu-berlin.de)
