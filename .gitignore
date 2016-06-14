@@ -1,5 +1,9 @@
 bin
+build
 dist
 *.log
 *.swp
 *.so
+.project
+.classpath
+.settings
