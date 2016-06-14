@@ -1,8 +1,6 @@
 package de.topobyte.jterm;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -10,7 +8,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
