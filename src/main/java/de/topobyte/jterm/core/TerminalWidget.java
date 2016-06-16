@@ -57,7 +57,7 @@ public class TerminalWidget extends JComponent implements
 	int charHeight = 11;
 	private int descent = 3;
 
-	private Cache<Pixel, BufferedImage> cache = new Cache<Pixel, BufferedImage>(
+	private Cache<Pixel, BufferedImage> cache = new Cache<>(
 			300);
 
 	private Screen screen;
@@ -322,7 +322,7 @@ public class TerminalWidget extends JComponent implements
 		mutex.release();
 	}
 
-	private List<TerminalClosedListener> listeners = new ArrayList<TerminalClosedListener>();
+	private List<TerminalClosedListener> listeners = new ArrayList<>();
 
 	public void addTerminalClosedListener(TerminalClosedListener listener)
 	{

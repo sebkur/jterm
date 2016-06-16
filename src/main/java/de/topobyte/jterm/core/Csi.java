@@ -9,5 +9,5 @@ public class Csi
 	public char suffix1;
 	public char suffix2;
 	public boolean firstDigit = true;
-	public List<Integer> nums = new ArrayList<Integer>();;
+	public List<Integer> nums = new ArrayList<>();;
 }

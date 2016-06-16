@@ -22,9 +22,9 @@ public class CustomTabbedContainer extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	private Component current = null;
-	private List<Component> components = new ArrayList<Component>();
-	private List<String> titles = new ArrayList<String>();
-	private List<String> ids = new ArrayList<String>();
+	private List<Component> components = new ArrayList<>();
+	private List<String> titles = new ArrayList<>();
+	private List<String> ids = new ArrayList<>();
 
 	private CardLayout cardLayout;
 	private int i = 0;
@@ -115,7 +115,7 @@ public class CustomTabbedContainer extends JPanel
 		});
 	}
 
-	private List<TabListener> listeners = new ArrayList<TabListener>();
+	private List<TabListener> listeners = new ArrayList<>();
 
 	public void addTabListener(TabListener listener)
 	{

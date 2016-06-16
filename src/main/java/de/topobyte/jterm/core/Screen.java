@@ -15,7 +15,7 @@ public class Screen
 
 	private char characterSet = 'B';
 
-	private List<Row> rows = new ArrayList<Row>();
+	private List<Row> rows = new ArrayList<>();
 
 	public Screen(int scrollTop, int scrollBottom)
 	{

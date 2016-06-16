@@ -44,7 +44,7 @@ public class Charmap
 			{ '~', 0x00b7 }, /* bullet */
 	};
 
-	private static Map<Character, Character> lookup = new HashMap<Character, Character>();
+	private static Map<Character, Character> lookup = new HashMap<>();
 
 	static {
 		for (char[] mapping : iso2022_map) {

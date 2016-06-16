@@ -19,7 +19,7 @@ public abstract class TerminalReader implements Runnable
 
 	public abstract void handleUtf8(char c);
 
-	private List<TerminalClosedListener> listeners = new ArrayList<TerminalClosedListener>();
+	private List<TerminalClosedListener> listeners = new ArrayList<>();
 
 	public void addTerminalClosedListener(TerminalClosedListener listener)
 	{

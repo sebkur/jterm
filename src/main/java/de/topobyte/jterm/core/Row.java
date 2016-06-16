@@ -6,7 +6,7 @@ import java.util.List;
 public class Row
 {
 
-	private List<Pixel> pixels = new ArrayList<Pixel>();
+	private List<Pixel> pixels = new ArrayList<>();
 
 	public List<Pixel> getPixels()
 	{

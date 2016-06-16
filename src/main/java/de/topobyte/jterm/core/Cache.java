@@ -17,8 +17,8 @@ public class Cache<K, V>
 {
 
 	private int size;
-	private UniqueLinkedList<K> keys = new UniqueLinkedList<K>();
-	private Map<K, V> map = new HashMap<K, V>();
+	private UniqueLinkedList<K> keys = new UniqueLinkedList<>();
+	private Map<K, V> map = new HashMap<>();
 
 	/**
 	 * Create a memory cache.
