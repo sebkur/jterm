@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.topobyte:adt-misc:0.0.1'
+    compile 'de.topobyte:adt-misc:0.0.2'
 }
 
 task copyJars(type: Copy) {
