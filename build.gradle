@@ -5,6 +5,7 @@ wrapper {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply plugin: 'c'
 
 group = pGroup
 version = pVersion
@@ -32,4 +33,30 @@ task copyDeps(type: Copy) {
 
 task createRuntime(dependsOn: [copyJars, copyDeps]) {
     description 'Setup the execution environment for the main scripts'
+}
+
+model {
+  components {
+    terminal(NativeLibrarySpec) {
+      binaries.all {
+        if (targetPlatform.operatingSystem.macOsX) {
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/darwin"
+          cCompiler.args '-mmacosx-version-min=10.4'
+          linker.args '-mmacosx-version-min=10.4'
+        } else if (targetPlatform.operatingSystem.linux) {
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/linux"
+          cCompiler.args '-D_FILE_OFFSET_BITS=64'
+        } else if (targetPlatform.operatingSystem.windows) {
+          cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+          cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include/win32"
+          linker.args "Shlwapi.lib", "Advapi32.lib"
+        } else if (targetPlatform.operatingSystem.freeBSD) {
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/freebsd"
+        }
+      }
+    }
+  }
 }

@@ -1,5 +1,4 @@
 #include <jni.h>
-#include "de_topobyte_jterm_core_Terminal.h"
 
 #define BUFSIZE 10000
 

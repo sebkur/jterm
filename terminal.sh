@@ -9,7 +9,7 @@ if [ ! -d "$LIBS" ]; then
 fi
 
 CLASSPATH="$LIBS/*"
-NATIVE=$DIR/native/
+NATIVE=$DIR/build/libs/terminal/shared/
 
 echo "CLASSPATH=$CLASSPATH"
 echo "NATIVE=$NATIVE"
