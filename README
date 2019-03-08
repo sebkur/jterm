@@ -1,3 +1,0 @@
-javah -jni -cp bin -d native de.topobyte.jterm.Terminal
-
-java -Djava.library.path=native/ -cp bin/ de.topobyte.jterm.TestTerminal
