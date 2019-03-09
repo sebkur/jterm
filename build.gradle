@@ -60,3 +60,12 @@ model {
     }
   }
 }
+
+eclipse.classpath.file {
+  withXml { xml ->
+    def node = xml.asNode()
+    def container = node.find { it.@path == 'src/main/java' }
+    def attributes = container.find { it.@name == 'attributes' }
+    container.attributes[0].appendNode('attribute', [name: 'org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY', value:"$project.name/build/libs/terminal/shared"])
+  }
+}
