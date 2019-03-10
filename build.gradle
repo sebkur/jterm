@@ -36,36 +36,36 @@ task createRuntime(dependsOn: [copyJars, copyDeps]) {
 }
 
 model {
-  components {
-    terminal(NativeLibrarySpec) {
-      binaries.all {
-        if (targetPlatform.operatingSystem.macOsX) {
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/darwin"
-          cCompiler.args '-mmacosx-version-min=10.4'
-          linker.args '-mmacosx-version-min=10.4'
-        } else if (targetPlatform.operatingSystem.linux) {
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/linux"
-          cCompiler.args '-D_FILE_OFFSET_BITS=64'
-        } else if (targetPlatform.operatingSystem.windows) {
-          cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
-          cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include/win32"
-          linker.args "Shlwapi.lib", "Advapi32.lib"
-        } else if (targetPlatform.operatingSystem.freeBSD) {
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
-          cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/freebsd"
+    components {
+        terminal(NativeLibrarySpec) {
+            binaries.all {
+                if (targetPlatform.operatingSystem.macOsX) {
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/darwin"
+                    cCompiler.args '-mmacosx-version-min=10.4'
+                    linker.args '-mmacosx-version-min=10.4'
+                } else if (targetPlatform.operatingSystem.linux) {
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/linux"
+                    cCompiler.args '-D_FILE_OFFSET_BITS=64'
+                } else if (targetPlatform.operatingSystem.windows) {
+                    cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include/win32"
+                    linker.args "Shlwapi.lib", "Advapi32.lib"
+                } else if (targetPlatform.operatingSystem.freeBSD) {
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/freebsd"
+                }
+            }
         }
-      }
     }
-  }
 }
 
 eclipse.classpath.file {
-  withXml { xml ->
-    def node = xml.asNode()
-    def container = node.find { it.@path == 'src/main/java' }
-    def attributes = container.find { it.@name == 'attributes' }
-    container.attributes[0].appendNode('attribute', [name: 'org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY', value:"$project.name/build/libs/terminal/shared"])
-  }
+    withXml { xml ->
+        def node = xml.asNode()
+        def container = node.find { it.@path == 'src/main/java' }
+        def attributes = container.find { it.@name == 'attributes' }
+        container.attributes[0].appendNode('attribute', [name: 'org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY', value:"$project.name/build/libs/terminal/shared"])
+    }
 }
