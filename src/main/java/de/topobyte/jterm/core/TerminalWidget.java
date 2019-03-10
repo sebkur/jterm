@@ -871,7 +871,7 @@ public class TerminalWidget extends JComponent implements
 	private boolean handleCsiIntern(Csi csi)
 	{
 		if ((csi.suffix1 == 'h' || csi.suffix1 == 'l') && csi.prefix == '\0') {
-			log("CSI case 1: all not handled yet in vexterm");
+			log("CSI case 1: all not handled yet in jterm");
 			return true;
 		} else if ((csi.suffix1 == 'h' || csi.suffix1 == 'l')
 				&& csi.prefix == '?') { // DECSET / DECRST
