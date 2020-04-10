@@ -10,7 +10,7 @@ public class Charmap
 	 * DEC Special Character and Line Drawing Set. VT100 and higher (per XTerm
 	 * docs).
 	 */
-	private static char[][] iso2022_map = new char[][] {
+	private static char[][] iso2022_map = new char[][] { //
 			{ 96, 0x25c6 }, /* diamond */
 			{ 'a', 0x2592 }, /* checkerboard */
 			{ 'b', 0x2409 }, /* HT symbol */

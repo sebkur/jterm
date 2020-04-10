@@ -182,9 +182,9 @@ public class AquaBarTabbedPaneUI extends BasicTabbedPaneUI
 				tabHeight / 2, colorSet.topGradColor2));
 		g2d.fillRect(xpos, 0, width, tabHeight / 2);
 
-		g2d.setPaint(new GradientPaint(0, tabHeight / 2,
-				colorSet.bottomGradColor1, 0, tabHeight + 1,
-				colorSet.bottomGradColor2));
+		g2d.setPaint(
+				new GradientPaint(0, tabHeight / 2, colorSet.bottomGradColor1,
+						0, tabHeight + 1, colorSet.bottomGradColor2));
 		g2d.fillRect(xpos, tabHeight / 2, width, tabHeight / 2 + 1);
 
 		if (contentTopBorderDrawn) {

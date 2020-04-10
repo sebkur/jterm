@@ -65,11 +65,13 @@ public class CustomTabbedContainer extends JPanel
 				InputEvent.CTRL_DOWN_MASK), keyCtrlPageDown);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,
 				InputEvent.CTRL_DOWN_MASK), keyCtrlPageUp);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,
-				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
 				keyCtrlShiftPageDown);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,
-				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
 				keyCtrlShiftPageUp);
 
 		ActionMap actionMap = getActionMap();

@@ -4,5 +4,5 @@ public interface TabListener
 {
 
 	public void updateTabs();
-	
+
 }

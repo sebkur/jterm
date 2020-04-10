@@ -22,8 +22,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 
-public class TerminalWidget extends JComponent implements
-		TerminalClosedListener
+public class TerminalWidget extends JComponent implements TerminalClosedListener
 {
 
 	private static final long serialVersionUID = 6198367149770918349L;
@@ -57,8 +56,7 @@ public class TerminalWidget extends JComponent implements
 	int charHeight = 11;
 	private int descent = 3;
 
-	private Cache<Pixel, BufferedImage> cache = new Cache<>(
-			300);
+	private Cache<Pixel, BufferedImage> cache = new Cache<>(300);
 
 	private Screen screen;
 	private Screen screenNormal;
@@ -285,8 +283,8 @@ public class TerminalWidget extends JComponent implements
 				screen.setCurrentRow(rows);
 			}
 		}
-		if (smaller
-				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
+		if (smaller && (screen.getScrollTop() == 1
+				&& screen.getScrollBottom() == nRowsOld)) {
 			// the terminal has become smaller
 			int rem = screen.getRows().size() - rows;
 			for (int i = 0; i < rem; i++) {
@@ -299,8 +297,8 @@ public class TerminalWidget extends JComponent implements
 			screen.setScrollTop(1);
 			screen.setScrollBottom(rows);
 		}
-		if (bigger
-				&& (screen.getScrollTop() == 1 && screen.getScrollBottom() == nRowsOld)) {
+		if (bigger && (screen.getScrollTop() == 1
+				&& screen.getScrollBottom() == nRowsOld)) {
 			// the terminal has become larger
 			int add = rows - screen.getRows().size();
 			int hlen = history.getLength();
@@ -377,8 +375,9 @@ public class TerminalWidget extends JComponent implements
 
 		if (drawFrame) {
 			g.setColor(palette.getColor(16));
-			g.drawRect(insets.left, insets.right, terminal.getNumberOfCols()
-					* charWidth, terminal.getNumberOfRows() * charHeight);
+			g.drawRect(insets.left, insets.right,
+					terminal.getNumberOfCols() * charWidth,
+					terminal.getNumberOfRows() * charHeight);
 		}
 
 		/*
@@ -447,9 +446,10 @@ public class TerminalWidget extends JComponent implements
 		if (cursorVisible
 				&& screen.getCurrentRow() + hn <= screen.getRows().size()) {
 			g.setColor(colorCursor);
-			g.fillRect(insets.left + (screen.getCurrentColumn() - 1)
-					* charWidth, insets.top + (screen.getCurrentRow() - 1)
-					* charHeight, charWidth, charHeight);
+			g.fillRect(
+					insets.left + (screen.getCurrentColumn() - 1) * charWidth,
+					insets.top + (screen.getCurrentRow() - 1) * charHeight,
+					charWidth, charHeight);
 		}
 
 		/*
@@ -459,8 +459,9 @@ public class TerminalWidget extends JComponent implements
 		if (drawScrollingArea) {
 			g.setColor(colorScrollingRegion);
 			g.setStroke(new BasicStroke(2.0f));
-			g.drawRect(insets.left, insets.top + (screen.getScrollTop() - 1)
-					* charHeight, terminal.getNumberOfCols() * charWidth,
+			g.drawRect(insets.left,
+					insets.top + (screen.getScrollTop() - 1) * charHeight,
+					terminal.getNumberOfCols() * charWidth,
 					screen.getScrollBottom() * charHeight);
 		}
 
@@ -470,8 +471,8 @@ public class TerminalWidget extends JComponent implements
 			long end = System.currentTimeMillis();
 			System.out.println("Time for paint(): " + (end - start));
 			System.out.println("Pixels painted: " + stats.total);
-			System.out.println("Hit rate: "
-					+ (stats.hits / (double) stats.total));
+			System.out.println(
+					"Hit rate: " + (stats.hits / (double) stats.total));
 			System.out.println("Cache size: " + cache.size());
 		}
 
@@ -863,8 +864,8 @@ public class TerminalWidget extends JComponent implements
 
 	private void printCsi(Csi csi)
 	{
-		log("Handle CSI. prefix: '" + csi.prefix + "', suffix1: '"
-				+ csi.suffix1 + "', suffix2: '" + csi.suffix2 + "'");
+		log("Handle CSI. prefix: '" + csi.prefix + "', suffix1: '" + csi.suffix1
+				+ "', suffix2: '" + csi.suffix2 + "'");
 		for (int i = 0; i < csi.nums.size(); i++) {
 			int num = csi.nums.get(i);
 			log("CSI number: " + num);
@@ -988,10 +989,9 @@ public class TerminalWidget extends JComponent implements
 			}
 
 			if (DEBUG_CURSOR) {
-				log(String
-						.format("FROM: %d,%d GOTO:%d,%d",
-								screen.getCurrentRow(),
-								screen.getCurrentColumn(), r, c));
+				log(String.format("FROM: %d,%d GOTO:%d,%d",
+						screen.getCurrentRow(), screen.getCurrentColumn(), r,
+						c));
 			}
 
 			screen.setCurrentRow(r);
@@ -1279,8 +1279,8 @@ public class TerminalWidget extends JComponent implements
 					if (screen.getCurrentRow() == screen.getScrollBottom()) {
 						// we're on the last line, have to scroll
 						screen.getRows().add(screen.getCurrentRow(), new Row());
-						Row drow = screen.getRows().remove(
-								screen.getScrollTop() - 1);
+						Row drow = screen.getRows()
+								.remove(screen.getScrollTop() - 1);
 						if (screen == screenNormal
 								&& screen.getScrollTop() == 1) {
 							history.push(drow);
@@ -1444,7 +1444,8 @@ public class TerminalWidget extends JComponent implements
 				row.remove(x);
 			}
 		}
-		for (int x = screen.getCurrentColumn(); x <= terminal.getNumberOfCols(); x++) {
+		for (int x = screen.getCurrentColumn(); x <= terminal
+				.getNumberOfCols(); x++) {
 			row.add(createPixel(' '));
 		}
 		this.reverse = reverse;
@@ -1557,8 +1558,8 @@ public class TerminalWidget extends JComponent implements
 						screen.getRows().add(s, new Row());
 					}
 					screen.getRows().add(screen.getCurrentRow(), new Row());
-					Row drow = screen.getRows().remove(
-							screen.getScrollTop() - 1);
+					Row drow = screen.getRows()
+							.remove(screen.getScrollTop() - 1);
 					if (screen == screenNormal && screen.getScrollTop() == 1) {
 						history.push(drow);
 					}
@@ -1566,10 +1567,11 @@ public class TerminalWidget extends JComponent implements
 					for (int x = 0; x < n; x++) {
 						// check whether we have to retain a row at the bottom
 						// of the scrolling region
-						if (screen.getRows().size() >= screen.getScrollBottom()) {
+						if (screen.getRows().size() >= screen
+								.getScrollBottom()) {
 							// yes, there are too many rows
-							screen.getRows().remove(
-									screen.getScrollBottom() - 1);
+							screen.getRows()
+									.remove(screen.getScrollBottom() - 1);
 						}
 						// insert new row
 						screen.getRows().add(screen.getCurrentRow(), new Row());

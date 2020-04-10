@@ -69,17 +69,14 @@ public class CustomTabbedTitleBar extends JPanel implements TabListener
 	@Override
 	public void updateTabs()
 	{
-		/*int total = container.getNumberOfPages();
-
-		if (total == 1 || total == 2) {
-			if (total == 1) {
-				 setPreferredSize(new Dimension(0, 0));
-			} else if (total == 2) {
-				 setPreferredSize(new Dimension(8, 8));
-			}
-			getParent().invalidate();
-			getParent().validate();
-		}*/
+		/*
+		 * int total = container.getNumberOfPages();
+		 * 
+		 * if (total == 1 || total == 2) { if (total == 1) {
+		 * setPreferredSize(new Dimension(0, 0)); } else if (total == 2) {
+		 * setPreferredSize(new Dimension(8, 8)); } getParent().invalidate();
+		 * getParent().validate(); }
+		 */
 
 		repaint();
 	}

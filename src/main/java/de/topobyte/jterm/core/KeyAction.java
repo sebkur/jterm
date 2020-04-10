@@ -177,8 +177,8 @@ public class KeyAction extends AbstractAction
 		} catch (UnsupportedFlavorException e) {
 			System.out.println("Paste Clipboard: Unsupported flavor");
 		} catch (IOException e) {
-			System.out.println("Paste Clipboard: IOException: "
-					+ e.getMessage());
+			System.out
+					.println("Paste Clipboard: IOException: " + e.getMessage());
 		}
 	}
 }

@@ -139,8 +139,8 @@ public class PixelSimple implements Pixel
 	@Override
 	public int hashCode()
 	{
-		return c + fg * 32 + bg * 16 + (highlighted ? 8 : 0)
-				+ (reverse ? 4 : 0) + (fgBright ? 2 : 0) + (bgBright ? 1 : 0);
+		return c + fg * 32 + bg * 16 + (highlighted ? 8 : 0) + (reverse ? 4 : 0)
+				+ (fgBright ? 2 : 0) + (bgBright ? 1 : 0);
 	}
 
 	@Override
@@ -151,8 +151,7 @@ public class PixelSimple implements Pixel
 		}
 		PixelSimple o = (PixelSimple) other;
 		return o.c == c && o.fg == fg && o.bg == bg
-				&& o.highlighted == highlighted
-				&& o.reverse == reverse && o.fgBright == fgBright
-				&& o.bgBright == bgBright;
+				&& o.highlighted == highlighted && o.reverse == reverse
+				&& o.fgBright == fgBright && o.bgBright == bgBright;
 	}
 }

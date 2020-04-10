@@ -96,16 +96,20 @@ public class JTerm
 		InputMap inputMap = tabbed
 				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		inputMap.put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK
-						| InputEvent.SHIFT_DOWN_MASK), keyCtrlShiftT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F8,
-				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+				KeyStroke.getKeyStroke(KeyEvent.VK_T,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+				keyCtrlShiftT);
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F8,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
 				keyCtrlShiftF8);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9,
-				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F9,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
 				keyCtrlShiftF9);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10,
-				InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+		inputMap.put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F10,
+						InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
 				keyCtrlShiftF10);
 
 		ActionMap actionMap = tabbed.getActionMap();
@@ -156,9 +160,8 @@ public class JTerm
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				int status = JOptionPane.showConfirmDialog(frame,
-						"Exit JTerm?", "Confirm Exit",
-						JOptionPane.OK_CANCEL_OPTION);
+				int status = JOptionPane.showConfirmDialog(frame, "Exit JTerm?",
+						"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
 				if (status == JOptionPane.YES_OPTION) {
 					System.exit(0);
 				}
@@ -181,15 +184,15 @@ public class JTerm
 		}
 
 		TerminalWidget terminalWidget = new TerminalWidget(pwd);
-		terminalWidget.setBorder(BorderFactory
-				.createEtchedBorder(EtchedBorder.LOWERED));
+		terminalWidget.setBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		TerminalMouseAdapter mouseAdapter = new TerminalMouseAdapter(
 				terminalWidget, statusbar);
 		terminalWidget.addMouseMotionListener(mouseAdapter);
 
-		terminalWidget.addTerminalClosedListener(new RemovalListener(
-				terminalWidget));
+		terminalWidget
+				.addTerminalClosedListener(new RemovalListener(terminalWidget));
 
 		if (tabbed.getNumberOfTabs() != 0) {
 			terminalWidget.setDrawScrollingArea(isShowScrollingArea());
