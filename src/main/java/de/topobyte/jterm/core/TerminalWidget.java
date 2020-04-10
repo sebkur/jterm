@@ -31,7 +31,7 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
 	private boolean DEBUG_SET_COLUMN = false;
-	private boolean DEBUG_CURSOR = true;
+	private boolean DEBUG_CURSOR = false;
 	private boolean DEBUG_ERASE_DELETE = false;
 	private boolean DEBUG_SCROLLING_AREA = false;
 
