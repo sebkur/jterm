@@ -1088,8 +1088,7 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 				log(String.format("SCROLLING AREA: %d:%d", t, b));
 			}
 
-			screen.setScrollTop(t);
-			screen.setScrollBottom(b);
+			setScrollingRegionSafe(screen, t, b);
 			return true;
 		} else if (csi.suffix1 == 'c' && csi.prefix == '>') {
 			// send device attributes (secondary DA)
@@ -1106,6 +1105,14 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 			return true;
 		}
 		return false;
+	}
+
+	private void setScrollingRegionSafe(Screen screen, int t, int b)
+	{
+		t = Math.max(t, 1);
+		b = Math.min(b, terminal.getNumberOfRows());
+		screen.setScrollTop(t);
+		screen.setScrollBottom(b);
 	}
 
 	private void useNormalScreen()
