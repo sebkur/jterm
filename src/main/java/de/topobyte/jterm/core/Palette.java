@@ -25,8 +25,8 @@ public class Palette
 			new Color(0x55FFFF),
 			new Color(0xFFFFFF),
 
-			new Color(0x000000),
 			new Color(0xFFFFFF),
+			new Color(0x000000),
 		};
 	// @formatter:on
 

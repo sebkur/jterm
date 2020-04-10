@@ -64,8 +64,11 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 
 	private History history;
 
-	private int fg = 16;
-	private int bg = 17;
+	private static final int DEFAULT_FG = 16;
+	private static final int DEFAULT_BG = 17;
+
+	private int fg = DEFAULT_FG;
+	private int bg = DEFAULT_BG;
 	private boolean highlighted = false;
 	private boolean reverse = false;
 	private boolean fgBright = false;
@@ -370,11 +373,11 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 		int ih = insets.left + insets.right;
 		int iv = insets.top + insets.bottom;
 
-		g.setColor(palette.getColor(17));
+		g.setColor(palette.getColor(DEFAULT_BG));
 		g.fillRect(insets.left, insets.top, getWidth() - ih, getHeight() - iv);
 
 		if (drawFrame) {
-			g.setColor(palette.getColor(16));
+			g.setColor(palette.getColor(DEFAULT_FG));
 			g.drawRect(insets.left, insets.right,
 					terminal.getNumberOfCols() * charWidth,
 					terminal.getNumberOfRows() * charHeight);
@@ -1175,8 +1178,8 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	private Pixel createOpaquePixel(char c)
 	{
 		Pixel pixel = newPixel(c);
-		pixel.setFg(16);
-		pixel.setBg(17);
+		pixel.setFg(DEFAULT_FG);
+		pixel.setBg(DEFAULT_BG);
 		pixel.setBgBright(false);
 		pixel.setFgBright(false);
 		pixel.setHighlighted(false);
@@ -1187,8 +1190,8 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	private void setColors(int code)
 	{
 		if (code == 0) {
-			fg = 16;
-			bg = 17;
+			fg = DEFAULT_FG;
+			bg = DEFAULT_BG;
 			highlighted = false;
 			reverse = false;
 			fgBright = false;
@@ -1206,14 +1209,14 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 			fg = c;
 			fgBright = false;
 		} else if (code == 39) {
-			fg = 16;
+			fg = DEFAULT_FG;
 			fgBright = false;
 		} else if (code >= 40 && code <= 47) {
 			int c = code - 40;
 			bg = c;
 			bgBright = false;
 		} else if (code == 49) {
-			bg = 17;
+			bg = DEFAULT_BG;
 			bgBright = false;
 		} else if (code >= 90 && code <= 97) { // should be bright
 			int c = code - 90;
