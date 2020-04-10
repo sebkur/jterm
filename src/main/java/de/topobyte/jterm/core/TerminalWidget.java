@@ -1065,8 +1065,18 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 			deleteLines(n);
 			return true;
 		} else if (csi.suffix1 == 'J') { // erase in display
-			int n = getValueOrDefault(csi, 1);
+			int n = getValueOrDefault(csi, 0);
 			switch (n) { // 0: below, 1: above, 2: all, 3: saved lines (xterm)
+			case 0: {
+				// from cursor to end of screen, including cursor position
+				eraseFromCursorToEnd();
+				return true;
+			}
+			case 1: {
+				// from beginning of screen to cursor, including cursor position
+				eraseFromBeginningToCursor();
+				return true;
+			}
 			case 2: {
 				eraseAll();
 				return true;
@@ -1441,29 +1451,36 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 		log("TODO: erase line");
 	}
 
-	private void eraseToTheRight()
+	private void eraseFromCursorToEnd()
 	{
 		int pr = screen.getCurrentRow();
 		int pc = screen.getCurrentColumn();
 		if (DEBUG_ERASE_DELETE) {
-			log("Erase to the right row: " + pr + ", col: " + pc);
+			log("Erase from cursor to to end of screen. row: " + pr + ", col: "
+					+ pc);
 		}
-		if (screen.getRows().size() < pr) {
-			return;
-		}
-		boolean reverse = this.reverse;
-		this.reverse = false;
+
 		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
 		if (row.size() >= 1) {
 			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
 				row.remove(x);
 			}
 		}
-		for (int x = screen.getCurrentColumn(); x <= terminal
-				.getNumberOfCols(); x++) {
-			row.add(createPixel(' '));
+
+		for (int i = pr + 1; i <= screen.getRows().size(); i++) {
+			screen.getRows().get(i - 1).getPixels().clear();
 		}
-		this.reverse = reverse;
+	}
+
+	private void eraseFromBeginningToCursor()
+	{
+		log("TODO: erase from beginning of screen to cursor");
+		int pr = screen.getCurrentRow();
+		int pc = screen.getCurrentColumn();
+		if (DEBUG_ERASE_DELETE) {
+			log("Erase from beginning of screen to row: " + pr + ", col: "
+					+ pc);
+		}
 	}
 
 	private void eraseToTheLeft()
@@ -1505,6 +1522,31 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 				}
 			}
 		}
+	}
+
+	private void eraseToTheRight()
+	{
+		int pr = screen.getCurrentRow();
+		int pc = screen.getCurrentColumn();
+		if (DEBUG_ERASE_DELETE) {
+			log("Erase to the right row: " + pr + ", col: " + pc);
+		}
+		if (screen.getRows().size() < pr) {
+			return;
+		}
+		boolean reverse = this.reverse;
+		this.reverse = false;
+		List<Pixel> row = screen.getRows().get(pr - 1).getPixels();
+		if (row.size() >= 1) {
+			for (int x = row.size() - 1; x >= pc - 1 && x >= 0; x--) {
+				row.remove(x);
+			}
+		}
+		for (int x = screen.getCurrentColumn(); x <= terminal
+				.getNumberOfCols(); x++) {
+			row.add(createPixel(' '));
+		}
+		this.reverse = reverse;
 	}
 
 	private void deleteLines(int n)
