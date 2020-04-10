@@ -1028,6 +1028,7 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 			int r = getValueOrDefault(csi, 1);
 			int c = getValueOrDefault(csi, 1, 1);
 			cursorGoto(r, c);
+			return true;
 		} else if (csi.suffix1 == 'K') { // erase in line
 			int n = getValueOrDefault(csi, 0);
 			switch (n) {
