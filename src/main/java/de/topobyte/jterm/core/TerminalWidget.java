@@ -966,13 +966,8 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 				}
 			}
 		} else if (csi.suffix1 == 'H') { // goto
-			int r = 1, c = 1; // appropriate default values
-			if (csi.nums.size() >= 1) {
-				r = csi.nums.get(0);
-			}
-			if (csi.nums.size() >= 2) {
-				c = csi.nums.get(1);
-			}
+			int r = getValueOrDefault(csi, 1);
+			int c = getValueOrDefault(csi, 1, 1);
 			// log(String.format("GOTO:%d,%d", r, c));
 
 			cursorGoto(r, c);
