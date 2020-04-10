@@ -48,6 +48,17 @@ public class Screen
 		this.crow = crow;
 	}
 
+	public Cursor getCurrentCursor()
+	{
+		return new Cursor(crow, ccol);
+	}
+
+	public void setCursor(Cursor cursor)
+	{
+		this.crow = cursor.getRow();
+		this.ccol = cursor.getCol();
+	}
+
 	public int getScrollTop()
 	{
 		return scrollTop;

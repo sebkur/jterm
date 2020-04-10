@@ -760,6 +760,8 @@ public class TerminalWidget extends JComponent implements
 		return handleCsi(currentCsi);
 	}
 
+	private Cursor storedCursor = null;
+
 	private boolean handleEscaped(char c)
 	{
 		switch (c) {
@@ -787,11 +789,21 @@ public class TerminalWidget extends JComponent implements
 			return true;
 		}
 		case '7': { // Save Cursor (DECSC)
-			log(String.format("TODO: Save Cursor"));
+			if (DEBUG_CURSOR) {
+				log(String.format("save cursor: %d,%d", screen.getCurrentRow(),
+						screen.getCurrentColumn()));
+			}
+			storedCursor = screen.getCurrentCursor();
 			return true;
 		}
 		case '8': { // Restore Cursor (DECRC)
-			log(String.format("TODO: Restore Cursor"));
+			if (DEBUG_CURSOR) {
+				log(String.format("restore cursor: %d,%d",
+						screen.getCurrentRow(), screen.getCurrentColumn()));
+			}
+			if (storedCursor != null) {
+				screen.setCursor(storedCursor);
+			}
 			return true;
 		}
 		case '=': { // Application Keypad Mode (DECKPAM)
