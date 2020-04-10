@@ -31,7 +31,7 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	private boolean DEBUG_NEWLINES = false;
 	private boolean DEBUG_HISTORY = false;
 	private boolean DEBUG_SET_COLUMN = false;
-	private boolean DEBUG_CURSOR = false;
+	private boolean DEBUG_CURSOR = true;
 	private boolean DEBUG_ERASE_DELETE = false;
 	private boolean DEBUG_SCROLLING_AREA = false;
 
@@ -1029,6 +1029,10 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 			int n = getValueOrDefault(csi, 1);
 			cursorBackward(n);
 			return true;
+		} else if (csi.suffix1 == 'f') { // cursor position
+			int r = getValueOrDefault(csi, 1);
+			int c = getValueOrDefault(csi, 1, 1);
+			cursorGoto(r, c);
 		} else if (csi.suffix1 == 'K') { // erase in line
 			int n = getValueOrDefault(csi, 0);
 			switch (n) {
@@ -1221,6 +1225,14 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	{
 		if (csi.nums.size() > 0) {
 			return csi.nums.get(0);
+		}
+		return v;
+	}
+
+	private int getValueOrDefault(Csi csi, int pos, int v)
+	{
+		if (csi.nums.size() > pos) {
+			return csi.nums.get(pos);
 		}
 		return v;
 	}
