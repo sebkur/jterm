@@ -22,3 +22,6 @@ Guide](https://vt100.net/docs/vt102-ug/) and its chapter about
 is a useful resource. The page that describes the
 [Xterm Control Sequences](https://www.xfree86.org/current/ctlseqs.html) is
 also a very good reference.
+
+One day the [vttest](https://invisible-island.net/vttest/vttest.html) should
+pass, but we're not there yet :)
