@@ -2,6 +2,7 @@ package de.topobyte.jterm.ui.tabs;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -20,6 +21,8 @@ public class CustomTabbedTitleBar extends JPanel implements TabListener
 		this.container = container;
 
 		container.addTabListener(this);
+
+		setPreferredSize(new Dimension(-1, 16));
 	}
 
 	@Override
