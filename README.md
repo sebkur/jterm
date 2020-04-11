@@ -42,3 +42,6 @@ pass, but we're not there yet :)
 
 * [ ] mouse selection for copy and paste
 * [ ] reintroduce proguard compilation
+* [ ] make tabs clickable
+* [ ] display title in tabs and window bar
+* [ ] implement font size increase / decrease
