@@ -25,6 +25,7 @@ import de.topobyte.jterm.core.Terminal;
 import de.topobyte.jterm.core.TerminalClosedListener;
 import de.topobyte.jterm.core.TerminalMouseAdapter;
 import de.topobyte.jterm.core.TerminalWidget;
+import de.topobyte.jterm.themes.Themes;
 import de.topobyte.jterm.ui.Statusbar;
 import de.topobyte.jterm.ui.Toolbar;
 import de.topobyte.jterm.ui.tabs.CustomTabbed;
@@ -150,7 +151,7 @@ public class JTerm
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				System.out.println("F10");
+				switchTheme();
 				// Toggle menu
 			}
 		});
@@ -236,6 +237,16 @@ public class JTerm
 			if (tabbed.getSelectedIndex() == i) {
 				widget.repaint();
 			}
+		}
+	}
+
+	protected void switchTheme()
+	{
+		for (int i = 0; i < tabbed.getNumberOfTabs(); i++) {
+			TerminalWidget widget = (TerminalWidget) tabbed.getComponentAt(i);
+			int currentTheme = widget.getTheme();
+			int newTheme = (currentTheme + 1) % Themes.THEMES.size();
+			widget.setTheme(newTheme);
 		}
 	}
 

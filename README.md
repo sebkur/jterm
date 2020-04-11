@@ -36,3 +36,4 @@ pass, but we're not there yet :)
 ### Misc
 * Ctrl + Shift + F8: toggle status bar display
 * Ctrl + Shift + F9: toggle toolbar display
+* Ctrl + Shift + F10: switch color themes

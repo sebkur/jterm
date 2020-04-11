@@ -22,6 +22,9 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 
+import de.topobyte.jterm.themes.Palette;
+import de.topobyte.jterm.themes.Themes;
+
 public class TerminalWidget extends JComponent implements TerminalClosedListener
 {
 
@@ -74,7 +77,8 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 	private boolean fgBright = false;
 	private boolean bgBright = false;
 
-	private Palette palette = new Palette();
+	private int theme = 0;
+	private Palette palette = Themes.THEMES.get(theme);
 
 	boolean decCkm = false; // Cursor Keys Mode
 	boolean decAwm = false; // Auto Wrap Mode
@@ -1659,6 +1663,19 @@ public class TerminalWidget extends JComponent implements TerminalClosedListener
 		if (history.getPos() != history.getLength()) {
 			history.setPos(history.getLength());
 		}
+	}
+
+	public int getTheme()
+	{
+		return theme;
+	}
+
+	public void setTheme(int num)
+	{
+		this.theme = num;
+		palette = Themes.THEMES.get(theme);
+		cache.clear();
+		repaint();
 	}
 
 }
