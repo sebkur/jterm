@@ -37,3 +37,8 @@ pass, but we're not there yet :)
 * Ctrl + Shift + F8: toggle status bar display
 * Ctrl + Shift + F9: toggle toolbar display
 * Ctrl + Shift + F10: switch color themes
+
+## Todo list
+
+* [ ] mouse selection for copy and paste
+* [ ] reintroduce proguard compilation
