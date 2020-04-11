@@ -2,9 +2,8 @@ package de.topobyte.jterm.core;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.KeyStroke;
-
 import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 
 public class KeyUtil
 {
