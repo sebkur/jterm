@@ -242,4 +242,5 @@ public class AquaBarTabbedPaneUI extends BasicTabbedPaneUI
 			}
 		}
 	}
+
 }

@@ -34,4 +34,5 @@ public class Palette
 	{
 		return colors[index];
 	}
+
 }

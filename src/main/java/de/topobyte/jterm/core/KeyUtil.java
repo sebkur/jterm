@@ -8,6 +8,7 @@ import javax.swing.InputMap;
 
 public class KeyUtil
 {
+
 	private InputMap inputMap;
 	private ActionMap actionMap;
 

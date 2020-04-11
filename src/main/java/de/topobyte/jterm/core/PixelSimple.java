@@ -154,4 +154,5 @@ public class PixelSimple implements Pixel
 				&& o.highlighted == highlighted && o.reverse == reverse
 				&& o.fgBright == fgBright && o.bgBright == bgBright;
 	}
+
 }

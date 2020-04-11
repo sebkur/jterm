@@ -36,4 +36,5 @@ public class Toolbar extends JToolBar
 		buttonGarbageCollection.setFocusable(false);
 		buttonShowScrollingArea.setFocusable(false);
 	}
+
 }

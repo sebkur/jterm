@@ -38,4 +38,5 @@ public class TerminalKeyAdapter extends KeyAdapter
 		terminalWidget.ensureBottomLineVisible();
 		terminal.write(message);
 	}
+
 }

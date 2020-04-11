@@ -24,4 +24,5 @@ public class TerminalWidgetKeyUtil extends KeyUtil
 	{
 		add(keyCode, mask, new KeyAction(terminal, keyCode, mask));
 	}
+
 }

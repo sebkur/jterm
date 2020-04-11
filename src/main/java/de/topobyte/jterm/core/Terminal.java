@@ -45,4 +45,5 @@ public class Terminal
 	{
 		this.rows = rows;
 	}
+
 }

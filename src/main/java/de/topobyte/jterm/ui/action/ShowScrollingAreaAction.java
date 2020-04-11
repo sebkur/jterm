@@ -35,4 +35,5 @@ public class ShowScrollingAreaAction extends AbstractAction
 		}
 		return null;
 	}
+
 }

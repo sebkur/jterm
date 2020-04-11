@@ -24,4 +24,5 @@ public abstract class Tabbed extends JPanel
 	public abstract Component getComponentAt(int index);
 
 	public abstract String getTitleAt(int index);
+
 }

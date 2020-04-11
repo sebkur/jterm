@@ -68,4 +68,5 @@ public class RingBuffer<T>
 		length -= 1;
 		return data;
 	}
+
 }

@@ -274,4 +274,5 @@ public class CustomTabbedContainer extends JPanel
 	{
 		return titles.get(index);
 	}
+
 }

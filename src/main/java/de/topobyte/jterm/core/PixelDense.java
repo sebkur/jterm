@@ -176,4 +176,5 @@ public class PixelDense implements Pixel
 		PixelDense o = (PixelDense) other;
 		return o.c == c && o.flags == flags;
 	}
+
 }

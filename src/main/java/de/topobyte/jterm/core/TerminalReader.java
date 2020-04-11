@@ -6,6 +6,7 @@ import java.util.List;
 
 public abstract class TerminalReader implements Runnable
 {
+
 	private Terminal terminal;
 
 	public TerminalReader(Terminal terminal)
