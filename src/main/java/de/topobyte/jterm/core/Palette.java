@@ -7,7 +7,7 @@ public class Palette
 
 	// @formatter:off
 	private Color[] colors = new Color[] { // default
-			new Color(0x000000),
+			new Color(0xFFFFFF),
 			new Color(0xAA0000),
 			new Color(0x00AA00),
 			new Color(0xAA5500),
@@ -23,10 +23,10 @@ public class Palette
 			new Color(0x5555FF),
 			new Color(0xFF55FF),
 			new Color(0x55FFFF),
-			new Color(0xFFFFFF),
-
-			new Color(0xFFFFFF),
 			new Color(0x000000),
+
+			new Color(0x000000),
+			new Color(0xFFFFFF),
 		};
 	// @formatter:on
 
