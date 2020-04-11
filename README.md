@@ -25,3 +25,14 @@ also a very good reference.
 
 One day the [vttest](https://invisible-island.net/vttest/vttest.html) should
 pass, but we're not there yet :)
+
+## Keyboard shortcuts
+
+### Tabs
+* Ctrl + Shift + T: create new tab
+* Ctrl + Page Up: move to next tab to the left
+* Ctrl + Page Down: move to next tab to the right
+
+### Misc
+* Ctrl + Shift + F8: toggle status bar display
+* Ctrl + Shift + F9: toggle toolbar display
