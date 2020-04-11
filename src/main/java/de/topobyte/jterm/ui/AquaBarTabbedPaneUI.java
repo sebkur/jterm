@@ -221,11 +221,13 @@ public class AquaBarTabbedPaneUI extends BasicTabbedPaneUI
 	private class RollOverAdapter extends MouseAdapter
 	{
 
+		@Override
 		public void mouseEntered(MouseEvent e)
 		{
 			checkRollOver();
 		}
 
+		@Override
 		public void mouseExited(MouseEvent e)
 		{
 			tabPane.repaint();
