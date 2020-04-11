@@ -47,6 +47,8 @@ public class JTerm
 	private Toolbar toolbar;
 	private Statusbar statusbar;
 
+	private int theme = 0;
+
 	public JTerm()
 	{
 		frame = new JFrame("JTerm");
@@ -195,6 +197,8 @@ public class JTerm
 		terminalWidget
 				.addTerminalClosedListener(new RemovalListener(terminalWidget));
 
+		terminalWidget.setTheme(theme);
+
 		if (tabbed.getNumberOfTabs() != 0) {
 			terminalWidget.setDrawScrollingArea(isShowScrollingArea());
 		}
@@ -242,11 +246,11 @@ public class JTerm
 
 	protected void switchTheme()
 	{
+		theme = (theme + 1) % Themes.THEMES.size();
+
 		for (int i = 0; i < tabbed.getNumberOfTabs(); i++) {
 			TerminalWidget widget = (TerminalWidget) tabbed.getComponentAt(i);
-			int currentTheme = widget.getTheme();
-			int newTheme = (currentTheme + 1) % Themes.THEMES.size();
-			widget.setTheme(newTheme);
+			widget.setTheme(theme);
 		}
 	}
 
