@@ -22,7 +22,7 @@ public class RingBuffer<T>
 	public T get(int i)
 	{
 		int pos = (start + i) % buffer.length;
-		return (T) buffer[pos];
+		return buffer[pos];
 	}
 
 	public T prepend(T data)
@@ -30,7 +30,7 @@ public class RingBuffer<T>
 		int pos = start == 0 ? buffer.length - 1 : start - 1;
 		T old = null;
 		if (length == buffer.length) {
-			old = (T) buffer[pos];
+			old = buffer[pos];
 		} else {
 			length += 1;
 		}
@@ -44,7 +44,7 @@ public class RingBuffer<T>
 		int pos = (start + length) % buffer.length;
 		T old = null;
 		if (length == buffer.length) {
-			old = (T) buffer[pos];
+			old = buffer[pos];
 			start = (start + 1) % buffer.length;
 		} else {
 			length += 1;
@@ -55,7 +55,7 @@ public class RingBuffer<T>
 
 	public T removeFirst()
 	{
-		T data = (T) buffer[start];
+		T data = buffer[start];
 		start = (start + 1) % buffer.length;
 		length -= 1;
 		return data;
@@ -64,7 +64,7 @@ public class RingBuffer<T>
 	public T removeLast()
 	{
 		int pos = (start + length - 1) % buffer.length;
-		T data = (T) buffer[pos];
+		T data = buffer[pos];
 		length -= 1;
 		return data;
 	}
