@@ -31,7 +31,7 @@ public class ShowScrollingAreaAction extends AbstractAction
 	public Object getValue(String key)
 	{
 		if (key.equals(Action.SELECTED_KEY)) {
-			return new Boolean(jterm.isShowScrollingArea());
+			return Boolean.valueOf(jterm.isShowScrollingArea());
 		}
 		return null;
 	}
