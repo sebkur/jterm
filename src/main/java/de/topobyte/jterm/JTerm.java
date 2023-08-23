@@ -31,6 +31,8 @@ import de.topobyte.jterm.ui.Toolbar;
 import de.topobyte.jterm.ui.tabs.CustomTabbed;
 import de.topobyte.jterm.ui.tabs.HidingTabbed;
 import de.topobyte.jterm.ui.tabs.Tabbed;
+import de.topobyte.shared.preferences.SharedPreferences;
+import de.topobyte.swing.util.SwingUtils;
 
 public class JTerm
 {
@@ -51,6 +53,8 @@ public class JTerm
 
 	public JTerm()
 	{
+		SwingUtils.setUiScale(SharedPreferences.getUIScale());
+
 		frame = new JFrame("JTerm");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 

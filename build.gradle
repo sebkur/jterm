@@ -18,6 +18,8 @@ repositories {
 
 dependencies {
     implementation 'de.topobyte:adt-misc:0.0.2'
+    implementation 'de.topobyte:swing-utils:0.0.13'
+    implementation 'de.topobyte:shared-preferences:0.0.1'
 }
 
 task copyJars(type: Copy) {
