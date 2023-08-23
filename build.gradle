@@ -1,10 +1,9 @@
 wrapper {
-    gradleVersion = '5.2.1'
+    gradleVersion = '7.6.1'
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'maven'
 apply plugin: 'c'
 
 group = pGroup
@@ -12,13 +11,13 @@ version = pVersion
 
 repositories {
     maven {
-        url 'http://mvn.topobyte.de'
+        url 'https://mvn.topobyte.de'
     }
     mavenCentral()
 }
 
 dependencies {
-    compile 'de.topobyte:adt-misc:0.0.2'
+    implementation 'de.topobyte:adt-misc:0.0.2'
 }
 
 task copyJars(type: Copy) {
@@ -28,7 +27,7 @@ task copyJars(type: Copy) {
 
 task copyDeps(type: Copy) {
     into "$buildDir/lib-run"
-    from configurations.runtime
+    from configurations.runtimeClasspath
 }
 
 task createRuntime(dependsOn: [copyJars, copyDeps]) {
